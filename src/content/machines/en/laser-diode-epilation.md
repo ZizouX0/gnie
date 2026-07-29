@@ -52,17 +52,17 @@ specs:
   - group: "Pulse and endurance"
     rows:
       - { label: "Minimum pulse width", value: "2 ms" }
-      - { label: "Stated lifetime", value: "200 000 000 de shoots (100 000 000 par bras)" }
-      - { label: "Operation", value: "24h/24" }
+      - { label: "Stated lifetime", value: "200 000 000 shots (100 000 000 per arm)" }
+      - { label: "Operation", value: "24/7" }
   - group: "Cooling"
     rows:
-      - { label: "Type", value: "Peltier de refroidissement 360" }
-      - { label: "Temperature", value: "-18° atteints en 2 minutes" }
+      - { label: "Type", value: "360 Peltier cooling" }
+      - { label: "Temperature", value: "-18° reached in 2 minutes" }
   - group: "System"
     rows:
-      - { label: "Screen", value: "Android ultra-clair 15,6 pouces" }
-      - { label: "Updates", value: "Sans fil (système Android)" }
-      - { label: "Handpieces", value: "2 poignées utilisables simultanément" }
+      - { label: "Screen", value: "Ultra-clear 15.6-inch Android display" }
+      - { label: "Updates", value: "Wireless (Android system)" }
+      - { label: "Handpieces", value: "2 handpieces usable simultaneously" }
   - group: "Technical characteristics"
     rows:
       - { label: "Power", value: "TODO:NEEDS_INPUT" }
