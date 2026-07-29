@@ -25,7 +25,7 @@ applications:
   - "Pores dilatés et points noirs"
   - "Rides et ridules"
   - "Acné, sébum et porphyrines"
-  - "Sensibilité, rougeurs et rougeurs diffuses"
+  - "Sensibilité, rougeurs diffuses et petits vaisseaux apparents"
   - "Dommages cutanés liés aux UV"
   - "Niveau d'hydratation de la peau"
   - "Tendance au vieillissement cutané"
