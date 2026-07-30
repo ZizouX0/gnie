@@ -23,8 +23,7 @@
  * twice writes byte-identical files.
  */
 import { createRequire } from "node:module";
-import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, statSync } from "node:fs";
-import { createHash } from "node:crypto";
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -108,10 +107,18 @@ function buildSpecs() {
 
   const specs = [];
   for (const locale of locales) {
-    for (const p of staticPages(ROOT, locale, locale === defaultLocale, segments, ui)) {
+    const machines = readMachines(ROOT, locale);
+    for (const p of staticPages(
+      ROOT,
+      locale,
+      locale === defaultLocale,
+      segments,
+      ui,
+      machines.length,
+    )) {
       specs.push({ ...p, out: `${locale}/${p.page}.png` });
     }
-    for (const m of readMachines(ROOT, locale)) {
+    for (const m of machines) {
       const category = ui[locale][`cat.${m.category}`];
       if (!category) throw new Error(`No label for category "${m.category}" in ${locale}`);
       specs.push({

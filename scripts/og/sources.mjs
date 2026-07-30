@@ -149,7 +149,7 @@ const PAGE_COPY = {
   privacy: { title: "base", eyebrow: "footer.privacy" },
 };
 
-export function staticPages(root, locale, isDefault, segments, ui) {
+export function staticPages(root, locale, isDefault, segments, ui, machineCount) {
   const keys = ["home", ...Object.keys(segments[locale])];
   return keys.map((key) => {
     const rule = PAGE_COPY[key];
@@ -165,7 +165,12 @@ export function staticPages(root, locale, isDefault, segments, ui) {
     else title = ui[locale][rule.title.slice(3)];
     if (!title) throw new Error(`Could not read a title for ${locale}/${key} from ${file}`);
 
-    const eyebrow = ui[locale][rule.eyebrow];
+    /* The catalogue counts what is really in the collection rather than
+       repeating its own title: a thirteenth machine updates the card. */
+    const eyebrow =
+      key === "machines"
+        ? `${machineCount} ${ui[locale][machineCount === 1 ? "catalog.countOne" : "catalog.count"]}`
+        : ui[locale][rule.eyebrow];
     return {
       locale,
       page: key,
