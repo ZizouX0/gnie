@@ -69,6 +69,7 @@ specs:
       - { label: "Température de stockage", value: "-20℃~+55℃" }
       - { label: "Humidité relative", value: "≤80%" }
       - { label: "Pression atmosphérique", value: "86kPa~106kPa" }
+videoId: "gaZDpWDmA_g"
 related: ["v-shape-platinum", "ems-16"]
 featured: true
 order: 2

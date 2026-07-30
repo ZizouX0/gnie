@@ -61,6 +61,7 @@ specs:
     rows:
       - { label: "Maximum turntable weight (test)", value: "180kg" }
       - { label: "Maximum height (test)", value: "200cm" }
+videoId: "OqesJJg_vyQ"
 related: ["howbody-h6", "ems-16"]
 featured: true
 order: 7

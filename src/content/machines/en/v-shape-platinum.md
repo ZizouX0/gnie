@@ -64,6 +64,7 @@ specs:
       - { label: "Power supply", value: "TODO:NEEDS_INPUT" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Weight", value: "TODO:NEEDS_INPUT" }
+videoId: "e-gJUsTJzC8"
 related: ["cryolipolyse-7d-360", "ems-16"]
 featured: true
 order: 3

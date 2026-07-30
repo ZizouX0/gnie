@@ -61,6 +61,7 @@ specs:
     rows:
       - { label: "Charge maximale du plateau (test)", value: "180kg" }
       - { label: "Taille maximale (test)", value: "200cm" }
+videoId: "OqesJJg_vyQ"
 related: ["howbody-h6", "ems-16"]
 featured: true
 order: 7

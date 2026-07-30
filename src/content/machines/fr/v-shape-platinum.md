@@ -64,6 +64,7 @@ specs:
       - { label: "Alimentation", value: "TODO:NEEDS_INPUT" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
+videoId: "e-gJUsTJzC8"
 related: ["cryolipolyse-7d-360", "ems-16"]
 featured: true
 order: 3
