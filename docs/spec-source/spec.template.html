@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GNIE Aesthetics v2 — Specification</title>
+<style>
+/*FONTS*/
+:root{
+  --noir:#0B0B0D; --graphite:#131316; --carbone:#1C1C21;
+  --or:#C9A24B; --or-clair:#E9D5A1; --ivoire:#F3EEE4; --gris:#98938A;
+  --ligne:rgba(201,162,75,.28); --ligne-faint:rgba(201,162,75,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:0}
+html,body{background:var(--noir);}
+body{
+  font-family:'Manrope',sans-serif; font-weight:400;
+  color:var(--ivoire); font-size:10.5pt; line-height:1.6;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.page{
+  position:relative; width:210mm; height:297mm; overflow:hidden;
+  background:var(--noir); padding:21mm 19mm 17mm;
+  page-break-after:always; display:flex; flex-direction:column;
+}
+.page:last-child{page-break-after:auto}
+.page.alt{background:var(--graphite)}
+
+/* ——— running furniture ——— */
+.runner{position:absolute;top:9mm;left:19mm;right:19mm;display:flex;
+  justify-content:space-between;font-size:6.9pt;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gris)}
+.runner b{color:var(--or);font-weight:700}
+.folio{position:absolute;bottom:9mm;left:19mm;right:19mm;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:7pt;letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
+.folio .num{font-family:'Cormorant Garamond',serif;font-size:13.5pt;color:var(--or);letter-spacing:0}
+.rule{height:1px;background:var(--ligne);width:100%}
+
+/* ——— type ——— */
+.eyebrow{font-size:7.2pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--or)}
+h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34pt;line-height:1.04;letter-spacing:-.01em}
+h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24pt;line-height:1.12;margin:2.5mm 0 3.5mm}
+h3{font-family:'Manrope',sans-serif;font-weight:700;font-size:10.6pt;letter-spacing:.01em;color:var(--or-clair);margin:0 0 1mm}
+p{margin:0 0 2.6mm;max-width:158mm}
+p.lead{font-size:12pt;line-height:1.55;color:var(--ivoire)}
+strong{font-weight:700;color:#fff}
+em{color:var(--or-clair);font-style:italic}
+a{color:var(--or-clair);text-decoration:none}
+.muted{color:var(--gris)}
+.small{font-size:9.2pt;line-height:1.56}
+code{font-family:'Manrope',monospace;font-size:8pt;color:var(--or-clair);
+  background:rgba(201,162,75,.09);padding:.4mm 1.2mm;border-radius:2px}
+.section-head{margin-bottom:4mm}
+.section-head .rule{margin-top:3mm}
+.flow{flex:1;min-height:0}
+
+/* ——— layout helpers ——— */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm}
+.stack{display:flex;flex-direction:column;gap:3mm}
+.mt{margin-top:4mm}
+.mt2{margin-top:7mm}
+
+/* ——— the plaque (signature device) ——— */
+.plaque{border:1px solid var(--ligne);background:var(--carbone);border-radius:2px}
+.plaque-head{font-size:7.2pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--or);padding:2.6mm 4mm;border-bottom:1px solid var(--ligne)}
+.plaque-body{padding:1.5mm 4mm 2.5mm}
+.plaque.tight .plaque-body{padding:.8mm 3.5mm 1.4mm}
+.plaque.tight .row{padding:1.1mm 0;font-size:8.6pt}
+.row{display:flex;justify-content:space-between;gap:4mm;
+  padding:1.8mm 0;border-bottom:1px solid var(--ligne-faint);font-size:9.2pt}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--gris)}
+.row .v{text-align:right;color:var(--ivoire);font-weight:500}
+
+/* ——— tables ——— */
+table{width:100%;border-collapse:collapse;font-size:9.2pt}
+th{font-size:7pt;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--or);text-align:left;padding:0 3mm 1.8mm 0;border-bottom:1px solid var(--ligne)}
+td{padding:2mm 3mm 2mm 0;border-bottom:1px solid var(--ligne-faint);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.id{color:var(--or);font-weight:700;white-space:nowrap;width:9mm}
+td.nowrap{white-space:nowrap}
+.star{color:var(--or)}
+
+/* ——— cards / callouts ——— */
+.card{border:1px solid var(--ligne);background:var(--carbone);border-radius:2px;padding:4mm}
+.card .eyebrow{display:block;margin-bottom:1.6mm}
+.q{border-left:2px solid var(--or);padding:.5mm 0 .5mm 4mm;margin-bottom:3.4mm}
+.q .qh{font-weight:700;color:#fff;font-size:9.6pt}
+.q .qb{font-size:9.2pt;color:var(--gris);line-height:1.5}
+.numlist{counter-reset:n;display:flex;flex-direction:column;gap:2.6mm}
+.numlist li{list-style:none;display:flex;gap:3.5mm;counter-increment:n}
+.numlist li::before{content:counter(n,decimal-leading-zero);
+  font-family:'Cormorant Garamond',serif;font-size:14.5pt;color:var(--or);
+  line-height:1;min-width:7mm;padding-top:.6mm}
+.numlist .t{font-weight:700;color:#fff;font-size:10pt}
+.numlist .d{font-size:9.2pt;color:var(--gris);line-height:1.5}
+ul.dash{list-style:none}
+ul.dash li{position:relative;padding-left:4mm;font-size:9.2pt;margin-bottom:1.4mm;line-height:1.5}
+ul.dash li::before{content:"";position:absolute;left:0;top:2.1mm;width:2mm;height:1px;background:var(--or)}
+
+/* ——— cover ——— */
+.cover{justify-content:space-between;background:
+  radial-gradient(120% 90% at 78% 8%, rgba(201,162,75,.13) 0%, rgba(201,162,75,0) 55%),
+  var(--noir)}
+.cover img.logo{width:38mm;display:block}
+.cover .ttl{font-size:48pt;line-height:.98}
+.cover .sub{font-family:'Cormorant Garamond',serif;font-size:18pt;color:var(--or-clair);
+  font-weight:400;margin-top:3mm;letter-spacing:.005em}
+.cover .meta{display:flex;justify-content:space-between;font-size:7.4pt;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gris);padding-top:3.5mm}
+
+/* ——— swatches / design page ——— */
+.sw{display:flex;flex-direction:column;gap:0}
+.sw .chip{height:13mm;border:1px solid var(--ligne-faint);border-radius:2px}
+.sw .lbl{font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-top:1.4mm}
+.sw .hex{font-size:8pt;color:var(--ivoire);font-weight:500}
+.pill{display:inline-block;border:1px solid var(--ligne);border-radius:999px;
+  padding:1.2mm 3.4mm;font-size:8.2pt;color:var(--or-clair);margin:0 1.4mm 1.6mm 0}
+.btn-demo{display:inline-block;background:var(--or);color:#0B0B0D;font-weight:700;
+  font-size:8.4pt;letter-spacing:.06em;padding:2.2mm 5mm;border-radius:2px}
+.btn-demo.ghost{background:transparent;border:1px solid var(--or);color:var(--or)}
+.shot{border:1px solid var(--ligne);border-radius:2px;background:var(--graphite);overflow:hidden}
+.shot img{width:100%;height:40mm;object-fit:cover;display:block}
+.shot .cap{padding:2.2mm 3mm;font-size:7.6pt;color:var(--gris);letter-spacing:.08em;text-transform:uppercase}
+.shot .cap b{color:var(--or);font-weight:700;display:block;letter-spacing:.14em;font-size:7pt}
+
+/* ——— phase timeline ——— */
+.phase{display:grid;grid-template-columns:12mm 1fr;gap:0 4mm;padding-bottom:4mm}
+.phase .n{font-family:'Cormorant Garamond',serif;font-size:30pt;color:var(--or);line-height:.9}
+.phase .stop{display:inline-block;font-size:7pt;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--noir);background:var(--or-clair);padding:.7mm 2mm;border-radius:2px}
+.term{display:grid;grid-template-columns:auto 1fr;gap:1.5mm 4mm;font-size:9.2pt}
+.term dt{color:var(--or-clair);font-weight:700;white-space:nowrap}
+.term dd{color:var(--ivoire)}
+pre.cmd{background:var(--carbone);border:1px solid var(--ligne);border-radius:2px;
+  padding:4mm 4.5mm;font-size:8.6pt;line-height:1.7;color:var(--or-clair);
+  font-family:'Manrope',monospace;white-space:pre-wrap}
+pre.cmd .c{color:var(--gris)}
+</style>
+</head>
+<body>
+
+<!-- ============ 1 · COVER ============ -->
+<section class="page cover">
+  <div>
+    <img class="logo" src="{{LOGO}}" alt="GNIE">
+  </div>
+  <div>
+    <div class="eyebrow">Specification document — Version 1.0</div>
+    <h1 class="ttl">GNIE<br>Aesthetics<span style="color:var(--or)">.</span></h1>
+    <div class="sub">Premium bilingual showcase website — 12 machines, one purpose:<br>turn clinic owners into conversations.</div>
+  </div>
+  <div>
+    <div class="rule"></div>
+    <div class="meta">
+      <span>gnie-aesthetics.com</span>
+      <span>Montplaisir · Tunis</span>
+      <span>July 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · THE PROJECT ============ -->
+<section class="page">
+  <div class="runner"><span><b>01</b> · The project</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter one</div>
+      <h2>What we are building</h2>
+      <div class="rule"></div>
+    </div>
+
+    <p class="lead">A <strong>premium showcase website</strong> for GNIE — distributor of professional aesthetic equipment in Tunis — replacing the current single-page site with twelve dedicated machine pages, in French and English.</p>
+
+    <p>The machines sell between €15,000 and €30,000. The site's job is not to explain wavelengths; it is to make a clinic owner feel that this equipment is worth its price, and to put a contact button within reach at every scroll position. <strong>One converted lead pays for this website many times over.</strong></p>
+
+    <div class="cols2 mt">
+      <div class="card">
+        <span class="eyebrow">Who visits</span>
+        <p class="small" style="margin:0">Owners and managers of aesthetic clinics, medspas and beauty institutes — Tunisia first, francophone Africa second. Business decision-makers, not technicians. They buy outcomes, ROI and trust, so the site leads with results and keeps the engineering in an expandable spec table for those who want it.</p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">The single goal</span>
+        <p class="small" style="margin:0">Qualified leads through exactly two channels: a <strong>WhatsApp</strong> conversation pre-filled with the machine's name, or a <strong>quote request</strong> form with that machine pre-selected. No prices anywhere — the business is quote-driven.</p>
+      </div>
+    </div>
+
+    <div class="mt2">
+      <div class="eyebrow">At a glance</div>
+      <div class="cols3 mt" style="gap:4mm">
+        <div class="plaque"><div class="plaque-body">
+          <div class="row"><span class="k">Machines</span><span class="v">12</span></div>
+          <div class="row"><span class="k">Categories</span><span class="v">7</span></div>
+          <div class="row"><span class="k">Languages</span><span class="v">FR · EN</span></div>
+        </div></div>
+        <div class="plaque"><div class="plaque-body">
+          <div class="row"><span class="k">Pages built</span><span class="v">≈ 34</span></div>
+          <div class="row"><span class="k">Content files</span><span class="v">24</span></div>
+          <div class="row"><span class="k">Images curated</span><span class="v">43</span></div>
+        </div></div>
+        <div class="plaque"><div class="plaque-body">
+          <div class="row"><span class="k">Server</span><span class="v">None (static)</span></div>
+          <div class="row"><span class="k">JavaScript</span><span class="v">&lt; 30 KB</span></div>
+          <div class="row"><span class="k">Hosting cost</span><span class="v">€0</span></div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="mt">
+      <div class="eyebrow">What this site is not</div>
+      <p class="small" style="margin-top:2mm">No online shop or checkout · no prices · no user accounts · no blog · no admin panel to maintain · no database to back up. Every one of those is a cost and a risk that a lead-generation brochure does not need. The architecture leaves the door open (see chapter&nbsp;08) without paying for it now.</p>
+    </div>
+
+    <div class="mt">
+      <div class="eyebrow">How to read this document</div>
+      <div class="cols2" style="margin-top:2mm;gap:6mm">
+        <div class="plaque tight"><div class="plaque-body">
+          <div class="row"><span class="k">01 · The project</span><span class="v">02</span></div>
+          <div class="row"><span class="k">02 · Decisions already taken</span><span class="v">03</span></div>
+          <div class="row"><span class="k">03 · Answers we need from GNIE</span><span class="v">04</span></div>
+          <div class="row"><span class="k">04 · Structure &amp; the twelve machines</span><span class="v">05</span></div>
+          <div class="row"><span class="k">05 · The machine page</span><span class="v">07</span></div>
+          <div class="row"><span class="k">06 · Catalogue, home, contact</span><span class="v">08</span></div>
+        </div></div>
+        <div class="plaque tight"><div class="plaque-body">
+          <div class="row"><span class="k">07 · Design system</span><span class="v">09</span></div>
+          <div class="row"><span class="k">08 · Content &amp; how you edit it</span><span class="v">10</span></div>
+          <div class="row"><span class="k">09 · Leads &amp; foundations</span><span class="v">11</span></div>
+          <div class="row"><span class="k">10 · Build plan</span><span class="v">12</span></div>
+          <div class="row"><span class="k">11 · Quality &amp; risk</span><span class="v">13</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">02</span></div>
+</section>
+
+<!-- ============ 3 · DECISIONS ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>02</b> · Decisions</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter two</div>
+      <h2>Decisions already taken</h2>
+      <div class="rule"></div>
+    </div>
+    <p class="small muted">Each decision below is settled and reflected in the plan. If you disagree with any of them, changing it now costs minutes; after the phase that builds on it, hours.</p>
+
+    <table class="mt">
+      <tr><th>#</th><th>Decision</th><th>Choice</th><th>Reason</th></tr>
+      <tr><td class="id">D1</td><td>Catalogue scope</td><td><strong>12 machines</strong> (CDC said 7)</td><td>Client confirmed all 12 brochures are catalogue machines</td></tr>
+      <tr><td class="id">D2</td><td>Categories</td><td><strong>7</strong> — the CDC's six plus <em>Épilation Définitive</em></td><td>The two hair-removal machines needed a home</td></tr>
+      <tr><td class="id">D3</td><td>Featured on home page</td><td>Cryolipolyse 7D · V-Shape Platinum · VISBODY M30</td><td>Flagship spread: fat freezing, body contouring, 3D analysis</td></tr>
+      <tr><td class="id">D4</td><td>Home hero visual</td><td><strong>Machine photography</strong> on the dark ground</td><td>Sells the equipment from the first second</td></tr>
+      <tr><td class="id">D5</td><td>Analytics</td><td><strong>Vercel Web Analytics</strong></td><td>Free, cookieless, ~1.5 KB; counts visitors, top machines, and clicks on WhatsApp / quote buttons</td></tr>
+      <tr><td class="id">D6</td><td>Phase review method</td><td>Screenshots in chat <em>and</em> you run the site locally</td><td>No extra accounts, real device testing</td></tr>
+      <tr><td class="id">D7</td><td>Missing spec values</td><td><strong>Hidden</strong> on the live site, tracked in a gap list</td><td>A visitor must never see a placeholder</td></tr>
+      <tr><td class="id">D8</td><td>Source brochures</td><td>Archived in the repository, excluded from the built site</td><td>Traceability without page weight</td></tr>
+      <tr><td class="id">D9</td><td>Logo</td><td>Gold logo extracted from the catalogue at 300 dpi</td><td>Usable now; original file still awaited</td></tr>
+      <tr><td class="id">D10</td><td>Language routing</td><td>French at the root, English under <code>/en/</code></td><td>Primary market is francophone; concentrates search authority on the French pages</td></tr>
+      <tr><td class="id">D11</td><td>Editorial rules</td><td>No invented data · no prices · no medical claims</td><td>These are professional aesthetic devices, not medical treatments — protects GNIE legally and commercially</td></tr>
+    </table>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">03</span></div>
+</section>
+
+<!-- ============ 4 · OPEN QUESTIONS ============ -->
+<section class="page">
+  <div class="runner"><span><b>03</b> · Open questions</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter three</div>
+      <h2>Eight answers we need from GNIE</h2>
+      <div class="rule"></div>
+    </div>
+    <p class="small muted">Nothing here blocks the next phase — but every unanswered item eventually becomes visible on a page. Answers can arrive one at a time.</p>
+
+    <div class="mt">
+      <div class="q"><div class="qh">01 · Is the machine called EMS 16 or NEO?</div>
+        <div class="qb">The manufacturer's manual is titled "NEO use manual"; your catalogue calls it EMS 16. The site currently says EMS 16.</div></div>
+      <div class="q"><div class="qh">02 · Which brand for the Hydrafacial?</div>
+        <div class="qb">The technical brief says BEAUTICIAN/NEO, but the brochure shows <strong>PZLASER</strong> printed on the device itself, and "Hydra Star" in its testimonials. The site currently says PZLASER.</div></div>
+      <div class="q"><div class="qh">03 · Does GNIE actually distribute the HOWBODY H6?</div>
+        <div class="qb">Its brochure is co-branded by <strong>HBEC (hbec.tn)</strong> — another Tunisian distributor. All HBEC branding has been stripped from the content and even from the product photo, but the machine's presence on the site should be confirmed.</div></div>
+      <div class="q"><div class="qh">04 · Exact model name of the Électrolyse 5-en-1?</div>
+        <div class="qb">Its two-page brochure only prints "5 IN 1 Permanent". A precise commercial name would improve both the page and its search visibility.</div></div>
+      <div class="q"><div class="qh">05 · Which brands appear in the home-page brand strip?</div>
+        <div class="qb">Confirmed so far: PZLASER, VISBODY. Pending: BEAUTICIAN/NEO (see&nbsp;02) and HOWBODY (see&nbsp;03).</div></div>
+      <div class="q"><div class="qh">06 · What exactly does GNIE commit to after the sale?</div>
+        <div class="qb">Installation, training, local after-sales service — the precise wording appears in the reassurance line under <em>every</em> machine's call to action, so it must be accurate.</div></div>
+      <div class="q"><div class="qh">07 · Are these the current contact details?</div>
+        <div class="qb">Found in the catalogue: Imm Emmeraude de Tunis, Rue Mohamed Badra, Bureau A-2-8, Montplaisir, Tunis 1073 · 55&nbsp;157&nbsp;506 / 90&nbsp;157&nbsp;560 · grtarek@yahoo.fr. Opening hours still needed.</div></div>
+      <div class="q"><div class="qh">08 · Seventeen technical values and two product photos</div>
+        <div class="qb">Five brochures carry no specification table, so values such as power draw, dimensions and weight are missing. V-Shape Platinum and Électrolyse 5-en-1 also need a clean product photograph. Full list in the Phase&nbsp;0 report.</div></div>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">04</span></div>
+</section>
+
+<!-- ============ 5 · SITEMAP + MACHINES ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>04</b> · Structure</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter four</div>
+      <h2>Every page, every machine</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="cols2">
+      <div>
+        <div class="eyebrow">Site map</div>
+        <div class="plaque mt" style="margin-top:2.5mm">
+          <div class="plaque-head">French (default) → English twin</div>
+          <div class="plaque-body">
+            <div class="row"><span class="k">Home</span><span class="v"><code>/</code> → <code>/en/</code></span></div>
+            <div class="row"><span class="k">Catalogue</span><span class="v"><code>/machines/</code></span></div>
+            <div class="row"><span class="k">Machine page ×12</span><span class="v"><code>/machines/{slug}/</code></span></div>
+            <div class="row"><span class="k">Contact</span><span class="v"><code>/contact/</code></span></div>
+            <div class="row"><span class="k">Legal notice</span><span class="v"><code>/mentions-legales/</code></span></div>
+            <div class="row"><span class="k">Privacy</span><span class="v"><code>/confidentialite/</code></span></div>
+            <div class="row"><span class="k">Not found</span><span class="v"><code>/404</code> · bilingual</span></div>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top:3mm">Roughly 34 pages in total. Every French page has an exact English counterpart at the same slug, so the language switcher always lands on the same machine — never back on the home page.</p>
+      </div>
+      <div>
+        <div class="eyebrow">The three featured machines</div>
+        <div class="stack mt" style="margin-top:2.5mm">
+          <div class="shot"><img src="{{CRYO}}" alt=""><div class="cap"><b>Cryolipolyse</b>Cryolipolysis 7D 360° · PZLASER</div></div>
+          <div class="shot"><img src="{{VSHAPE}}" alt=""><div class="cap"><b>Remodelage corporel</b>V-Shape Platinum 5-en-1 · PZLASER</div></div>
+          <div class="shot"><img src="{{VISBODY}}" alt=""><div class="cap"><b>Analyse &amp; diagnostic</b>VISBODY M30 · 3D body scanner</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">05</span></div>
+</section>
+
+<!-- ============ 5b · THE TWELVE MACHINES ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>04</b> · Structure</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div>
+      <div class="eyebrow">The twelve machines, in catalogue order</div>
+      <h2 style="margin-top:2mm">One catalogue, seven categories</h2>
+      <div class="rule"></div>
+      <table style="margin-top:5mm">
+        <tr><th>#</th><th>Machine</th><th>Category</th><th>Brand</th><th>Content</th></tr>
+        <tr><td class="id">01</td><td>Ultra PicoIris — picosecond laser</td><td>Laser pigmentaire &amp; détatouage</td><td>PZLASER</td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">02</td><td>Cryolipolysis 7D 360° <span class="star">★</span></td><td>Cryolipolyse</td><td>PZLASER</td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">03</td><td>V-Shape Platinum — 5-en-1 <span class="star">★</span></td><td>Remodelage corporel</td><td>PZLASER</td><td class="nowrap">4 specs missing</td></tr>
+        <tr><td class="id">04</td><td>Hydrafacial 10-en-1</td><td>Soin du visage</td><td>PZLASER<span class="star">†</span></td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">05</td><td>3-en-1 Air Presso</td><td>Pressothérapie &amp; drainage</td><td>—</td><td class="nowrap">3 specs missing</td></tr>
+        <tr><td class="id">06</td><td>EMS 16<span class="star">†</span> — sculpting musculaire</td><td>Remodelage corporel</td><td>—</td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">07</td><td>VISBODY M30 — 3D scanner <span class="star">★</span></td><td>Analyse &amp; diagnostic</td><td>VISBODY</td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">08</td><td>Laser CO2 fractionné</td><td>Laser pigmentaire &amp; détatouage</td><td>—</td><td class="nowrap">Complete</td></tr>
+        <tr><td class="id">09</td><td>EosICE Pro Max — diode 4 λ</td><td>Épilation définitive</td><td>PZLASER</td><td class="nowrap">5 specs missing</td></tr>
+        <tr><td class="id">10</td><td>Électrolyse 5-en-1<span class="star">†</span></td><td>Épilation définitive</td><td>—</td><td class="nowrap">3 specs missing</td></tr>
+        <tr><td class="id">11</td><td>Skin Analyzer Q2 — 3 caméras</td><td>Analyse &amp; diagnostic</td><td>—</td><td class="nowrap">2 specs missing</td></tr>
+        <tr><td class="id">12</td><td>HOWBODY H6<span class="star">†</span></td><td>Analyse &amp; diagnostic</td><td>HOWBODY</td><td class="nowrap">Complete</td></tr>
+      </table>
+      <p class="small muted" style="margin-top:3mm"><span class="star">★</span> featured on the home page · <span class="star">†</span> subject to an open question in chapter three. "Complete" means every field the brochure could fill is filled — French and English both written.</p>
+    </div>
+
+    <div class="cols2 mt2">
+      <div class="card">
+        <span class="eyebrow">The seven categories</span>
+        <p class="small" style="margin:0">Laser pigmentaire &amp; détatouage <span class="muted">(2)</span> · Cryolipolyse <span class="muted">(1)</span> · Remodelage corporel <span class="muted">(2)</span> · Soin du visage <span class="muted">(1)</span> · Pressothérapie &amp; drainage <span class="muted">(1)</span> · Épilation définitive <span class="muted">(2)</span> · Analyse &amp; diagnostic <span class="muted">(3)</span>.</p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Where this content came from</span>
+        <p class="small" style="margin:0">Twelve manufacturer brochures, read page by page — three of them image-only, so their pages were rendered and read visually. Nothing on these pages is invented: every specification, benefit and zone traces back to a printed source, and anything the brochures did not state is recorded as a gap rather than guessed.</p>
+      </div>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">06</span></div>
+</section>
+
+<!-- ============ 6 · MACHINE PAGE ============ -->
+<section class="page">
+  <div class="runner"><span><b>05</b> · The machine page</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter five</div>
+      <h2>The machine page, section by section</h2>
+      <div class="rule"></div>
+    </div>
+    <p class="small">One template renders all twelve machines from their content files. The order is fixed and engineered for a non-technical buyer: <em>outcomes first, proof in the middle, engineering on demand, contact everywhere.</em></p>
+
+    <ol class="numlist mt">
+      <li><div><div class="t">Breadcrumb</div><div class="d">Accueil / Machines / {machine}. Small and quiet, but it tells search engines how the site is organised.</div></div></li>
+      <li><div><div class="t">Hero</div><div class="d">Category label, the machine's name in large serif type, a one-sentence value proposition, and the two buttons that matter — gold <em>Demander un devis</em> and outlined <em>WhatsApp</em>. Product image framed to the right, stacking above the text on phones.</div></div></li>
+      <li><div><div class="t">Pourquoi cette machine — three to six benefit cards</div><div class="d">Outcome language only: what the clinic gains, not how the electronics work. This is the section that sells.</div></div></li>
+      <li><div><div class="t">Zones &amp; indications</div><div class="d">Treatment areas as gold-outlined chips — double menton, abdomen, flancs, cuisses. For the three analysis devices these become measurement capabilities instead. If a machine has none, the section disappears rather than showing an empty shell.</div></div></li>
+      <li><div><div class="t">La technologie — one to four plain-language blocks</div><div class="d">How it works, explained for an owner evaluating an investment. Jargon stays in the spec table below.</div></div></li>
+      <li><div><div class="t">Caractéristiques techniques — the plaque</div><div class="d">The signature device: specifications presented as an engraved metal plate, grouped by theme. On phones each group collapses, the first one open. Values still missing are simply not shown.</div></div></li>
+      <li><div><div class="t">Gallery</div><div class="d">Only appears when the machine has at least two more clean images. A quiet grid — no slideshow, no lightbox.</div></div></li>
+      <li><div><div class="t">Call to action</div><div class="d">Full-width band: <em>« Intéressé par la {machine} ? »</em>, the reassurance line about installation, training and after-sales, and both buttons again. The quote button carries the machine's identity to the contact form, which pre-selects it.</div></div></li>
+      <li><div><div class="t">À découvrir également</div><div class="d">Two related machines, already chosen for all twelve — keeps a visitor moving through the catalogue instead of leaving.</div></div></li>
+    </ol>
+
+    <div class="card mt" style="margin-top:5mm">
+      <span class="eyebrow">Why this order converts</span>
+      <p class="small" style="margin:0">A clinic owner scanning the page gets the promise in the first screen, the reasons to believe in the second, and a contact button no matter where they stop reading. The technical detail sits low on the page where it reassures the diligent buyer without slowing down the impatient one.</p>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">06</span></div>
+</section>
+
+<!-- ============ 7 · OTHER PAGES ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>06</b> · The other pages</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter six</div>
+      <h2>Catalogue, home, contact</h2>
+      <div class="rule"></div>
+    </div>
+
+    <h3>Catalogue — <code>/machines/</code></h3>
+    <p class="small">A title, a single line of introduction, then a filter bar of eight pills — <em>Toutes</em> plus the seven categories — above a grid of twelve cards. Each card carries the product image, its category, name, a one-line summary, one key specification, and <em>Découvrir →</em>.</p>
+    <p class="small">Filtering is instant and the active filter is written into the address bar, so a filtered view can be shared: you can send a clinic a link that opens directly on the two hair-removal machines. With JavaScript disabled, all twelve simply show.</p>
+
+    <h3 class="mt">Home — <code>/</code></h3>
+    <div class="cols2" style="margin-top:2mm">
+      <ul class="dash">
+        <li><strong>Hero</strong> — GNIE's positioning headline over a strong machine visual, with <em>Découvrir nos machines</em> and WhatsApp.</li>
+        <li><strong>Categories strip</strong> — the seven categories as tiles, each opening the catalogue already filtered.</li>
+        <li><strong>Featured machines</strong> — the three flagships as large cards.</li>
+        <li><strong>Pourquoi GNIE</strong> — three or four trust points: official distributor, installation and training, local after-sales, international brands.</li>
+      </ul>
+      <ul class="dash">
+        <li><strong>Brands strip</strong> — brand names set in type rather than low-resolution logo scrapes.</li>
+        <li><strong>About GNIE</strong> — a compact company block: Montplaisir, Tunis; active since 2015.</li>
+        <li><strong>Final call to action</strong> — both contact channels plus the newsletter signup.</li>
+        <li><em>No sliders, no autoplay, no stock-photo carousel.</em> The restraint is the luxury.</li>
+      </ul>
+    </div>
+
+    <h3 class="mt">Contact — <code>/contact/</code></h3>
+    <p class="small">Coordinates on the left — address, phone, email, WhatsApp, hours. The quote form on the right: name, establishment, phone, email, machine concerned (a dropdown of all twelve plus <em>Autre demande</em>, pre-selected when the visitor arrives from a machine page) and a message. It posts by email through Formspree, works even with JavaScript switched off, and a hidden decoy field absorbs spam bots. Below, the Google map loads only when scrolled to, so it never slows the page down.</p>
+
+    <h3 class="mt">Legal, privacy, 404</h3>
+    <p class="small">Standard French legal notice and privacy policy drafted for a Tunisian company — the privacy page names every third party the site touches: Formspree, Brevo, Google Maps and Vercel Analytics. The 404 page is bilingual and on-brand, offering both home pages rather than a dead end.</p>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">07</span></div>
+</section>
+
+<!-- ============ 8 · DESIGN SYSTEM ============ -->
+<section class="page">
+  <div class="runner"><span><b>07</b> · Design</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter seven</div>
+      <h2>Instrument de précision</h2>
+      <div class="rule"></div>
+    </div>
+    <p class="small">The direction: the restraint of a Swiss watch specification sheet crossed with the warmth of a Tunis luxury institute. Gold on black is fixed by the GNIE logo — and gold on black is exactly how cheap nightclub templates look, so the system is built on discipline. <em>This document you are reading uses that system.</em></p>
+
+    <div class="mt">
+      <div class="eyebrow">Palette — one gold, never negotiable</div>
+      <div class="cols3 mt" style="grid-template-columns:repeat(6,1fr);gap:3mm;margin-top:2.5mm">
+        <div class="sw"><div class="chip" style="background:#0B0B0D"></div><div class="lbl">Noir</div><div class="hex">#0B0B0D</div></div>
+        <div class="sw"><div class="chip" style="background:#131316"></div><div class="lbl">Graphite</div><div class="hex">#131316</div></div>
+        <div class="sw"><div class="chip" style="background:#1C1C21"></div><div class="lbl">Carbone</div><div class="hex">#1C1C21</div></div>
+        <div class="sw"><div class="chip" style="background:#C9A24B"></div><div class="lbl">Or</div><div class="hex">#C9A24B</div></div>
+        <div class="sw"><div class="chip" style="background:#E9D5A1"></div><div class="lbl">Or clair</div><div class="hex">#E9D5A1</div></div>
+        <div class="sw"><div class="chip" style="background:#F3EEE4"></div><div class="lbl">Ivoire</div><div class="hex">#F3EEE4</div></div>
+      </div>
+      <p class="small muted" style="margin-top:2.5mm">Never pure black — <code>#0B0B0D</code> has depth. Gold is reserved for headings, eyebrow labels, hairlines and buttons; <strong>body text is always ivory, never gold</strong>. Contrast passes accessibility standards at every combination used.</p>
+    </div>
+
+    <div class="cols2 mt2">
+      <div>
+        <div class="eyebrow">Typography</div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22pt;line-height:1.1;margin:2.5mm 0 1mm">Cryolipolysis 7D 360°</p>
+        <p class="small muted" style="margin:0">Cormorant Garamond 600 — machine names, page titles.</p>
+        <p class="small" style="margin:3.5mm 0 1mm;font-size:9.4pt">Traite quatre zones simultanément en quarante minutes.</p>
+        <p class="small muted" style="margin:0">Manrope 400/500/700 — everything else.</p>
+        <p class="eyebrow" style="margin-top:3.5mm">Cryolipolyse — remodelage</p>
+        <p class="small muted" style="margin:1mm 0 0">The eyebrow: the system's recurring motif, above every section title.</p>
+      </div>
+      <div>
+        <div class="eyebrow">Components</div>
+        <div style="margin-top:2.5mm">
+          <span class="pill">Double menton</span><span class="pill">Abdomen</span><span class="pill">Flancs</span><span class="pill">Cuisses</span>
+        </div>
+        <div style="margin-top:2mm">
+          <span class="btn-demo">Demander un devis</span>&nbsp;&nbsp;<span class="btn-demo ghost">WhatsApp</span>
+        </div>
+        <div class="plaque" style="margin-top:4mm">
+          <div class="plaque-head">Énergie</div>
+          <div class="plaque-body">
+            <div class="row"><span class="k">Refroidissement</span><span class="v">−11 °C</span></div>
+            <div class="row"><span class="k">Applicateurs</span><span class="v">7 tailles</span></div>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top:2.5mm">The <strong>plaque technique</strong> — the site's one memorable device, repeated in miniature on catalogue cards so everything reads as one family.</p>
+      </div>
+    </div>
+
+    <div class="mt2">
+      <div class="eyebrow">Motion &amp; restraint</div>
+      <p class="small mt" style="margin-top:2mm">One fade-up as a section enters view, a gold underline sliding on menu hover, a two-percent lift on card hover. Corners are nearly sharp — two pixels. Nothing autoplays, nothing parallaxes, nothing carousels. Every animation switches off automatically for visitors whose device asks for reduced motion.</p>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">08</span></div>
+</section>
+
+<!-- ============ 9 · CONTENT MODEL ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>08</b> · Content</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter eight</div>
+      <h2>How the content works — and how you change it</h2>
+      <div class="rule"></div>
+    </div>
+
+    <p class="small">Every machine is a pair of plain text files, already written. Nothing is buried in the design: components display what the files contain, and never contain sentences themselves.</p>
+
+    <pre class="cmd">src/content/machines/fr/cryolipolyse-7d-360.md   <span class="c">← French version</span>
+src/content/machines/en/cryolipolyse-7d-360.md   <span class="c">← English version</span>
+src/assets/machines/cryolipolyse-7d-360/         <span class="c">← its images</span></pre>
+
+    <p class="small mt">Each file holds the name, brand, category, tagline, benefits, treatment zones, technology blocks, specification table, related machines and search text. Interface labels — menu items, button text, form fields — live in a single dictionary with a French and an English column.</p>
+
+    <div class="cols2 mt2">
+      <div>
+        <div class="eyebrow">What this means in practice</div>
+        <ul class="dash mt" style="margin-top:2.5mm">
+          <li><strong>Correct a specification:</strong> edit one line in two files.</li>
+          <li><strong>Swap a product photo:</strong> drop the new file in the machine's folder, change one line.</li>
+          <li><strong>Add machine number thirteen:</strong> two content files and an image folder. Catalogue, filters, sitemap and related-machine links pick it up by themselves.</li>
+          <li><strong>Retire a machine:</strong> delete two files.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow">What cannot go wrong</div>
+        <ul class="dash mt" style="margin-top:2.5mm">
+          <li><strong>Malformed content cannot ship.</strong> The build refuses to run on a missing benefit, a category typo, or an over-long search title.</li>
+          <li><strong>Missing data cannot embarrass you.</strong> Values still unknown are hidden rather than printed as placeholders.</li>
+          <li><strong>A missing translation is an error,</strong> not a page that silently switches language.</li>
+          <li><strong>The French and English versions cannot drift apart</strong> structurally — parity is checked.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt2">
+      <span class="eyebrow">Later, if GNIE wants to edit content themselves</span>
+      <p class="small" style="margin:0">A free visual editor (Decap CMS) can be layered on top of these exact files — a login page where the client edits machines in a form, with no developer involved and no rebuild of the site. This is precisely why the content lives in flat files rather than a database. Parked as a future option, costing nothing today.</p>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">09</span></div>
+</section>
+
+<!-- ============ 10 · LEADS + TECH ============ -->
+<section class="page">
+  <div class="runner"><span><b>09</b> · Leads &amp; foundations</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter nine</div>
+      <h2>How a visitor becomes a lead</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="cols2">
+      <div class="card">
+        <span class="eyebrow">Channel one · WhatsApp</span>
+        <p class="small" style="margin:0">A floating button on every page, bottom right. On a machine page the conversation opens already written: <em>« Bonjour, je souhaite plus d'informations sur la Cryolipolyse 7D 360°. »</em> — so GNIE knows instantly which machine the lead is about, in the visitor's own language.</p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Channel two · Quote request</span>
+        <p class="small" style="margin:0">Every <em>Demander un devis</em> button lands on the contact form with that machine already selected in the dropdown. The submission arrives by email. No account, no login, no friction — and it works without JavaScript.</p>
+      </div>
+    </div>
+    <p class="small mt">Supporting these: a newsletter signup in the footer for long decision cycles, and analytics counting visitors, most-viewed machines, and clicks on both channels — so after launch you can see <em>which machines attract interest</em> before anyone even writes.</p>
+
+    <div class="mt2">
+      <div class="eyebrow">Technical foundation</div>
+      <table class="mt" style="margin-top:2.5mm">
+        <tr><th>Layer</th><th>Choice</th><th>In plain terms</th></tr>
+        <tr><td class="nowrap">Framework</td><td class="nowrap">Astro 5, fully static</td><td>The site is pre-built into plain HTML files — nothing to hack, nothing to crash, instant to load</td></tr>
+        <tr><td class="nowrap">Styling</td><td class="nowrap">Tailwind CSS 4 + tokens</td><td>One file defines the gold, the spacing and the type scale for the whole site</td></tr>
+        <tr><td class="nowrap">Content</td><td class="nowrap">Text files + validation</td><td>Human-editable, machine-checked</td></tr>
+        <tr><td class="nowrap">Images</td><td class="nowrap">Astro image pipeline</td><td>Automatically converted to modern formats, correctly sized, loaded as needed</td></tr>
+        <tr><td class="nowrap">Fonts</td><td class="nowrap">Self-hosted woff2</td><td>No external request, no text jumping as the page loads</td></tr>
+        <tr><td class="nowrap">Hosting</td><td class="nowrap">Vercel, free tier</td><td>Global delivery network, HTTPS, republished on every save to the repository</td></tr>
+        <tr><td class="nowrap">Domain</td><td class="nowrap">GoDaddy DNS → Vercel</td><td>gnie-aesthetics.com, already owned</td></tr>
+        <tr><td class="nowrap">Form · newsletter · chat</td><td class="nowrap">Formspree · Brevo · WhatsApp</td><td>No server to maintain, no monthly bill at this volume</td></tr>
+      </table>
+      <p class="small muted" style="margin-top:2.5mm">Identifiers and keys are configured in Vercel, never written into the code. If one is missing when the site builds, that block renders in a safe disabled state instead of breaking the page.</p>
+    </div>
+
+    <div style="margin-top:3.5mm">
+      <div class="eyebrow">The four values needed at deployment</div>
+      <div class="cols2" style="margin-top:2mm;gap:6mm">
+        <div class="plaque tight"><div class="plaque-body">
+          <div class="row"><span class="k">Formspree ID</span><span class="v">quote requests</span></div>
+          <div class="row"><span class="k">WhatsApp number</span><span class="v">chat buttons</span></div>
+        </div></div>
+        <div class="plaque tight"><div class="plaque-body">
+          <div class="row"><span class="k">Brevo form URL</span><span class="v">newsletter</span></div>
+          <div class="row"><span class="k">Site address</span><span class="v">sitemap, sharing</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">10</span></div>
+</section>
+
+<!-- ============ 11 · BUILD PLAN ============ -->
+<section class="page alt">
+  <div class="runner"><span><b>10</b> · Build plan</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter ten</div>
+      <h2>Four phases, four review gates</h2>
+      <div class="rule"></div>
+    </div>
+    <p class="small"><strong>Phase 0 is already delivered:</strong> twelve brochures audited and mapped, 24 content files written and validated, 43 images curated, the gold logo recovered, and a gap report produced. What follows builds the site around that content.</p>
+
+    <div class="mt">
+      <div class="phase">
+        <div class="n">01</div>
+        <div>
+          <div class="t" style="font-weight:700;color:#fff;font-size:10.4pt">Skeleton &amp; design system</div>
+          <div class="d small muted">Astro configured for two languages, all design tokens, the base layout with header, footer, language switcher and WhatsApp button — plus a hidden styleguide page showing every component. <em>Accepted when</em> both languages render, the switcher works, and the empty shell scores 95+ on Google's performance audit. &nbsp;<span class="stop">Your review</span></div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="n">02</div>
+        <div>
+          <div class="t" style="font-weight:700;color:#fff;font-size:10.4pt">Machine pages &amp; catalogue</div>
+          <div class="d small muted">First the complete machine template with <strong>one machine only</strong> — Cryolipolyse 7D, the richest content — as the reference for design review. <span class="stop">Your review</span> Then all twelve plus the filtered catalogue. <em>Accepted when</em> all 24 machine pages build, related links resolve, spec plates collapse properly on phones, and filtered views are shareable. &nbsp;<span class="stop">Your review</span></div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="n">03</div>
+        <div>
+          <div class="t" style="font-weight:700;color:#fff;font-size:10.4pt">Home, contact, legal, 404</div>
+          <div class="d small muted"><em>Accepted when</em> the form delivers to a test inbox, machine pre-selection works from every machine page, and both languages are complete. &nbsp;<span class="stop">Your review</span></div>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="n">04</div>
+        <div>
+          <div class="t" style="font-weight:700;color:#fff;font-size:10.4pt">Search visibility, integrations, quality assurance</div>
+          <div class="d small muted">Structured data validated with Google's own tools, language pairs verified, social-share images generated, analytics wired, performance pass, then a full sweep: every internal link, French/English parity page by page, 360-pixel screens, keyboard-only navigation, reduced-motion. <em>Delivered with</em> a QA report and a step-by-step deployment guide including the exact GoDaddy DNS records. &nbsp;<span class="stop">Final review → launch</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols2 mt" style="margin-top:2mm">
+      <div>
+        <div class="eyebrow">How you review each phase</div>
+        <p class="small mt" style="margin-top:2mm">Desktop and phone screenshots posted in the chat — and the site running on your own machine, so you can click it, resize it, and test it on your phone.</p>
+      </div>
+      <div>
+        <pre class="cmd">git clone …/gnie.git
+cd gnie
+npm install
+npm run dev   <span class="c"># localhost:4321</span></pre>
+      </div>
+    </div>
+  </div>
+  <div class="folio"><span>Specification · v1.0</span><span class="num">11</span></div>
+</section>
+
+<!-- ============ 12 · QUALITY + RISKS ============ -->
+<section class="page">
+  <div class="runner"><span><b>11</b> · Quality &amp; risk</span><span>GNIE Aesthetics v2</span></div>
+  <div class="flow">
+    <div class="section-head">
+      <div class="eyebrow">Chapter eleven</div>
+      <h2>What "finished" means, measurably</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="cols2">
+      <div>
+        <div class="eyebrow">Performance &amp; accessibility</div>
+        <ul class="dash mt" style="margin-top:2.5mm">
+          <li>90+ on all four Google Lighthouse categories, on a throttled mobile connection, for the home page, the catalogue and a machine page</li>
+          <li>No layout shifting as the page loads</li>
+          <li>No horizontal scrolling at 360 pixels wide</li>
+          <li>Fully operable by keyboard, with visible gold focus outlines</li>
+          <li>Touch targets at least 44 pixels</li>
+          <li>Colour is never the only way meaning is conveyed</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow">Search visibility</div>
+        <ul class="dash mt" style="margin-top:2.5mm">
+          <li>A unique title and description per page, written in the content files</li>
+          <li>Structured data: organisation, product (without prices), breadcrumb</li>
+          <li>Language pairs declared on every page, French as the default</li>
+          <li>XML sitemap, robots file, canonical addresses</li>
+          <li>A share image per page for WhatsApp, Facebook and LinkedIn previews</li>
+          <li>Descriptive alternative text on every content image, in both languages</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt2">
+      <div class="eyebrow">Risks, and what absorbs them</div>
+      <table class="mt" style="margin-top:2.5mm">
+        <tr><th>Risk</th><th>How it is handled</th></tr>
+        <tr><td>Manufacturer images are mediocre — artefacts, text baked in</td><td>Heroes already re-cropped from the brochures at high resolution; two machines flagged for client photography; swapping a photo is a one-line change</td></tr>
+        <tr><td>Gold on black drifts into "nightclub"</td><td>Tokens permit one gold, used only for accents; body text always ivory; whitespace and hairlines carry the luxury</td></tr>
+        <tr><td>Two machines have thin brochure content</td><td>Their pages render fully with what exists; unknown values hidden; the gap list drives client follow-up</td></tr>
+        <tr><td>Brand confusion — HBEC brochure, PZLASER versus BEAUTICIAN</td><td>Raised as open questions; HBEC branding already stripped from all text and images</td></tr>
+        <tr><td>A later content edit breaks the site</td><td>Validation refuses malformed content at build time — broken data cannot reach the public site</td></tr>
+        <tr><td>Free hosting carries no formal service guarantee</td><td>Accepted at this traffic level; because the site is static files, moving it anywhere takes minutes</td></tr>
+      </table>
+    </div>
+
+    <div class="card mt2" style="border-color:var(--or)">
+      <span class="eyebrow">Next step</span>
+      <p class="small" style="margin:0">Read this document and say <strong>“go Phase 1”</strong> — or ask for any change first; edits now cost minutes. The eight open questions in chapter three can be answered whenever GNIE is ready; none of them holds up the next phase.</p>
+    </div>
+  </div>
+  <div class="folio"><span>GNIE Aesthetics v2 · Specification v1.0 · July 2026</span><span class="num">12</span></div>
+</section>
+
+</body>
+</html>
