@@ -10,6 +10,8 @@ import SectionHeading from "@/components/SectionHeading.astro";
 import CategoryPill from "@/components/CategoryPill.astro";
 import BenefitCard from "@/components/BenefitCard.astro";
 import SpecPlate from "@/components/SpecPlate.astro";
+import MachineGallery from "@/components/MachineGallery.astro";
+import VideoFacade from "@/components/VideoFacade.astro";
 import MachineCard from "@/components/MachineCard.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import CTABlock from "@/components/CTABlock.astro";
@@ -158,6 +160,41 @@ const scale = [
       <SpecPlate specs={sample.data.specs} />
     </section>
 
+    <!-- GALLERY (D12) -->
+    <section>
+      <h2 class="sg-h">{t("machine.gallery")}</h2>
+      <p class="note mb">
+        Bascule multi-vues (D12). Les miniatures sont de vrais <code>&lt;button&gt;</code> avec
+        <code>aria-pressed</code>, opérables aux flèches. Sous 2 images le composant ne rend rien ;
+        sans JavaScript la scène devient une grille de toutes les vues.
+      </p>
+      <div class="half">
+        <MachineGallery images={sample.data.gallery} name={sample.data.name} locale={locale} />
+      </div>
+    </section>
+
+    <!-- VIDEO FACADE (D11) -->
+    <section>
+      <h2 class="sg-h">{t("machine.video")}</h2>
+      <p class="note mb">
+        Façade au clic (D11) : aucun <code>iframe</code>, script ou <code>preconnect</code> YouTube
+        dans le HTML initial. Sans JavaScript, l'affiche reste visible et le bouton est remplacé par
+        un lien vers YouTube.
+      </p>
+      <div class="half">
+        {
+          sample.data.videoId && (
+            <VideoFacade
+              videoId={sample.data.videoId}
+              title={sample.data.name}
+              poster={sample.data.heroImage}
+              locale={locale}
+            />
+          )
+        }
+      </div>
+    </section>
+
     <!-- MACHINE CARDS -->
     <section>
       <h2 class="sg-h">Cartes machines</h2>
@@ -296,6 +333,11 @@ const scale = [
   .narrow {
     max-width: 20rem;
     margin-top: 1rem;
+  }
+
+  /* Both media components are built for a machine page's content column. */
+  .half {
+    max-width: 46rem;
   }
 
   .bens,

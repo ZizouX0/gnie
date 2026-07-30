@@ -1,0 +1,204 @@
+---
+/**
+ * Click-to-load video facade (spec decision D11).
+ *
+ * The initial HTML contains a poster and a button — no iframe, no YouTube
+ * script, no preconnect. The embed is created only when the visitor asks for
+ * it, so nothing third-party touches the page otherwise (~1 KB instead of
+ * ~600 KB) and no cookie is set before consent-by-click.
+ *
+ * Without JavaScript the poster still renders and the overlay becomes a real
+ * link to YouTube: the button is hidden while `html.no-js` is set, so a dead
+ * control is never exposed to the keyboard.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { useTranslations, type Locale } from "@/i18n/ui";
+
+interface Props {
+  /** YouTube id of the official manufacturer footage. */
+  videoId: string;
+  /** Machine name — used for the accessible names only, never displayed raw. */
+  title: string;
+  poster: ImageMetadata;
+  locale: Locale;
+  class?: string;
+}
+const { videoId, title, poster, locale, class: className = "" } = Astro.props;
+const t = useTranslations(locale);
+
+/** Fallback destination for the no-JS path; the embed URL is built in the script. */
+const watch = `https://www.youtube.com/watch?v=${videoId}`;
+const host = new URL(watch).hostname.replace(/^www\./, "");
+
+const playLabel = `${t("machine.videoPlay")} — ${title}`;
+const frameTitle = `${t("machine.video")} — ${title}`;
+---
+
+<div
+  class:list={["vf", className]}
+  data-video-facade
+  data-video-id={videoId}
+  data-video-title={frameTitle}
+  data-reveal
+>
+  <div class="stage plaque">
+    <Image
+      class="poster"
+      src={poster}
+      alt=""
+      widths={[480, 768, 1024, 1440]}
+      sizes="(width >= 62rem) 46rem, 92vw"
+      loading="lazy"
+      aria-hidden="true"
+    />
+
+    <button type="button" class="veil trigger" aria-label={playLabel}>
+      <span class="disc" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+          <path d="M8 5.5v13l11-6.5z" fill="currentColor"></path>
+        </svg>
+      </span>
+      <span class="cap">{t("machine.videoPlay")}</span>
+    </button>
+
+    <noscript>
+      <a class="veil" href={watch} target="_blank" rel="noopener noreferrer">
+        <span class="disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+            <path d="M8 5.5v13l11-6.5z" fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="cap">{t("machine.videoPlay")}</span>
+        <span class="host">{host} ↗</span>
+      </a>
+    </noscript>
+  </div>
+</div>
+
+<style>
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-noir);
+  }
+  .stage :global(img),
+  .stage :global(.embed) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .stage :global(img) {
+    object-fit: cover;
+    filter: saturate(0.88) brightness(0.9);
+  }
+
+  /* Overlay: shared by the button (JS) and the noscript link (no JS). */
+  .veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    width: 100%;
+    /* Centre-weighted veil: the labels must stay legible over any poster, so
+       the darkest part of the gradient is exactly where the text sits
+       (≈0.8 over a white frame still clears 7:1 for ivory). */
+    background: radial-gradient(
+      62% 62% at 50% 50%,
+      rgb(11 11 13 / 0.8),
+      rgb(11 11 13 / 0.42)
+    );
+    border: 0;
+    color: var(--color-ivoire);
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
+    padding: 1rem;
+  }
+  /* The overlay fills a clipping frame, so the site-wide outset focus ring
+     would be cut off: draw it inside instead. */
+  .veil:focus-visible {
+    outline: 2px solid var(--color-or);
+    outline-offset: -6px;
+  }
+
+  /* No JS: the button cannot work, so it is never focusable — the link shows. */
+  :global(html.no-js) .trigger {
+    display: none;
+  }
+
+  .disc {
+    display: grid;
+    place-items: center;
+    width: 4.5rem; /* 72px — comfortably past the 44px touch target */
+    height: 4.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-or);
+    background: rgb(201 162 75 / 0.14);
+    color: var(--color-or);
+    backdrop-filter: blur(2px);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .disc svg {
+    margin-left: 0.1875rem; /* optical centring of the triangle */
+  }
+  .veil:hover .disc,
+  .veil:focus-visible .disc {
+    background: var(--color-or);
+    color: var(--color-noir);
+    transform: scale(1.05);
+  }
+
+  .cap {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  /* Named destination for the no-JS link: gold-clair keeps it above 7:1 on the
+     veil, where the secondary grey would have failed. */
+  .host {
+    font-size: var(--text-small);
+    color: var(--color-or-clair);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .disc {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .veil:hover .disc,
+    .veil:focus-visible .disc {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // The only third-party contact on the page, and only after a deliberate click.
+  document.querySelectorAll<HTMLElement>("[data-video-facade]").forEach((root) => {
+    const stage = root.querySelector<HTMLElement>(".stage");
+    const trigger = root.querySelector<HTMLButtonElement>(".trigger");
+    const id = root.dataset.videoId;
+    if (!stage || !trigger || !id) return;
+
+    trigger.addEventListener("click", () => {
+      const frame = document.createElement("iframe");
+      frame.className = "embed";
+      frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+      frame.title = root.dataset.videoTitle ?? "";
+      frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      frame.allowFullscreen = true;
+      stage.replaceChildren(frame);
+      // Keyboard users land inside the player they just asked for.
+      frame.focus();
+    });
+  });
+</script>

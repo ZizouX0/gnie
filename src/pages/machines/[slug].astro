@@ -1,0 +1,22 @@
+---
+/**
+ * French machine pages (`/machines/{slug}/`).
+ *
+ * This route only enumerates the French half of the collection — every line of
+ * markup lives in MachinePage.astro, shared with the English route.
+ */
+import { getCollection } from "astro:content";
+import MachinePage from "@/components/MachinePage.astro";
+
+export async function getStaticPaths() {
+  const machines = await getCollection("machines", (m) => m.id.startsWith("fr/"));
+  return machines.map((entry) => ({
+    params: { slug: entry.id.slice("fr/".length) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+---
+
+<MachinePage entry={entry} locale="fr" />

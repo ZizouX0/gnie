@@ -1,0 +1,222 @@
+---
+/**
+ * Comparison tool (decision D14).
+ *
+ * The visitor ticks two or three machines in the catalogue and their spec plates
+ * line up side by side — the answer to "EMS 16 or V-Shape?". The selection is
+ * mirrored into the URL (`?compare=slug,slug`) so a shortlist can be sent to a
+ * client as a link.
+ *
+ * Every column is pre-rendered here and simply unhidden by the catalogue script:
+ * no spec data is duplicated into JavaScript, nothing is templated at runtime,
+ * and rows still marked TODO:NEEDS_INPUT are dropped at build time (D7) exactly
+ * as SpecPlate drops them.
+ *
+ * The columns live in a horizontally scrollable region of their own, so on a
+ * 360 px phone the comparison scrolls and the page body never does. With
+ * JavaScript off the whole section is hidden — there is no way to select.
+ */
+import SectionHeading from "@/components/SectionHeading.astro";
+import { categoryLabel, useTranslations, type Category, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+interface CompareMachine {
+  slug: string;
+  name: string;
+  category: Category;
+  /** Already filtered: no missing values, no empty groups. */
+  groups: { group: string; rows: { label: string; value: string }[] }[];
+}
+interface Props {
+  locale: Locale;
+  machines: CompareMachine[];
+}
+const { locale, machines } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="cmp" id="cmp" aria-label={t("catalog.compareTitle")}>
+  <div class="wrap">
+    <SectionHeading eyebrow={t("catalog.compare")} title={t("catalog.compareTitle")} />
+
+    <p class="hint" id="cmp-empty">{t("catalog.compareEmpty")}</p>
+
+    <div
+      class="scroller"
+      data-cmp-cols
+      role="region"
+      aria-label={t("catalog.compareTitle")}
+      tabindex="0"
+      hidden
+    >
+      <div class="cols">
+        {
+          machines.map((m) => (
+            <article class="col plaque" data-col={m.slug} hidden>
+              <header class="head">
+                <p class="eyebrow">{categoryLabel(locale, m.category)}</p>
+                <h3>{m.name}</h3>
+                <a href={path(locale, "machines", m.slug)}>{t("cta.more")} →</a>
+              </header>
+              {m.groups.map((g) => (
+                <div class="group">
+                  <p class="eyebrow gname">{g.group}</p>
+                  <dl>
+                    {g.rows.map((r) => (
+                      <div class="row">
+                        <dt>{r.label}</dt>
+                        <dd>{r.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <button type="button" class="reset" data-cmp-clear hidden>{t("catalog.clear")}</button>
+  </div>
+</section>
+
+<style>
+  /* Deliberately tighter than a full section: for most visits this block holds
+     one line of invitation, and a full section's air would read as a hole. */
+  .cmp {
+    padding-block: clamp(3rem, 7vw, 4.75rem);
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+  }
+  /* No script, no way to tick a box — so no section. */
+  :global(html.no-js) .cmp {
+    display: none;
+  }
+
+  .cmp :global(.heading) {
+    margin-bottom: 1.75rem;
+  }
+
+  .hint {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    margin: 0;
+  }
+  .hint[hidden] {
+    display: none;
+  }
+
+  /* The comparison scrolls inside itself; the page body never scrolls sideways. */
+  .scroller {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0.75rem;
+    /* room for the focus ring of a focused scroll region */
+    margin: -0.25rem;
+    padding-inline: 0.25rem;
+    padding-top: 0.25rem;
+  }
+  .scroller[hidden] {
+    display: none;
+  }
+
+  .cols {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .col {
+    flex: 0 0 min(21rem, 80vw);
+    scroll-snap-align: start;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .col[hidden] {
+    display: none;
+  }
+
+  .head {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--ligne);
+  }
+  h3 {
+    font-size: 1.375rem;
+    margin-top: 0.5rem;
+  }
+  .head a {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: var(--color-or);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .head a:hover {
+    color: var(--color-or-clair);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .group {
+    margin-top: 1.25rem;
+  }
+  .gname {
+    margin-bottom: 0.25rem;
+  }
+  dl {
+    margin: 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--ligne-ghost);
+    font-size: var(--text-small);
+  }
+  dt {
+    color: var(--color-gris);
+  }
+  dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .reset {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-top: 1.5rem;
+    padding: 0.5rem 1.125rem;
+    border: 1px solid var(--ligne);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ivoire);
+    font: inherit;
+    font-size: var(--text-small);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .reset:hover {
+    border-color: var(--color-or);
+    color: var(--color-or-clair);
+  }
+  .reset[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroller {
+      scroll-snap-type: none;
+    }
+    .reset {
+      transition: none;
+    }
+  }
+</style>

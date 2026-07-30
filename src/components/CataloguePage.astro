@@ -1,0 +1,438 @@
+---
+/**
+ * The catalogue — one template, two languages (specification §4.2).
+ *
+ * The two routes (`/machines/` and `/en/machines/`) do nothing but pass a
+ * locale, so the French and English catalogues physically cannot drift apart.
+ *
+ * Order of the page: title + intro → filter bar of 8 pills with counts → grid of
+ * all 12 machines in `order` → the comparison panel → the CTA block.
+ *
+ * Three interactive layers, all of them optional (§8):
+ *   · FILTER (client-side) — a pill is a real link to `#{category}`, so the
+ *     browser writes the active filter into the URL by itself and a filtered
+ *     view is shareable; the script only reacts to the hash by toggling
+ *     `hidden` per card. With JavaScript off every card stays visible and
+ *     "Toutes" stays the marked pill, which is the truth of that page.
+ *   · QUICK-VIEW (D13) — native <dialog>, see QuickView.astro.
+ *   · COMPARISON (D14) — pre-rendered columns, see Compare.astro.
+ *
+ * No value marked TODO:NEEDS_INPUT is ever passed on (D7).
+ */
+import { getCollection, type CollectionEntry } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CategoryPill from "@/components/CategoryPill.astro";
+import MachineCard from "@/components/MachineCard.astro";
+import QuickView from "@/components/QuickView.astro";
+import Compare from "@/components/Compare.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { categories, categoryLabel, useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const entries = (await getCollection("machines", (m) => m.id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+/* ── spec helpers ────────────────────────────────────────────────
+   Everything the catalogue shows of a spec table goes through here, so the
+   D7 rule (a visitor never reads "TODO") is applied once. */
+const MISSING = "TODO:NEEDS_INPUT";
+const visibleGroups = (entry: CollectionEntry<"machines">) =>
+  entry.data.specs
+    .map((g) => ({ group: g.group, rows: g.rows.filter((r) => !r.value.includes(MISSING)) }))
+    .filter((g) => g.rows.length > 0);
+
+/** Identity and boilerplate labels: true of every machine, so they sell nothing. */
+const DULL =
+  /^(mod[eè]les?|models?|marque|brand|versions?|tension|voltage|alimentation( électrique)?|power supply|consommation|power consumption|dimensions?|poids|weight|fr[ée]quence|frequency)$/i;
+/** A value carrying a real figure with a unit — what a buyer actually scans for. */
+const FIGURE =
+  /\d\s*(?:mm|cm|nm|ps|ms|kg|kPa|Kpa|kVA|kW|kHz|MHz|GHz|Hz|Tesla|mj|mw|µm|µA|pouces?|inch(?:es)?|pcs|W|V|%|°|℃)/i;
+
+/**
+ * The card's one-line mini spec.
+ *
+ * MachineCard clamps it to two lines, which at the narrowest card the grid ever
+ * produces is around 40 characters: a longer pair loses its own figure to the
+ * ellipsis, which is worse than a humbler spec shown whole. So: walk the plate in the
+ * order the content author wrote it and take the first figure-bearing row that
+ * fits; if a machine has none that fits, take its shortest figure-bearing row;
+ * only then fall back to plain text. Nothing is hand-picked per machine, so
+ * machine #13 gets a mini spec for free.
+ */
+const FITS = 38;
+const size = (r: { label: string; value: string }) => r.label.length + r.value.length;
+const miniSpec = (groups: ReturnType<typeof visibleGroups>) => {
+  const rows = groups
+    .flatMap((g) => g.rows)
+    .filter((r) => r.label.length >= 4 && r.value.length <= 46 && !DULL.test(r.label.trim()));
+  const figures = rows.filter((r) => FIGURE.test(r.value));
+  const shortest = [...figures].sort((a, b) => size(a) - size(b))[0];
+  return figures.find((r) => size(r) <= FITS) ?? shortest ?? rows.find((r) => size(r) <= FITS) ?? rows[0];
+};
+
+const machines = entries.map((entry) => {
+  const groups = visibleGroups(entry);
+  return {
+    slug: entry.id.slice(entry.id.indexOf("/") + 1),
+    data: entry.data,
+    groups,
+    mini: miniSpec(groups),
+    /** Quick-view shows the top of the plate only — six rows at most (D13). */
+    quickRows: groups.flatMap((g) => g.rows).slice(0, 6),
+  };
+});
+
+/* ── filter bar ──────────────────────────────────────────────── */
+const count = (c: string) => machines.filter((m) => m.data.category === c).length;
+const pills = [
+  { value: "all", label: t("catalog.all"), count: machines.length },
+  ...categories.map((c) => ({ value: c, label: categoryLabel(locale, c), count: count(c) })),
+];
+
+const total = machines.length;
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("nav.machines") },
+];
+---
+
+<Base
+  locale={locale}
+  page="machines"
+  title={t("catalog.title")}
+  description={t("catalog.intro")}
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap head">
+    <SectionHeading
+      as="h1"
+      eyebrow={t("nav.machines")}
+      title={t("catalog.title")}
+      intro={t("catalog.intro")}
+    />
+  </div>
+
+  {/* ── filter bar: 8 pills, each carrying its own count ──────── */}
+  <div class="wrap tools">
+    <nav class="filters" id="filters" aria-label={t("catalog.title")}>
+      {
+        pills.map((p) => (
+          <CategoryPill
+            label={p.label}
+            value={p.value}
+            count={p.count}
+            href={`#${p.value}`}
+            active={p.value === "all"}
+          />
+        ))
+      }
+    </nav>
+    <p
+      class="tally"
+      id="tally"
+      role="status"
+      data-one={t("catalog.countOne")}
+      data-many={t("catalog.count")}
+    >
+      {total} {t("catalog.count")}
+    </p>
+  </div>
+
+  {/* ── the grid ─────────────────────────────────────────────── */}
+  <div class="wrap gwrap">
+    {/* The cards carry h3 titles (MachineCard is shared with the "related"
+        grids, which sit under an h2). The list therefore needs its own h2 so
+        the outline never jumps h1 → h3; the visible page already says it. */}
+    <h2 class="sr">{t("nav.machines")}</h2>
+    <ul class="grid" id="grid">
+      {
+        machines.map((m, i) => (
+          <li data-category={m.data.category}>
+            <MachineCard
+              locale={locale}
+              slug={m.slug}
+              name={m.data.name}
+              category={m.data.category}
+              excerpt={m.data.excerpt}
+              image={m.data.heroImage}
+              miniLabel={m.mini?.label}
+              miniValue={m.mini?.value}
+              eager={i === 0}
+            />
+            <div class="actions">
+              <QuickView
+                locale={locale}
+                slug={m.slug}
+                name={m.data.name}
+                category={m.data.category}
+                excerpt={m.data.excerpt}
+                image={m.data.heroImage}
+                rows={m.quickRows}
+              />
+              <label class="pick">
+                <input type="checkbox" data-pick={m.slug} />
+                <span>{t("catalog.compare")}</span>
+              </label>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  {/* ── comparison (D14) ─────────────────────────────────────── */}
+  <Compare
+    locale={locale}
+    machines={machines.map((m) => ({
+      slug: m.slug,
+      name: m.data.name,
+      category: m.data.category,
+      groups: m.groups,
+    }))}
+  />
+
+  <CTABlock locale={locale} title={t("site.tagline")} text={t("machine.reassurance")} />
+</Base>
+
+<style>
+  .head {
+    padding-top: 1rem;
+  }
+
+  /* Available to assistive technology, absent from the design. */
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── tools row ────────────────────────────────────────────── */
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--ligne-faint);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+  /* Local repair: CategoryPill's count sits at 4.2:1 on the gold active pill,
+     just under AA for 11px bold. The permanent fix belongs in CategoryPill. */
+  .filters :global(.pill.active .count) {
+    color: rgb(11 11 13 / 0.85);
+  }
+
+  .tally {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    white-space: nowrap;
+  }
+
+  /* ── grid ─────────────────────────────────────────────────── */
+  .gwrap {
+    padding-block: 2.5rem clamp(3rem, 7vw, 5rem);
+  }
+  .grid {
+    display: grid;
+    gap: 1.75rem 1.5rem;
+    grid-template-columns: 1fr;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* Column counts are set by the width a card needs, not by taste: below about
+     290 px the mini spec loses its figure to the two-line clamp. Three across
+     at most — twelve machines then read as four calm rows. */
+  @media (width >= 44rem) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (width >= 66rem) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .grid > li {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .grid > li[hidden] {
+    display: none;
+  }
+  /* The card fills its cell so that every row of secondary controls sits on
+     the same line, whatever the length of the excerpts above it. */
+  .grid > li > :global(article) {
+    flex: 1;
+  }
+
+  /* Secondary controls, deliberately quieter than the card itself. */
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.25rem 0.125rem 0;
+  }
+  .pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem; /* 44px touch target */
+    padding: 0.5rem 0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    cursor: pointer;
+  }
+  .pick:hover {
+    color: var(--color-ivoire);
+  }
+  .pick input {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--color-or);
+    cursor: pointer;
+  }
+  /* Nothing to tick without the script that draws the comparison. */
+  :global(html.no-js) .pick {
+    display: none;
+  }
+
+  /* Background scroll lock while a quick-view panel is open. */
+  :global(html.qv-lock),
+  :global(html.qv-lock body) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  /* ── filter ────────────────────────────────────────────────────
+     The hash is the single source of truth: pills are links, so the
+     browser writes it, sharing works, and Back/Forward replay filters. */
+  const grid = document.getElementById("grid");
+  const pills = [...document.querySelectorAll<HTMLElement>("#filters [data-filter]")];
+  const tally = document.getElementById("tally");
+
+  if (grid && tally) {
+    const items = [...grid.children] as HTMLElement[];
+    const filter = () => {
+      const want = decodeURIComponent(location.hash.slice(1));
+      const cat = pills.some((p) => p.dataset.filter === want) ? want : "all";
+      let n = 0;
+      for (const li of items) {
+        const show = cat === "all" || li.dataset.category === cat;
+        li.hidden = !show;
+        if (show) n += 1;
+      }
+      for (const p of pills) {
+        const on = p.dataset.filter === cat;
+        p.classList.toggle("active", on);
+        if (on) p.setAttribute("aria-current", "true");
+        else p.removeAttribute("aria-current");
+      }
+      tally.textContent = `${n} ${n === 1 ? tally.dataset.one : tally.dataset.many}`;
+    };
+    filter();
+    addEventListener("hashchange", filter);
+  }
+
+  /* ── quick-view (D13) ──────────────────────────────────────────
+     showModal() gives focus entry, the focus trap, Escape and focus
+     return for free; only the scroll lock and the backdrop click are ours. */
+  const lock = (on: boolean) => document.documentElement.classList.toggle("qv-lock", on);
+  document.addEventListener("click", (e) => {
+    const el = e.target as HTMLElement;
+    const opener = el.closest<HTMLElement>("[data-qv-open]");
+    if (opener) {
+      const panel = document.getElementById(opener.dataset.qvOpen!) as HTMLDialogElement | null;
+      if (panel) {
+        panel.showModal();
+        lock(true);
+      }
+      return;
+    }
+    if (el.closest("[data-qv-close]")) el.closest("dialog")?.close();
+    else if (el.tagName === "DIALOG") (el as HTMLDialogElement).close();
+  });
+  for (const d of document.querySelectorAll("dialog")) {
+    d.addEventListener("close", () => lock(false));
+  }
+
+  /* ── comparison (D14) ──────────────────────────────────────────
+     Columns are pre-rendered; selection lives in ?compare= so a shortlist
+     can be sent to a client. Ticking a fourth machine drops the oldest. */
+  const cmp = document.getElementById("cmp");
+  if (cmp) {
+    const boxes = [...document.querySelectorAll<HTMLInputElement>("[data-pick]")];
+    const cols = [...cmp.querySelectorAll<HTMLElement>("[data-col]")];
+    const shelf = cmp.querySelector<HTMLElement>("[data-cmp-cols]")!;
+    const hint = document.getElementById("cmp-empty")!;
+    const reset = cmp.querySelector<HTMLElement>("[data-cmp-clear]")!;
+    let sel: string[] = [];
+
+    const draw = () => {
+      for (const c of cols) c.hidden = !sel.includes(c.dataset.col!);
+      for (const b of boxes) b.checked = sel.includes(b.dataset.pick!);
+      const ready = sel.length > 1;
+      shelf.hidden = !ready;
+      hint.hidden = ready;
+      reset.hidden = sel.length === 0;
+      // Written by hand rather than through URLSearchParams, which would
+      // percent-encode the separators of a link meant to be read and pasted.
+      const query = sel.length ? `?compare=${sel.join(",")}` : "";
+      history.replaceState(null, "", `${location.pathname}${query}${location.hash}`);
+    };
+
+    for (const b of boxes) {
+      b.addEventListener("change", () => {
+        sel = sel.filter((s) => s !== b.dataset.pick);
+        if (b.checked) sel.push(b.dataset.pick!);
+        if (sel.length > 3) sel.shift();
+        draw();
+      });
+    }
+    reset.addEventListener("click", () => {
+      sel = [];
+      draw();
+    });
+
+    const known = new Set(cols.map((c) => c.dataset.col));
+    sel = (new URL(location.href).searchParams.get("compare") ?? "")
+      .split(",")
+      .filter((s) => known.has(s))
+      .slice(0, 3);
+    draw();
+  }
+</script>
