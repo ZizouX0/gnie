@@ -38,7 +38,15 @@ const id = `qv-${slug}`;
 const cat = categoryLabel(locale, category);
 ---
 
-<button type="button" class="trigger" data-qv-open={id} aria-haspopup="dialog">
+{/* The visible label stays short; the accessible name says which machine,
+    so a screen-reader user does not meet twelve identical buttons. */}
+<button
+  type="button"
+  class="trigger"
+  data-qv-open={id}
+  aria-haspopup="dialog"
+  aria-label={`${t("catalog.quickView")} — ${name}`}
+>
   {t("catalog.quickView")}
 </button>
 

@@ -55,6 +55,9 @@ export const ui = {
     "machine.views": "Vues du produit",
 
     "catalog.title": "Nos machines",
+    /* The <title> is a search result, not a heading: it carries the terms a
+       clinic actually types. The h1 above stays short on the page itself. */
+    "catalog.seoTitle": "Machines esthétiques professionnelles en Tunisie",
     "catalog.intro":
       "Douze équipements professionnels, sept familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
     "catalog.all": "Toutes",
@@ -132,6 +135,7 @@ export const ui = {
     "machine.views": "Product views",
 
     "catalog.title": "Our machines",
+    "catalog.seoTitle": "Professional aesthetic machines in Tunisia",
     "catalog.intro":
       "Twelve professional devices across seven technology families, selected for demanding clinics and institutes.",
     "catalog.all": "All",

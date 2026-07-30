@@ -40,7 +40,9 @@ const machines = defineCollection({
       featured: z.boolean().default(false),
       order: z.number(),
       seo: z.object({
-        title: z.string().max(60),
+        /* 53, not 60: the layout appends " | GNIE" (7 characters), so this
+           is what keeps the RENDERED title inside the 60-char guideline. */
+        title: z.string().max(53),
         description: z.string().max(155),
       }),
     }),

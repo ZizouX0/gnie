@@ -1,5 +1,5 @@
 ---
-name: "Cryolipolysis 7D 360°"
+name: "Cryolipolyse 7D 360°"
 brand: "PZLASER"
 category: "cryolipolyse"
 tagline: "La cryolipolyse de 4e génération à refroidissement 360° qui sculpte la silhouette du menton aux genoux."
@@ -74,6 +74,6 @@ related: ["v-shape-platinum", "ems-16"]
 featured: true
 order: 2
 seo:
-  title: "Cryolipolysis 7D 360° — Cryolipolyse 4e génération"
+  title: "Cryolipolyse 7D 360° — 7 applicateurs, 4 zones"
   description: "Cryolipolyse 360° PZLASER : 7 applicateurs, -11 °C, 4 zones en 40 min et jusqu'à 35 % de graisse en moins en une séance selon le fabricant."
 ---

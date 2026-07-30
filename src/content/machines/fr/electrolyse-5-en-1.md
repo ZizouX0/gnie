@@ -57,6 +57,6 @@ related: ["laser-diode-epilation", "hydrafacial-10-en-1"]
 featured: false
 order: 10
 seo:
-  title: "Électrolyse 5-en-1 — épilation permanente multifonction"
+  title: "Électrolyse 5-en-1 — épilation permanente"
   description: "Appareil 5-en-1 d'épilation permanente : aiguilles isolées, pincette isolée, marteau chaud/froid et stylo plasma. Protocole complet sur écran tactile."
 ---

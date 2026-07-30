@@ -108,7 +108,7 @@ const crumbs = [
 <Base
   locale={locale}
   page="machines"
-  title={t("catalog.title")}
+  title={t("catalog.seoTitle")}
   description={t("catalog.intro")}
 >
   <div class="wrap">
@@ -181,8 +181,14 @@ const crumbs = [
                 image={m.data.heroImage}
                 rows={m.quickRows}
               />
+              {/* Visible text stays "Comparer"; the accessible name carries
+                  the machine, so the twelve boxes are distinguishable. */}
               <label class="pick">
-                <input type="checkbox" data-pick={m.slug} />
+                <input
+                  type="checkbox"
+                  data-pick={m.slug}
+                  aria-label={`${t("catalog.compare")} — ${m.data.name}`}
+                />
                 <span>{t("catalog.compare")}</span>
               </label>
             </div>

@@ -70,10 +70,18 @@ const phones = [CONTACT.phonePrimary, CONTACT.phoneSecondary];
       </dd>
     </div>
 
-    <div class="row">
-      <dt>{labels.email}</dt>
-      <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : "—"}</dd>
-    </div>
+    {
+      /* No confirmed address means no row at all — an "E-mail —" line
+         advertises a channel that does not exist. Same rule as WhatsApp. */
+      CONTACT.email && (
+        <div class="row">
+          <dt>{labels.email}</dt>
+          <dd>
+            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </dd>
+        </div>
+      )
+    }
 
     {
       waHref && (
