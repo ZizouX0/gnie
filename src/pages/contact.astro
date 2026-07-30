@@ -1,0 +1,144 @@
+---
+/**
+ * French contact page (`/contact/`) — specification §4.4.
+ *
+ * Every sentence on the page lives here; the three components hold none. The
+ * English twin at src/pages/en/contact.astro carries the same structure with
+ * translated copy, so the two cannot drift apart in shape.
+ *
+ * Facts (address, numbers, e-mail, WhatsApp) come from src/config/site.ts and
+ * are never retyped in this file.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ContactDetails from "@/components/ContactDetails.astro";
+import ContactForm from "@/components/ContactForm.astro";
+import MapEmbed from "@/components/MapEmbed.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+const locale = "fr" as const;
+const t = useTranslations(locale);
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("nav.contact") },
+];
+
+/*
+ * HORAIRES — non confirmés par le client (spécification §2, question ouverte 7).
+ * Rien n'est inventé et aucun espace réservé n'est affiché (D7) : le bloc
+ * n'existe pas tant que cette ligne n'est pas ajoutée à <ContactDetails> —
+ *
+ *   hours={{ label: "Horaires", lines: ["Lun – Ven · 9h – 18h"] }}
+ */
+---
+
+<Base
+  locale={locale}
+  page="contact"
+  title="Contact et demande de devis"
+  description="Contactez GNIE à Tunis : devis, démonstration ou conseil sur un équipement esthétique professionnel. Téléphone, e-mail, WhatsApp et formulaire."
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap head">
+    <SectionHeading
+      as="h1"
+      eyebrow={t("nav.contact")}
+      title="Parlons de votre projet"
+      intro="Un devis, une démonstration ou une simple question sur un équipement : choisissez le canal qui vous convient, nous vous répondons personnellement."
+    />
+  </div>
+
+  {/* Coordonnées à gauche, formulaire à droite ; empilés sur mobile. */}
+  <section class="cols">
+    <div class="wrap grid">
+      <ContactDetails
+        locale={locale}
+        eyebrow="Coordonnées"
+        title="Où nous joindre"
+        intro="Trois canaux directs, sans intermédiaire : appelez, écrivez, ou lancez une conversation WhatsApp."
+        labels={{
+          address: "Adresse",
+          phone: "Téléphone",
+          email: "E-mail",
+          whatsapp: "WhatsApp",
+        }}
+      />
+      <ContactForm
+        locale={locale}
+        eyebrow="Devis"
+        title="Demander un devis"
+        intro="Décrivez votre besoin en quelques lignes. Plus vous nous en dites sur votre établissement, plus notre proposition sera précise."
+        labels={{
+          legend: "Formulaire de demande de devis",
+          required: "Les champs suivis d'un astérisque (*) sont obligatoires.",
+          name: "Nom et prénom",
+          establishment: "Établissement",
+          phone: "Téléphone",
+          email: "E-mail",
+          machine: "Machine concernée",
+          machineNone: "Aucune machine en particulier",
+          machineOther: "Autre demande",
+          message: "Votre message",
+          submit: "Envoyer la demande",
+          subject: "Nouvelle demande de devis — site GNIE",
+          trap: "Laissez ce champ vide.",
+          disabled:
+            "Le formulaire de devis n'est pas encore actif. En attendant, joignez-nous par téléphone, par e-mail ou sur WhatsApp : les coordonnées figurent sur cette page.",
+        }}
+      />
+    </div>
+  </section>
+
+  {/* La carte n'est chargée qu'au clic : aucun iframe tiers au chargement. */}
+  <section class="section-y shade">
+    <div class="wrap">
+      <SectionHeading eyebrow="Adresse" title="Nous trouver" />
+      <div class="col">
+        <MapEmbed
+          locale={locale}
+          action="Afficher la carte"
+          linkLabel="Ouvrir dans Google Maps"
+          frameTitle="Carte Google — localisation de GNIE"
+          note="La carte n'est chargée depuis Google qu'à votre demande : aucune donnée n'est transmise avant votre clic."
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 1rem;
+  }
+
+  /* Deux colonnes dès que le formulaire tient sans comprimer les coordonnées ;
+     en dessous, empilement dans l'ordre de lecture. */
+  .cols {
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+  }
+  .grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (width >= 62rem) {
+    .grid {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 4rem;
+    }
+  }
+
+  .shade {
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+  }
+  .col {
+    max-width: 52rem;
+  }
+</style>

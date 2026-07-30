@@ -105,16 +105,20 @@ const groups = specs
     color: var(--color-ivoire);
   }
 
-  /* From tablet up every group stays open: a spec sheet reads best whole. */
+  /* From tablet up every group stays open: a spec sheet reads best whole.
+     Only the script can force a <details> open, so the summary may be made
+     inert ONLY when the script is there to do it. Without JavaScript the
+     groups stay collapsible and the summary must remain operable — otherwise
+     a desktop visitor can see the first group and nothing else. */
   @media (width >= 48rem) {
     .group {
       display: block;
     }
-    summary {
+    :global(html:not(.no-js)) summary {
       pointer-events: none;
       padding-bottom: 0.75rem;
     }
-    .chev {
+    :global(html:not(.no-js)) .chev {
       display: none;
     }
   }

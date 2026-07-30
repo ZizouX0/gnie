@@ -1,0 +1,141 @@
+---
+/**
+ * English contact page (`/en/contact/`) — specification §4.4.
+ *
+ * The French twin at src/pages/contact.astro is the reference: same structure,
+ * same components, translated copy. Every sentence lives here, never in a
+ * component; every fact comes from src/config/site.ts.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ContactDetails from "@/components/ContactDetails.astro";
+import ContactForm from "@/components/ContactForm.astro";
+import MapEmbed from "@/components/MapEmbed.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+const locale = "en" as const;
+const t = useTranslations(locale);
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("nav.contact") },
+];
+
+/*
+ * OPENING HOURS — not confirmed by the client (specification §2, open question
+ * 7). Nothing is invented and no placeholder is shown (D7): the block does not
+ * exist until this line is added to <ContactDetails> —
+ *
+ *   hours={{ label: "Opening hours", lines: ["Mon – Fri · 9am – 6pm"] }}
+ */
+---
+
+<Base
+  locale={locale}
+  page="contact"
+  title="Contact and quote requests"
+  description="Get in touch with GNIE in Tunis: request a quote, book a demonstration or ask about a machine. Phone, e-mail, WhatsApp and quote form."
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap head">
+    <SectionHeading
+      as="h1"
+      eyebrow={t("nav.contact")}
+      title="Let's talk about your project"
+      intro="A quote, a demonstration or simply a question about a machine: pick whichever channel suits you and we will answer you personally."
+    />
+  </div>
+
+  {/* Details on the left, quote form on the right; stacked on mobile. */}
+  <section class="cols">
+    <div class="wrap grid">
+      <ContactDetails
+        locale={locale}
+        eyebrow="Details"
+        title="How to reach us"
+        intro="Three direct channels, no middleman: call us, write to us, or start a WhatsApp conversation."
+        labels={{
+          address: "Address",
+          phone: "Phone",
+          email: "E-mail",
+          whatsapp: "WhatsApp",
+        }}
+      />
+      <ContactForm
+        locale={locale}
+        eyebrow="Quote"
+        title="Request a quote"
+        intro="Tell us what you need in a few lines. The more you tell us about your practice, the more precise our proposal will be."
+        labels={{
+          legend: "Quote request form",
+          required: "Fields marked with an asterisk (*) are required.",
+          name: "Full name",
+          establishment: "Practice or clinic",
+          phone: "Phone",
+          email: "E-mail",
+          machine: "Machine concerned",
+          machineNone: "No particular machine",
+          machineOther: "Other enquiry",
+          message: "Your message",
+          submit: "Send the request",
+          subject: "New quote request — GNIE website",
+          trap: "Leave this field empty.",
+          disabled:
+            "The quote form is not live yet. In the meantime, reach us by phone, e-mail or WhatsApp — the details are on this page.",
+        }}
+      />
+    </div>
+  </section>
+
+  {/* The map loads on click only: no third-party iframe on page load. */}
+  <section class="section-y shade">
+    <div class="wrap">
+      <SectionHeading eyebrow="Address" title="Find us" />
+      <div class="col">
+        <MapEmbed
+          locale={locale}
+          action="Show the map"
+          linkLabel="Open in Google Maps"
+          frameTitle="Google map — GNIE location"
+          note="The map is loaded from Google only when you ask for it: nothing is sent before your click."
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 1rem;
+  }
+
+  /* Two columns as soon as the form fits without squeezing the details;
+     below that, stacked in reading order. */
+  .cols {
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+  }
+  .grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (width >= 62rem) {
+    .grid {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 4rem;
+    }
+  }
+
+  .shade {
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+  }
+  .col {
+    max-width: 52rem;
+  }
+</style>

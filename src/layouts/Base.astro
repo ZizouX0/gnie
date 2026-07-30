@@ -65,7 +65,10 @@ const organization = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {/* A noindex page has no public URL to point at: the canonical is derived
+        from `page`, so a dev page that borrows page="home" would otherwise
+        claim to BE the home page. Emit none rather than a wrong one. */}
+    {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     {

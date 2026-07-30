@@ -32,9 +32,9 @@ Quality bars:
 | Largest contentful paint | 2.0 s | 1.8 s | — |
 | Total blocking time | 0 ms | 0 ms | — |
 | Cumulative layout shift | **0** | **0.04** | < 0.1 |
-| JavaScript shipped | 2.9 KB inline, **0 external files** | 3.0 KB inline, **0 external files** | < 40 KB |
+| JavaScript shipped | 1 747 B inline, **0 external files** | 2 393 B inline, **0 external files** | < 40 KB |
 
-Measured after the fixes in §4. The lowest score across the twelve machine pages is 98 (V-Shape Platinum).
+Measured after the fixes in §4. The lowest score across the twelve machine pages is 98 (V-Shape Platinum). An earlier draft of this table said 2.9 / 3.0 KB of inline JavaScript; the real figures are the ones above, measured by summing every non-JSON-LD `<script>` body.
 
 ## 3. What was verified, and how
 
@@ -48,7 +48,9 @@ Measured after the fixes in §4. The lowest score across the twelve machine page
 
 **Responsive.** No horizontal overflow at 360 px on the catalogue, a machine page, an English machine page, or a filtered view — including with the comparison panel open.
 
-**Without JavaScript.** All 12 cards visible, no dialog stuck open, comparison panel hidden rather than broken, 15 spec rows readable, video degraded to a working YouTube link.
+**Without JavaScript.** All 12 cards visible, no dialog stuck open, comparison panel hidden rather than broken, video degraded to a working YouTube link.
+
+An independent audit caught this claim being wrong about the spec plate, and behind it a real defect. The plate makes the group headers inert from tablet width up, because a script forces every group open there — but that rule was plain CSS while the force-open was JavaScript-only. With JavaScript off on a desktop, the headers were unclickable **and** closed, so 11 of the 15 rows could not be reached with a mouse at all. The inert rule is now conditional on JavaScript being present; without it the groups stay collapsible and every row is reachable. Re-verified at 1280 px with scripting disabled.
 
 **Missing data never reaches a visitor (D7).** Verified per machine, counting rows inside the plate only:
 
@@ -62,7 +64,9 @@ Measured after the fixes in §4. The lowest score across the twelve machine page
 
 Groups left with no remaining rows disappear entirely. Across all 29 pages: **zero occurrences** of `TODO:NEEDS_INPUT`, `undefined`, or `[object Object]`.
 
-**Structured data.** `Organization`, `Product` (name, image, description, brand — **no `offers`**, no price) and a 3-item `BreadcrumbList` per machine page. Title 57 characters, description 139 — both inside the limits.
+**Structured data.** `Organization`, `Product` (name, image, description — **no `offers`**, no price, verified on all 24 machine pages) and a 3-item `BreadcrumbList` per machine page. `brand` is present on 7 of the 12 machines and absent on the other 5 (Électrolyse, EMS 16, Laser CO2, Air Presso, Skin Analyzer) — the template emits it only when the content file has one, and those five have no confirmed manufacturer. That is a content gap on the client question list, not a template fault.
+
+**Page titles.** The Cryolipolyse page is 57 characters with a 139-character description, both inside the limits — but that is one page, not the site. Across all 29: five titles run 61–64 characters and a few descriptions reach 153. Nothing is over a hard search-engine limit, and Phase 4 does the SEO pass.
 
 **Content fidelity — traced back to the brochures.** Values sampled on the rendered pages and located in the source PDFs:
 
@@ -100,7 +104,8 @@ The cut-outs look considerably more expensive, and white rectangles do work agai
 ## 6. Known issues, not code defects
 
 - **Section eyebrows repeat the machine name** on every section of a machine page. Defensible, but a varied eyebrow would read better. Cosmetic, your call.
-- **`Fractional CO2 Laser` and `Visbody-M30`** display with their manufacturer spelling on French pages. Product names are not translated, so this is correct — but if you prefer *Laser CO2 Fractionné* on the French side, it is a one-line content edit.
+- **Three machines carry English names on the French site**: `Cryolipolysis 7D 360°`, `Fractional CO2 Laser` and `Visbody-M30`. Product names are not normally translated, so this is defensible — but *Cryolipolysis* is an ordinary English word rather than a brand, and it sits under a category pill that already reads *Cryolipolyse*, on the machine you will show first. **My recommendation is to rename that one to `Cryolipolyse 7D 360°` on the French side** and leave the other two, since they are closer to real product names. Either way it is a one-line content edit per machine.
+- **Links to Phase 3 pages currently 404.** Every machine page's "Demander un devis" button points at `/contact/`, and the footer points at the legal and privacy pages. Those pages are being built now; until Phase 3 lands, those links go nowhere on the built site. Worth knowing before you click around.
 
 ## 7. A note on the screenshots
 

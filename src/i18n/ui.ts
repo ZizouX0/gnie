@@ -49,7 +49,7 @@ export const ui = {
     "machine.videoPlay": "Lancer la vidéo",
     "machine.related": "À découvrir également",
     "machine.brand": "Marque",
-    "machine.interested": "Intéressé par la",
+    "machine.interested": "{name} vous intéresse ?",
     "machine.reassurance":
       "Installation, formation de vos équipes et service après-vente assurés localement par GNIE.",
     "machine.views": "Vues du produit",
@@ -126,7 +126,7 @@ export const ui = {
     "machine.videoPlay": "Play video",
     "machine.related": "Also worth discovering",
     "machine.brand": "Brand",
-    "machine.interested": "Interested in the",
+    "machine.interested": "Interested in the {name}?",
     "machine.reassurance":
       "Installation, staff training and after-sales service provided locally by GNIE.",
     "machine.views": "Product views",

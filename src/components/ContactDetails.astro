@@ -1,0 +1,182 @@
+---
+/**
+ * The contact card (specification §4.4, left column).
+ *
+ * Every fact comes from `CONTACT` / `ENV` in src/config/site.ts — nothing is
+ * written by hand here, so confirming the client's details (open question 7)
+ * stays a one-file edit. Every sentence comes from the page, as everywhere else.
+ *
+ * Two things degrade instead of breaking:
+ *   · WHATSAPP — no number configured, no row (same rule as WhatsAppFloat).
+ *   · HOURS — not in the config and not confirmed by the client, so the block
+ *     renders only once a page passes it (D7: a visitor never reads a
+ *     placeholder). The two contact pages carry the exact line to uncomment.
+ */
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { CONTACT, ENV } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  /** Row labels — the component owns no words. */
+  labels: {
+    address: string;
+    phone: string;
+    email: string;
+    whatsapp: string;
+  };
+  /** Opening hours, once the client has confirmed them. */
+  hours?: { label: string; lines: string[] };
+}
+const { locale, eyebrow, title, intro, labels, hours } = Astro.props;
+const t = useTranslations(locale);
+
+/* Same guard as WhatsAppFloat: an empty number produces no link at all. */
+const waNumber = ENV.whatsapp.replace(/[^\d]/g, "");
+const waHref = waNumber
+  ? `https://wa.me/${waNumber}?text=${encodeURIComponent(t("wa.generic"))}`
+  : null;
+
+/** Dial strings follow the footer's convention — digits exactly as published. */
+const dial = (n: string) => `tel:${n.replace(/\s/g, "")}`;
+const phones = [CONTACT.phonePrimary, CONTACT.phoneSecondary];
+---
+
+<div class="block" data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2>{title}</h2>
+  {intro && <p class="intro">{intro}</p>}
+
+  {/* The plaque motif at card scale — the same language as the spec plate. */}
+  <dl class="plaque rows">
+    <div class="row">
+      <dt>{labels.address}</dt>
+      <dd>
+        <address>
+          {CONTACT.addressLines.map((line) => <span>{line}</span>)}
+        </address>
+      </dd>
+    </div>
+
+    <div class="row">
+      <dt>{labels.phone}</dt>
+      <dd>
+        {phones.map((n) => <a href={dial(n)}>{n}</a>)}
+      </dd>
+    </div>
+
+    <div class="row">
+      <dt>{labels.email}</dt>
+      <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+    </div>
+
+    {
+      waHref && (
+        <div class="row">
+          <dt>{labels.whatsapp}</dt>
+          <dd>
+            <a href={waHref} target="_blank" rel="noopener noreferrer">
+              {t("cta.whatsappLong")}
+              <span class="ext" aria-hidden="true">↗</span>
+            </a>
+          </dd>
+        </div>
+      )
+    }
+
+    {
+      hours && (
+        <div class="row">
+          <dt>{hours.label}</dt>
+          <dd>
+            {hours.lines.map((line) => (
+              <span>{line}</span>
+            ))}
+          </dd>
+        </div>
+      )
+    }
+  </dl>
+</div>
+
+<style>
+  h2 {
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  .intro {
+    color: var(--color-gris);
+    margin-top: 0.875rem;
+    max-width: 34rem;
+  }
+
+  .rows {
+    margin: 2rem 0 0;
+    padding: 0.25rem 1.25rem;
+  }
+  .row {
+    display: grid;
+    gap: 0.375rem;
+    padding: 1.125rem 0;
+    border-top: 1px solid var(--ligne-ghost);
+  }
+  .row:first-child {
+    border-top: 0;
+  }
+  /* Two columns only once the value column can still hold the longest of
+     them — the e-mail address — on a single line. Below that, stacked. */
+  @media (width >= 30rem) {
+    .row {
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.375rem 1.5rem;
+      align-items: baseline;
+    }
+  }
+
+  dt {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+  }
+  dd {
+    margin: 0;
+    min-width: 0;
+    font-size: var(--text-small);
+    overflow-wrap: break-word;
+  }
+  dd span,
+  dd a {
+    display: block;
+    line-height: 1.8;
+  }
+  address {
+    font-style: normal;
+  }
+
+  dd a {
+    color: var(--color-ivoire);
+    text-decoration: none;
+    /* A comfortable target without stretching the rows into a list of buttons. */
+    padding-block: 0.125rem;
+    transition: color 0.2s ease;
+  }
+  dd a:hover {
+    color: var(--color-or-clair);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .ext {
+    margin-left: 0.375rem;
+    color: var(--color-or);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    dd a {
+      transition: none;
+    }
+  }
+</style>
