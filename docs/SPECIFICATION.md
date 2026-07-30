@@ -31,6 +31,14 @@ A **premium showcase website** for GNIE (Global Nouvelle Innovation Esthétique)
 | D8 | Source PDFs | Archived in the repo (`source-pdfs/`), excluded from the built site | Traceability without weight |
 | D9 | Logo | Extracted gold logo (`src/assets/brand/gnie-logo-gold.png`) as fallback | Original file still awaited from client |
 | D10 | Languages | French at the root (`/`), English under `/en/` | Primary market is francophone; concentrates SEO on FR |
+| D11 | Machine video | **Official manufacturer videos**, click-to-load facade (poster + play button) | Real footage of the real machine; ~1 KB instead of ~600 KB for an eager embed |
+| D12 | Multi-angle views | Toggle between the extra product shots where ≥ 3 clean ones exist | Delivers the "turn it around" feeling with existing assets, zero new cost |
+| D13 | Catalogue quick-view | Slide-over panel with key specs, without leaving the filtered view | The real answer to "check each machine easily" — better than 3D would be |
+| D14 | Comparison tool | Pick 2–3 machines, specs side by side | A buyer hesitating between the EMS 16 and V-Shape needs exactly this; no competitor offers it |
+| D15 | True 3D viewers | **Rejected** for v2 — paid extension only if manufacturers supply model files | No models exist for these machines; generic marketplace models would misrepresent the product, and an honest viewer costs 600 KB + MB-scale assets, breaking the mobile targets |
+| D16 | Auto-motion | **Rejected** — no auto-spin, parallax, background video or carousels | Each one cheapens the restraint the premium positioning depends on |
+
+Searched and confirmed before deciding D15: PZLASER and VISBODY publish no 3D or 360° assets on their own sites, and the 3D marketplaces carry nothing for these machines. What does exist is official video — see the asset list in §7.
 
 **Still open (client must answer — none of these block the build):**
 
@@ -42,6 +50,8 @@ A **premium showcase website** for GNIE (Global Nouvelle Innovation Esthétique)
 6. **Service commitments** — exact wording for installation / training / after-sales support (used in every CTA block).
 7. **Contact details** — confirm: Imm Emmeraude de Tunis, Rue Mohamed Badra, Bureau A-2-8 Montplaisir, Tunis 1073 · 55 157 506 / 90 157 560 · grtarek@yahoo.fr (found in catalogue 5 — is this current?), plus opening hours.
 8. **Missing data & photos** — 17 spec values and 2 product photos listed in `docs/PHASE0-REPORT.md` §4.
+9. **Media rights** — confirm GNIE may use PZLASER / VISBODY marketing material. Embedding video from the manufacturer's own YouTube channel is the safest route (nothing is rehosted), but the confirmation should be on record.
+10. **VISBODY figures** — visbody.com now advertises **10 posture assessments and 14 circumferences**; the brochure GNIE supplied says **9 and 13**, and our content follows the brochure. Confirm which revision is current.
 
 ---
 
@@ -181,7 +191,18 @@ Supporting cast: Brevo newsletter signup in the footer (long-cycle nurturing), V
 | Hosting | **Vercel** free tier | Global CDN, HTTPS, deploys on every git push |
 | Domain | GoDaddy DNS → Vercel | gnie-aesthetics.com already owned |
 | Forms / Newsletter / Chat | Formspree / Brevo / WhatsApp | No backend to maintain |
-| JavaScript budget | **< 30 KB total** | Menu, filter, fade-ups, analytics — that's all; the site works with JS disabled |
+| JavaScript budget | **< 40 KB total** | Menu, filter, fade-ups, analytics, quick-view panel, comparison tool, multi-angle toggle, video facade. Every one degrades gracefully: with JS disabled the catalogue shows all 12 machines, specs stay readable, and video falls back to a link |
+
+**Interactive layer (D11–D14).** Four additions beyond the static baseline, each built to fail safe:
+
+| Feature | Where | Behaviour |
+|---|---|---|
+| Video facade | Machine pages with an official video (Cryolipolyse 7D, V-Shape Platinum, VISBODY M30, + RF probe footage in V-Shape's technology section) | A poster frame with a gold play button. YouTube's iframe loads only on click — nothing third-party touches the page otherwise. No video, no section |
+| Multi-angle toggle | VISBODY M30 (7 shots), diode laser (6), CO2 laser (5), HOWBODY H6 (5) | Thumbnails swap the main image in place. Fewer than 3 clean shots and the toggle doesn't render |
+| Quick-view | Catalogue cards | Slide-over panel: hero, excerpt, key specs, link to the full page. Closes on Escape, focus-trapped, keyboard-operable |
+| Comparison | Catalogue | Tick 2–3 machines → spec tables side by side. Selection reflected in the URL so a comparison can be sent to a client |
+
+Official manufacturer video, verified July 2026: Cryolipolyse 360° cooling `gaZDpWDmA_g`, cryo usage `aZLtYIh0dDA`, V-Shape Platinum `e-gJUsTJzC8`, VISBODY M30 `OqesJJg_vyQ` / `NzRKns--crU`, RF probe `SDW-rv0GC1k` (YouTube IDs). Video IDs live in the machine content files like any other field — adding one later is a one-line edit.
 
 Secrets and IDs (Formspree ID, WhatsApp number, Brevo URL, site URL) are **environment variables** set in Vercel — never written in the code. If one is missing at build time, the related block renders in a safe disabled state instead of breaking.
 
