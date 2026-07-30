@@ -76,11 +76,10 @@ const uid = `gal-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-
 
 <style>
   /* ── Stage ─────────────────────────────────────────────────
-     Manufacturer shots run from 0.35 to 2.03 in ratio, so the frame is a
-     fixed square plate and every view is contained inside it, never cropped
-     and never resizing the page as it is swapped. The square is what keeps a
-     tall shot readable; the cap keeps the plate from dominating a wide column
-     (a page can widen it by passing a class). */
+     Manufacturer shots run from 0.35 to 2.03 in ratio, so the plate holds a
+     constant height and lets each view keep its own aspect inside it: never
+     cropped, never resizing the page as it is swapped. The cap keeps the
+     plate from dominating a wide column (a page can widen it with a class). */
   .gal {
     max-width: 34rem;
   }
@@ -90,13 +89,27 @@ const uid = `gal-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-
     padding: 0.75rem;
     background: var(--color-noir);
   }
+  /*
+   * Gallery shots arrive in wildly different aspects — portrait model photos
+   * next to landscape diagrams. A fixed square box letterboxed the portraits
+   * into a field of black, so instead the stage keeps a constant HEIGHT and
+   * each image shows at its own aspect, centred. Constant height means
+   * switching views costs no layout shift.
+   */
   .shot :global(img) {
     display: block;
-    width: 100%;
-    aspect-ratio: 1 / 1;
+    height: clamp(15rem, 42vw, 26rem);
+    width: auto;
+    max-width: 100%;
+    margin-inline: auto;
     object-fit: contain;
     background: var(--color-noir);
     filter: saturate(0.9);
+  }
+  /* No JS: every shot is listed, so let them size naturally in the grid. */
+  :global(html.no-js) .shot :global(img) {
+    height: auto;
+    width: 100%;
   }
 
   /* With JS the stage holds one view at a time. */
