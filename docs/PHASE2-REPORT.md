@@ -25,14 +25,16 @@ Quality bars:
 
 | Measure | Machine page | Catalogue | Target |
 |---|---|---|---|
-| Lighthouse performance | **98** | **96** | ≥ 90 |
+| Lighthouse performance | **99** | **99** | ≥ 90 |
 | Accessibility | **100** | **100** | 100 |
 | Best practices | **100** | **100** | — |
 | SEO | **100** | **100** | — |
-| Largest contentful paint | 2.1 s | 2.4 s | — |
+| Largest contentful paint | 2.0 s | 1.8 s | — |
 | Total blocking time | 0 ms | 0 ms | — |
 | Cumulative layout shift | **0** | **0.04** | < 0.1 |
 | JavaScript shipped | 2.9 KB inline, **0 external files** | 3.0 KB inline, **0 external files** | < 40 KB |
+
+Measured after the fixes in §4. The lowest score across the twelve machine pages is 98 (V-Shape Platinum).
 
 ## 3. What was verified, and how
 
@@ -74,15 +76,37 @@ Two deliberate deviations from "units exactly as printed": the manual's `0-7Tesa
 
 ## 4. Fixed during this review
 
-**Gallery stage.** The stage forced a 1:1 box with `object-fit: contain`, so portrait shots — most of the gallery images are portrait — were letterboxed into a field of black roughly 45 % of the frame. Replaced with a constant-height stage where each image shows at its own aspect, centred: no bars beyond the image itself, and switching views still costs no layout shift because the height is fixed. Without JavaScript the grid sizes naturally instead.
+**Gallery stage.** The stage forced a 1:1 box with `object-fit: contain`, so portrait shots — most of the gallery images are portrait — were letterboxed into a field of black roughly 45 % of the frame. Replaced with a constant-height stage where each image shows at its own aspect, centred: no bars beyond the image itself, and switching views still costs no layout shift because the height is fixed. Verified by driving all three Cryolipolyse views: each renders at exactly 416 px tall and 177 / 518 / 253 px wide. Without JavaScript the grid sizes naturally instead.
 
-## 5. Known issues, not code defects
+**Unrecognisable cards on very tall photos.** The card plate is landscape, and three manufacturer shots are extreme portraits — up to 1:2.8. Cropping those to the centre landed on the anonymous middle of a white column: the HOWBODY H6 card showed no identifiable machine at all. Cards now anchor the crop to the top when a photo is taller than 1:1.9, where the screen, branding and handpieces are. The threshold is measured from the asset itself, so a replacement photo needs no extra metadata, and it selects exactly the three intended cards (HOWBODY H6, Hydrafacial, Laser CO2).
 
-- **The first Cryolipolyse gallery image carries a black band** baked into the extracted file itself. Same class of problem as the V-Shape hero. Already on the client photo request in *Informations à fournir*.
+**Four corrupted product photos recovered.** These shots are stored in the brochures as an image plus a separate transparency mask. The original extraction took the image and dropped the mask, so the cut-out surround was flattened into whatever the encoder produced — a black band down one side of the Cryolipolyse gallery shot, and on the **V-Shape Platinum hero the machine tiled dozens of times across the background**. That last one had been logged in Phase 1 as an artifact needing a client re-shoot; it did not. Rebuilding each image from its mask, cropping to the subject and compositing onto the exact page black gives a clean cut-out:
+
+| Image | Was | Now |
+|---|---|---|
+| Cryolipolyse gallery 01 | 22 % pure-black dead band | clean cut-out |
+| Cryolipolyse gallery 03 | tiled repeats top and bottom | clean cut-out |
+| Hydrafacial hero | tiled repeats left and right | clean cut-out |
+| V-Shape Platinum hero | machine tiled across the frame | clean cut-out |
+
+Only these four were touched. A first attempt applied the same recovery to every photo carrying a mask and **corrupted the VISBODY body-measurement diagram**, which was already correct — matching a mask by pixel dimensions alone is not sound. That was reverted in full, and each of the four above was confirmed corrupted by eye before and after.
+
+## 5. A design decision for you
+
+Product photos now sit on two different backgrounds: four are cut out on the page black, the rest keep the manufacturer's white studio backdrop. On the Cryolipolyse page the V-Shape and EMS 16 cards sit side by side and show the difference plainly.
+
+The cut-outs look considerably more expensive, and white rectangles do work against a gold-on-black identity. Sixteen photos still carry a white backdrop and have no usable mask in the brochure, so evening this out means proper background removal on each. **My recommendation: normalise them all onto the page black** — but it is a taste call and a half-day of work, so I would rather you look at the screenshots and say.
+
+## 6. Known issues, not code defects
+
 - **Section eyebrows repeat the machine name** on every section of a machine page. Defensible, but a varied eyebrow would read better. Cosmetic, your call.
 - **`Fractional CO2 Laser` and `Visbody-M30`** display with their manufacturer spelling on French pages. Product names are not translated, so this is correct — but if you prefer *Laser CO2 Fractionné* on the French side, it is a one-line content edit.
 
-## 6. Run it yourself
+## 7. A note on the screenshots
+
+An earlier set of these screenshots showed two blank image plates — the HOWBODY H6 card and the EMS 16 related card. Neither was a site defect: the capture tool stitches a tall page (a machine page is over 8 000 px) from several passes and caught lazy images mid-load. The captures now size the viewport to the whole document and shoot in one pass, and every image is confirmed painted before the shutter. Worth stating because a blank plate in a review shot is indistinguishable from a real bug, and one of the two led me to a genuine defect while the other did not.
+
+## 8. Run it yourself
 
 ```bash
 git checkout claude/skills-setup-workflow-2garzi && npm install && npm run dev

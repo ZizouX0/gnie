@@ -31,6 +31,15 @@ const {
 } = Astro.props;
 const t = useTranslations(locale);
 const href = path(locale, "machines", slug);
+
+/**
+ * The plate is landscape but a few manufacturer shots are extreme portraits
+ * (up to 1:2.8). Cropping those to the centre lands on the anonymous middle of
+ * a column — the machine becomes unrecognisable. Their identifying features
+ * (screen, branding, handpieces) sit at the top, so anchor tall images there.
+ * Measured from the asset itself, so a new photo needs no extra metadata.
+ */
+const tall = image.height / image.width > 1.9;
 ---
 
 <article class:list={["card plaque", { large }]} data-category={category} data-reveal>
@@ -43,6 +52,7 @@ const href = path(locale, "machines", slug);
         sizes="(width >= 62rem) 22rem, (width >= 48rem) 45vw, 92vw"
         loading={eager ? "eager" : "lazy"}
         fetchpriority={eager ? "high" : "auto"}
+        style={tall ? "object-position: 50% 0%" : undefined}
       />
     </div>
     <div class="body">
