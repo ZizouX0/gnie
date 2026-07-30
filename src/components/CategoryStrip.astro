@@ -70,18 +70,30 @@ const tiles = categories.map((c) => {
     padding-block: var(--section-y);
   }
 
-  /* Seven tiles never divide evenly into a fixed column count, so they flow and
-     the last row grows to fill instead of leaving a hole in the grid. */
+  /* Seven tiles never divide evenly into a column count. Letting the last row
+     grow to fill made two categories two-and-a-half times wider than the
+     other five, which reads as a hierarchy that does not exist. Equal columns
+     with a short last row are calmer: the tiles stay the same size and the
+     row simply ends. Four across, so seven lands as 4 + 3. */
   .tiles {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.875rem;
     list-style: none;
     margin: 0;
     padding: 0;
   }
+  @media (width >= 48rem) {
+    .tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (width >= 62rem) {
+    .tiles {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
   .tiles li {
-    flex: 1 1 13rem;
     min-width: 0;
   }
 
