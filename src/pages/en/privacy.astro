@@ -20,6 +20,9 @@ const locale = "en" as const;
 const t = useTranslations(locale);
 
 const mailto = `mailto:${CONTACT.email}`;
+/* The rights route must never render as a blank or a dead link: with no
+   confirmed address, say so where the address would have been. */
+const TODO_EMAIL = `<span class="todo">TODO:NEEDS_INPUT — professional contact e-mail address</span>`;
 
 /** Document outline — drives both the table of contents and the numbering. */
 const S = [
@@ -79,7 +82,7 @@ const crumbs = [
         </p>
         <p>
           For any question about this policy, or to exercise your rights, write to
-          <a href={mailto}>{CONTACT.email}</a>.
+          {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
         <p>
           Personal data processing is governed by Tunisian law, in particular organic law no.
@@ -118,15 +121,16 @@ const crumbs = [
         </p>
         <p>
           You can withdraw it at any time: every message carries an unsubscribe link, and an email
-          to <a href={mailto}>{CONTACT.email}</a> works just as well.
+          to {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />} works just as well.
         </p>
 
         <h3>WhatsApp</h3>
         <p>
-          The WhatsApp buttons open a conversation with the message already written. Nothing is sent
-          until you send it yourself from the app. From that point {t("site.name")} has your number
-          and your message, and the exchange is governed by WhatsApp's own terms (Meta), over which
-          we have no control.
+          The WhatsApp buttons open a conversation with the message already written. Opening
+          that conversation is a visit to WhatsApp: from the moment you click, Meta receives the
+          pre-written message, your IP address and your browser — before you have sent anything.
+          If you then send the message, {t("site.name")} has your number and your message. The
+          exchange is governed by WhatsApp's own terms (Meta), over which we have no control.
         </p>
       </ProseSection>
 
@@ -235,7 +239,7 @@ const crumbs = [
           deleted, or to object to our using it.
         </p>
         <p>
-          One address covers all of that: <a href={mailto}>{CONTACT.email}</a>, or a letter to the
+          One address covers all of that: {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}, or a letter to the
           registered office given in the <a href={path(locale, "legal")}>legal notice</a>. A
           deletion request is passed on to our providers — Formspree for messages, Brevo for the
           newsletter.

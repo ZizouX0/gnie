@@ -17,6 +17,8 @@ import { useTranslations } from "@/i18n/ui";
 import { path } from "@/i18n/routes";
 import { CONTACT, ENV } from "@/config/site";
 
+const TODO_EMAIL = `<span class="todo">TODO:NEEDS_INPUT — adresse e-mail professionnelle de contact</span>`;
+
 const locale = "fr" as const;
 const t = useTranslations(locale);
 
@@ -95,7 +97,7 @@ const crumbs = [
           </dd>
 
           <dt>Adresse e-mail</dt>
-          <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+          <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}</dd>
 
           <dt>Registre national des entreprises</dt>
           <dd>
@@ -122,7 +124,7 @@ const crumbs = [
         </p>
         <p>
           Il peut être joint par courrier au siège social ou à l'adresse
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+          {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
       </ProseSection>
 
@@ -202,7 +204,7 @@ const crumbs = [
         <p>
           Le site est édité depuis la Tunisie et soumis au droit tunisien. Toute question relative
           aux présentes mentions peut être adressée à
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> ou par courrier au siège social.
+          {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />} ou par courrier au siège social.
         </p>
       </ProseSection>
     </div>

@@ -38,24 +38,48 @@ const alternate = alternatePath(locale, page, slug);
 const fullTitle = `${title} | GNIE`;
 const ogUrl = new URL(ogImage ?? logo.src, site).href;
 
+/**
+ * GNIE is both a legal entity and a place of business with an address, a
+ * phone and a map on the contact page, so it is typed as both. `@id` gives
+ * the entity one stable identity for the rest of the graph to point at.
+ *
+ * No `priceRange`: LocalBusiness recommends it, but this catalogue is sold by
+ * quotation and inventing a price band to satisfy a validator would be a lie.
+ * `sameAs` is absent until the client supplies social profiles (`SOCIAL` is
+ * still empty), and opening hours and coordinates are likewise unknown —
+ * omitted rather than guessed.
+ */
 const organization = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": ["Organization", "LocalBusiness"],
+  "@id": new URL("#organization", site).href,
   name: "GNIE",
   legalName: "Global Nouvelle Innovation Esthétique",
   url: site.href,
   logo: new URL(logo.src, site).href,
+  image: new URL(logo.src, site).href,
   foundingDate: String(CONTACT.since),
   address: {
     "@type": "PostalAddress",
-    streetAddress: CONTACT.addressLines.slice(0, 2).join(", "),
+    // All three lines: the third carries the Montplaisir district.
+    streetAddress: CONTACT.addressLines.join(", "),
     addressLocality: CONTACT.locality,
+    addressRegion: CONTACT.region,
     postalCode: CONTACT.postalCode,
     addressCountry: CONTACT.country,
   },
-  telephone: CONTACT.phonePrimary,
+  // E.164, so the number resolves and dials outside Tunisia.
+  telephone: CONTACT.phonePrimaryE164,
+  ...(CONTACT.email ? { email: CONTACT.email } : {}),
   areaServed: "TN",
 };
+
+/**
+ * The entity belongs where it is about the company, not on all 36 pages —
+ * Google is explicit that it need not repeat site-wide, and emitting it on a
+ * 404 or the dev styleguide is noise.
+ */
+const showOrganization = !noindex && (page === "home" || page === "contact");
 ---
 
 <!doctype html>
@@ -82,7 +106,10 @@ const organization = {
     <meta property="og:locale" content={locale === "fr" ? "fr_TN" : "en_US"} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {/* Same reasoning as the canonical: a noindex page borrowing page="home"
+        would otherwise advertise itself as the home page when its URL is
+        pasted into a chat. */}
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
@@ -93,7 +120,11 @@ const organization = {
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
+    {
+      showOrganization && (
+        <script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
+      )
+    }
     <script is:inline>
       document.documentElement.classList.remove("no-js");
       // Removing `no-js` disarms the CSS net that keeps [data-reveal] content

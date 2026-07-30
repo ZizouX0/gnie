@@ -40,7 +40,10 @@ const waHref = waNumber
   : null;
 
 /** Dial strings follow the footer's convention — digits exactly as published. */
-const dial = (n: string) => `tel:${n.replace(/\s/g, "")}`;
+/* A national-format number cannot be dialled from outside Tunisia, so the
+   link carries E.164 while the visible text keeps the local spacing. */
+const dial = (n: string) =>
+  `tel:${n === CONTACT.phonePrimary ? CONTACT.phonePrimaryE164 : n === CONTACT.phoneSecondary ? CONTACT.phoneSecondaryE164 : n.replace(/\s/g, "")}`;
 const phones = [CONTACT.phonePrimary, CONTACT.phoneSecondary];
 ---
 
@@ -69,7 +72,7 @@ const phones = [CONTACT.phonePrimary, CONTACT.phoneSecondary];
 
     <div class="row">
       <dt>{labels.email}</dt>
-      <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+      <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : "—"}</dd>
     </div>
 
     {

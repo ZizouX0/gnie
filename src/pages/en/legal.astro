@@ -16,6 +16,8 @@ import { useTranslations } from "@/i18n/ui";
 import { path } from "@/i18n/routes";
 import { CONTACT, ENV } from "@/config/site";
 
+const TODO_EMAIL = `<span class="todo">TODO:NEEDS_INPUT — professional contact e-mail address</span>`;
+
 const locale = "en" as const;
 const t = useTranslations(locale);
 
@@ -94,7 +96,7 @@ const crumbs = [
           </dd>
 
           <dt>Email</dt>
-          <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+          <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}</dd>
 
           <dt>Trade register</dt>
           <dd>
@@ -126,7 +128,7 @@ const crumbs = [
         </p>
         <p>
           They can be reached by post at the registered office, or at
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+          {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
       </ProseSection>
 
@@ -201,7 +203,7 @@ const crumbs = [
       <ProseSection {...sec("law")}>
         <p>
           The site is published from Tunisia and governed by Tunisian law. Any question about this
-          notice can be sent to <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> or by post to
+          notice can be sent to {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />} or by post to
           the registered office.
         </p>
       </ProseSection>

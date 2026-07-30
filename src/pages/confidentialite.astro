@@ -21,6 +21,9 @@ const locale = "fr" as const;
 const t = useTranslations(locale);
 
 const mailto = `mailto:${CONTACT.email}`;
+/* The rights route must never render as a blank or a dead link: with no
+   confirmed address, say so where the address would have been. */
+const TODO_EMAIL = `<span class="todo">TODO:NEEDS_INPUT — adresse e-mail professionnelle de contact</span>`;
 
 /** Document outline — drives both the table of contents and the numbering. */
 const S = [
@@ -81,7 +84,7 @@ const crumbs = [
         </p>
         <p>
           Pour toute question sur cette politique, ou pour exercer vos droits, écrivez à
-          <a href={mailto}>{CONTACT.email}</a>.
+          {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
         <p>
           Le traitement des données personnelles relève du droit tunisien, en particulier de la loi
@@ -122,15 +125,17 @@ const crumbs = [
         </p>
         <p>
           Vous pouvez le retirer à tout moment : chaque message contient un lien de désinscription,
-          et un simple e-mail à <a href={mailto}>{CONTACT.email}</a> suffit également.
+          et un simple e-mail à {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />} suffit également.
         </p>
 
         <h3>WhatsApp</h3>
         <p>
-          Les boutons WhatsApp ouvrent une conversation avec un message déjà rédigé. Rien n'est
-          transmis tant que vous ne l'avez pas envoyé depuis l'application. À partir de là,
-          {t("site.name")} reçoit votre numéro et votre message, et l'échange est régi par les
-          conditions de WhatsApp (Meta), sur lesquelles nous n'avons aucune prise.
+          Les boutons WhatsApp ouvrent une conversation avec un message déjà rédigé. Ouvrir
+          cette conversation est une visite chez WhatsApp : dès le clic, Meta reçoit le message
+          pré-rempli, votre adresse IP et votre navigateur — avant même que vous n'ayez envoyé
+          quoi que ce soit. Si vous envoyez le message, {t("site.name")} dispose alors de votre
+          numéro et de votre message. L'échange est régi par les conditions de WhatsApp (Meta),
+          sur lesquelles nous n'avons aucune prise.
         </p>
       </ProseSection>
 
@@ -253,7 +258,7 @@ const crumbs = [
           rectification, leur suppression, ou vous opposer à leur utilisation.
         </p>
         <p>
-          Une seule adresse pour tout cela : <a href={mailto}>{CONTACT.email}</a>, ou un courrier au
+          Une seule adresse pour tout cela : {CONTACT.email ? <a href={mailto}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}, ou un courrier au
           siège social indiqué dans les <a href={path(locale, "legal")}>mentions légales</a>. Une
           demande de suppression est répercutée chez nos prestataires — Formspree pour les messages,
           Brevo pour la newsletter.

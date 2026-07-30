@@ -75,7 +75,12 @@ const cat = categoryLabel(locale, category);
       )
     }
 
-    <Button href={path(locale, "machines", slug)} block>{t("cta.more")}</Button>
+    {/* Named for its destination: a dozen anchors all reading
+        "Découvrir" tell neither a crawler nor a screen reader
+        which machine they lead to. */}
+    <Button href={path(locale, "machines", slug)} block ariaLabel={`${t("cta.more")} — ${name}`}>
+      {t("cta.more")}
+    </Button>
   </div>
 </dialog>
 

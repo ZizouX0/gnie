@@ -53,8 +53,8 @@ const famillies = ["laser", "cryolipolyse", "remodelage", "epilation"] as const;
         <h2 class="eyebrow">{t("footer.contact")}</h2>
         <address>
           {CONTACT.addressLines.map((line) => <span>{line}</span>)}
-          <a href={`tel:${CONTACT.phonePrimary.replace(/\s/g, "")}`}>{CONTACT.phonePrimary}</a>
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          <a href={`tel:${CONTACT.phonePrimaryE164}`}>{CONTACT.phonePrimary}</a>
+          {CONTACT.email && <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>}
         </address>
 
         <h2 class="eyebrow news-h">{t("footer.newsletter")}</h2>

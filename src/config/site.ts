@@ -14,7 +14,27 @@ export const CONTACT = {
   cityLine: "Montplaisir · Tunis · Tunisie",
   phonePrimary: "55 157 506",
   phoneSecondary: "90 157 560",
-  email: "contact@gnie-aesthetics.com",
+  /**
+   * The same numbers in E.164, for anything a machine reads: structured data
+   * and `tel:` links. Google's guidance is explicit that a telephone in
+   * structured data must carry the country code, and a national-format number
+   * cannot be dialled from outside Tunisia. Display still uses the spaced
+   * forms above. Tunisia is +216.
+   */
+  phonePrimaryE164: "+21655157506",
+  phoneSecondaryE164: "+21690157560",
+  /**
+   * EMPTY ON PURPOSE — the client has not supplied a professional address.
+   * `contact@gnie-aesthetics.com` used to sit here as a stand-in and reached
+   * production copy: a legal notice printed it as the company's official
+   * contact, and the privacy policy named it as the sole route for exercising
+   * data rights. It appears in no source document and no mailbox is known to
+   * exist, so requests to it would silently bounce. The only address ever
+   * observed is `grtarek@yahoo.fr`, from catalogue 5, unconfirmed and
+   * personal. Every consumer hides its e-mail row while this is empty; fill
+   * it in and they all light up.
+   */
+  email: "",
   since: 2015,
   /** Geo for the Organization JSON-LD. */
   locality: "Tunis",

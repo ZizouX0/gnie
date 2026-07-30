@@ -16,7 +16,12 @@ export default defineConfig({
     sitemap({
       // the styleguide is a build-time tool, never a public page
       filter: (page) => !page.includes("/dev/"),
-      i18n: { defaultLocale: "fr", locales: { fr: "fr-TN", en: "en" } },
+      // No `i18n` block on purpose. It emitted fr-TN/en into the sitemap
+      // while the HTML emits fr/en/x-default — two implementations
+      // describing the same pairs with different codes, and the sitemap one
+      // had no x-default and skipped the four legal pages whose FR and EN
+      // slugs differ. The HTML tags are complete and reciprocal; they are
+      // the single source of truth.
     }),
   ],
   vite: { plugins: [tailwindcss()] },
