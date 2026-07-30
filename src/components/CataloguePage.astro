@@ -329,6 +329,14 @@ const crumbs = [
   :global(html.no-js) .pick {
     display: none;
   }
+  /* Same reasoning for the filter bar. The pills are `#category` links that
+     only the filter script acts on: without it they change the URL, scroll
+     nowhere and hide nothing — eight controls that silently do nothing. All
+     twelve cards are listed below, so hiding them loses no content. The
+     tally beside them is plain text and stays. */
+  :global(html.no-js) .filters {
+    display: none;
+  }
 
   /* Background scroll lock while a quick-view panel is open. */
   :global(html.qv-lock),

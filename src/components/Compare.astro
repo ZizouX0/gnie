@@ -41,14 +41,11 @@ const t = useTranslations(locale);
 
     <p class="hint" id="cmp-empty">{t("catalog.compareEmpty")}</p>
 
-    <div
-      class="scroller"
-      data-cmp-cols
-      role="region"
-      aria-label={t("catalog.compareTitle")}
-      tabindex="0"
-      hidden
-    >
+    {/* A scrollable region must be reachable by keyboard, but naming it the
+        same as the <section> around it exposes two landmarks with one name.
+        tabindex alone makes it scrollable-by-keyboard without a second
+        landmark; the section already names the whole thing. */}
+    <div class="scroller" data-cmp-cols tabindex="0" hidden>
       <div class="cols">
         {
           machines.map((m) => (

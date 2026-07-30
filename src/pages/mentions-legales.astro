@@ -1,0 +1,251 @@
+---
+/**
+ * Mentions légales (specification §4.5).
+ *
+ * Every company fact comes from CONTACT or the dictionary — nothing is retyped
+ * here. The facts a legal notice normally carries but this project has never
+ * been given (forme juridique, capital, RNE, matricule fiscal, directeur de la
+ * publication, identification complète de l'hébergeur) are rendered as
+ * TODO:NEEDS_INPUT placeholders, the same token the machine content uses: a
+ * missing registration number must look missing, never plausible.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProseSection from "@/components/ProseSection.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { CONTACT, ENV } from "@/config/site";
+
+const locale = "fr" as const;
+const t = useTranslations(locale);
+
+const host = new URL(ENV.siteUrl).host;
+const tel = (n: string) => `tel:${n.replace(/\s/g, "")}`;
+
+/** Document outline — drives both the table of contents and the numbering. */
+const S = [
+  { id: "editeur", title: "Éditeur du site" },
+  { id: "publication", title: "Directeur de la publication" },
+  { id: "hebergement", title: "Hébergement" },
+  { id: "propriete", title: "Propriété intellectuelle" },
+  { id: "responsabilite", title: "Contenu du site et responsabilité" },
+  { id: "liens", title: "Liens vers des services tiers" },
+  { id: "donnees", title: "Données personnelles et cookies" },
+  { id: "droit", title: "Droit applicable" },
+] as const;
+const sec = (id: (typeof S)[number]["id"]) => {
+  const i = S.findIndex((s) => s.id === id);
+  return { id, index: i + 1, title: S[i].title };
+};
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("footer.legal") },
+];
+---
+
+<Base
+  locale={locale}
+  page="legal"
+  title="Mentions légales"
+  description={`Mentions légales du site ${host} : éditeur, hébergement, propriété intellectuelle, responsabilité et droit applicable.`}
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap doc-page">
+    <SectionHeading
+      as="h1"
+      eyebrow="Informations légales"
+      title="Mentions légales"
+      intro={`Informations relatives au site ${host} et à la société qui l'édite.`}
+    />
+
+    <nav class="toc plaque" aria-labelledby="toc-h">
+      <h2 id="toc-h" class="eyebrow">Sommaire</h2>
+      <ol>
+        {S.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ol>
+    </nav>
+
+    <div class="doc">
+      <ProseSection {...sec("editeur")}>
+        <p>Le site {host} est édité par :</p>
+        <dl>
+          <dt>Dénomination sociale</dt>
+          <dd>{t("site.company")} ({t("site.name")})</dd>
+
+          <dt>Forme juridique</dt>
+          <dd>
+            <span class="todo">TODO:NEEDS_INPUT — forme juridique (SARL, SUARL, SA…)</span>
+          </dd>
+
+          <dt>Capital social</dt>
+          <dd><span class="todo">TODO:NEEDS_INPUT — montant du capital social</span></dd>
+
+          <dt>Siège social</dt>
+          <dd>{CONTACT.addressLines.map((line) => <span>{line}</span>)}</dd>
+
+          <dt>Téléphone</dt>
+          <dd>
+            <span><a href={tel(CONTACT.phonePrimary)}>{CONTACT.phonePrimary}</a></span>
+            <span><a href={tel(CONTACT.phoneSecondary)}>{CONTACT.phoneSecondary}</a></span>
+          </dd>
+
+          <dt>Adresse e-mail</dt>
+          <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+
+          <dt>Registre national des entreprises</dt>
+          <dd>
+            <span class="todo">
+              TODO:NEEDS_INPUT — numéro d'immatriculation au RNE (ex-registre du commerce)
+            </span>
+          </dd>
+
+          <dt>Matricule fiscal</dt>
+          <dd><span class="todo">TODO:NEEDS_INPUT — matricule fiscal</span></dd>
+
+          <dt>Activité</dt>
+          <dd>
+            Importation, distribution, installation et maintenance d'équipements esthétiques
+            professionnels, depuis {CONTACT.since}.
+          </dd>
+        </dl>
+      </ProseSection>
+
+      <ProseSection {...sec("publication")}>
+        <p>
+          Le directeur de la publication est&nbsp;:
+          <span class="todo">TODO:NEEDS_INPUT — nom et qualité du directeur de la publication</span>
+        </p>
+        <p>
+          Il peut être joint par courrier au siège social ou à l'adresse
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("hebergement")}>
+        <p>
+          Le site est un site statique — des pages pré-générées, sans base de données ni espace
+          client — hébergé et diffusé par Vercel.
+        </p>
+        <p>
+          Identification complète de l'hébergeur&nbsp;:
+          <span class="todo">
+            TODO:NEEDS_INPUT — raison sociale, adresse postale et contact de l'hébergeur
+          </span>
+        </p>
+        <p>
+          Les journaux techniques du serveur relèvent de l'hébergeur ; leur traitement est décrit
+          dans la <a href={path(locale, "privacy")}>politique de confidentialité</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("propriete")}>
+        <p>
+          La structure du site, ses textes, sa charte graphique, ses éléments d'interface ainsi que
+          le nom et le logo {t("site.name")} sont la propriété de {t("site.company")}. Toute
+          reproduction ou représentation, totale ou partielle, sans autorisation écrite préalable
+          est interdite.
+        </p>
+        <p>
+          Les marques, photographies, vidéos et documentations techniques des machines demeurent la
+          propriété de leurs fabricants respectifs. Elles sont reproduites sur ce site aux seules
+          fins de présentation des équipements distribués par {t("site.name")}.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("responsabilite")}>
+        <p>
+          Les informations publiées sur ce site sont fournies à titre indicatif. Les
+          caractéristiques techniques, les visuels et les configurations des équipements peuvent
+          être modifiés par les fabricants sans préavis : seule l'offre écrite remise par
+          {t("site.name")} engage la société.
+        </p>
+        <p>
+          Aucun prix n'est affiché sur ce site ; chaque équipement fait l'objet d'un devis
+          personnalisé. Les contenus présentés ne constituent ni un conseil médical, ni un
+          diagnostic, ni une promesse de résultat. Les machines décrites sont des équipements
+          professionnels, destinés à des praticiens formés à leur utilisation.
+        </p>
+        <p>
+          {t("site.name")} met tout en œuvre pour maintenir le site accessible et à jour, sans
+          pouvoir le garantir de façon permanente.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("liens")}>
+        <p>
+          Le site propose des liens et des contenus vers des services tiers — WhatsApp, YouTube et
+          Google Maps notamment. {t("site.name")} n'exerce aucun contrôle sur ces services et ne
+          saurait être tenue responsable de leur contenu ni de leurs pratiques.
+        </p>
+        <p>
+          Ces contenus tiers ne sont jamais chargés à votre insu : ils n'apparaissent qu'après une
+          action explicite de votre part, comme l'explique la
+          <a href={path(locale, "privacy")}>politique de confidentialité</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("donnees")}>
+        <p>
+          Ce site ne dépose aucun cookie de sa propre initiative et n'utilise aucun traceur
+          publicitaire. Les données que vous nous transmettez — formulaire de devis, inscription à
+          la newsletter — et la façon dont elles sont conservées sont décrites dans la
+          <a href={path(locale, "privacy")}>politique de confidentialité</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("droit")}>
+        <p>
+          Le site est édité depuis la Tunisie et soumis au droit tunisien. Toute question relative
+          aux présentes mentions peut être adressée à
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> ou par courrier au siège social.
+        </p>
+      </ProseSection>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .doc-page {
+    padding-block: 1.5rem var(--section-y);
+  }
+
+  /* Sommaire: a plaque, like every other framed surface on the site. */
+  .toc {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 38rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  /* Flex row, so a title that wraps stays aligned under itself and never
+     tucks under its own number. */
+  .toc li {
+    display: flex;
+    gap: 0.75rem;
+    counter-increment: toc;
+    padding-block: 0.25rem;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: none;
+    color: var(--color-or);
+    font-family: var(--font-display);
+  }
+  .toc a {
+    color: var(--color-ivoire);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+  .toc a:hover {
+    color: var(--color-or-clair);
+  }
+</style>

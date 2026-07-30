@@ -34,10 +34,18 @@ const t = useTranslations(locale);
   .sep {
     color: var(--color-gris);
   }
+  /* "FR"/"EN" set at 12px is only ~18x20 of ink — the smallest target on the
+     page. Padding brings the hit area to the 24px minimum without moving the
+     text, since the row is centred and the gap absorbs it. */
   a {
     color: var(--color-gris);
     text-decoration: none;
     transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
   }
   a:hover {
     color: var(--color-ivoire);

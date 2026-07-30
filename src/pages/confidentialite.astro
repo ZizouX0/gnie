@@ -1,0 +1,331 @@
+---
+/**
+ * Politique de confidentialité (specification §4.5).
+ *
+ * The page describes what the site actually does, service by service: Formspree
+ * routes the quote form, Brevo runs the newsletter, the YouTube embed and the
+ * Google map are click-to-load facades that contact nobody until you ask, and
+ * Vercel hosts the pages and measures the audience. Retention periods have never
+ * been decided, so they stay TODO:NEEDS_INPUT rather than becoming an invented
+ * number a visitor could rely on.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProseSection from "@/components/ProseSection.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { CONTACT } from "@/config/site";
+
+const locale = "fr" as const;
+const t = useTranslations(locale);
+
+const mailto = `mailto:${CONTACT.email}`;
+
+/** Document outline — drives both the table of contents and the numbering. */
+const S = [
+  { id: "responsable", title: "Qui traite vos données" },
+  { id: "collecte", title: "Ce que nous collectons, pourquoi et sur quelle base" },
+  { id: "cookies", title: "Cookies et traceurs" },
+  { id: "tiers", title: "Contenus tiers chargés au clic" },
+  { id: "audience", title: "Mesure d'audience" },
+  { id: "destinataires", title: "Destinataires et transferts" },
+  { id: "conservation", title: "Durées de conservation" },
+  { id: "droits", title: "Vos droits" },
+  { id: "securite", title: "Sécurité" },
+  { id: "evolution", title: "Évolution de cette politique" },
+] as const;
+const sec = (id: (typeof S)[number]["id"]) => {
+  const i = S.findIndex((s) => s.id === id);
+  return { id, index: i + 1, title: S[i].title };
+};
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("footer.privacy") },
+];
+---
+
+<Base
+  locale={locale}
+  page="privacy"
+  title="Politique de confidentialité"
+  description="Quelles données GNIE collecte sur ce site, pourquoi, avec quels prestataires (Formspree, Brevo, Google Maps, Vercel) et comment en demander la suppression."
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap doc-page">
+    <SectionHeading
+      as="h1"
+      eyebrow="Vos données"
+      title="Politique de confidentialité"
+      intro="Ce que ce site collecte, ce qu'il ne collecte pas, à qui vos données sont transmises et comment en obtenir la suppression."
+    />
+
+    <nav class="toc plaque" aria-labelledby="toc-h">
+      <h2 id="toc-h" class="eyebrow">Sommaire</h2>
+      <ol>
+        {S.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ol>
+    </nav>
+
+    <div class="doc">
+      <ProseSection {...sec("responsable")}>
+        <p>
+          Les données collectées sur ce site sont traitées par {t("site.company")}
+          ({t("site.name")}), dont le siège se trouve à {CONTACT.cityLine}. L'identification
+          complète de la société figure dans les
+          <a href={path(locale, "legal")}>mentions légales</a>.
+        </p>
+        <p>
+          Pour toute question sur cette politique, ou pour exercer vos droits, écrivez à
+          <a href={mailto}>{CONTACT.email}</a>.
+        </p>
+        <p>
+          Le traitement des données personnelles relève du droit tunisien, en particulier de la loi
+          organique n° 2004-63 du 27 juillet 2004 relative à la protection des données à caractère
+          personnel.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("collecte")}>
+        <p>
+          Ce site n'a ni compte client, ni espace membre, ni panier. Vous n'êtes jamais obligé de
+          nous laisser la moindre donnée pour consulter le catalogue. Trois situations seulement
+          font circuler des informations vous concernant.
+        </p>
+
+        <h3>Demande de devis et formulaire de contact</h3>
+        <p>
+          Le formulaire de la page <a href={path(locale, "contact")}>contact</a> recueille votre
+          nom, l'établissement, un téléphone, une adresse e-mail, la machine concernée et votre
+          message. Ces informations servent uniquement à vous répondre et à préparer un devis.
+        </p>
+        <p>
+          La base du traitement est votre propre démarche : vous décidez de nous écrire. Nous
+          n'utilisons pas ces coordonnées pour autre chose, et nous ne les intégrons pas
+          automatiquement à la newsletter.
+        </p>
+        <p>
+          L'envoi passe par <strong>Formspree</strong>, qui achemine le message vers la boîte
+          e-mail de {t("site.name")}. Un champ piège invisible bloque les robots ; il n'analyse
+          jamais votre comportement de navigation.
+        </p>
+
+        <h3>Newsletter</h3>
+        <p>
+          Le bloc du pied de page ne demande qu'une adresse e-mail. Elle est transmise à
+          <strong>Brevo</strong>, notre outil d'envoi, et sert uniquement à vous adresser quelques
+          fois par an les nouveautés d'équipement. La base du traitement est votre consentement.
+        </p>
+        <p>
+          Vous pouvez le retirer à tout moment : chaque message contient un lien de désinscription,
+          et un simple e-mail à <a href={mailto}>{CONTACT.email}</a> suffit également.
+        </p>
+
+        <h3>WhatsApp</h3>
+        <p>
+          Les boutons WhatsApp ouvrent une conversation avec un message déjà rédigé. Rien n'est
+          transmis tant que vous ne l'avez pas envoyé depuis l'application. À partir de là,
+          {t("site.name")} reçoit votre numéro et votre message, et l'échange est régi par les
+          conditions de WhatsApp (Meta), sur lesquelles nous n'avons aucune prise.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("cookies")}>
+        <p>
+          Ce site ne dépose aucun cookie de sa propre initiative. Il n'utilise ni stockage local, ni
+          pixel publicitaire, ni bouton de réseau social, ni profilage. C'est la raison pour
+          laquelle vous ne voyez aucune bannière de consentement : il n'y a rien à accepter.
+        </p>
+        <p>
+          Un service tiers ne peut déposer un cookie qu'après une action explicite de votre part —
+          c'est l'objet de la section suivante.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("tiers")}>
+        <p>
+          Deux contenus proviennent de services extérieurs, et aucun des deux ne se charge tout
+          seul :
+        </p>
+        <ul>
+          <li>
+            <strong>Les vidéos de machines.</strong> La page n'affiche d'abord qu'une image et un
+            bouton de lecture. Le lecteur YouTube n'est créé qu'au moment où vous cliquez, et sur le
+            domaine youtube-nocookie.com. Sans clic, aucune requête n'est adressée à YouTube ni à
+            Google.
+          </li>
+          <li>
+            <strong>La carte de la page contact.</strong> Elle suit le même principe : Google Maps
+            n'est sollicité qu'à votre demande. Sans clic, aucune requête n'est adressée à Google.
+          </li>
+        </ul>
+        <p>
+          Une fois le contenu chargé, c'est la politique de confidentialité du fournisseur concerné
+          qui s'applique à ce contenu, et il peut alors recevoir votre adresse IP et déposer ses
+          propres cookies.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("audience")}>
+        <p>
+          Lorsqu'elle est activée, la mesure d'audience du site repose sur
+          <strong>Vercel Web Analytics</strong> : des statistiques agrégées — pages vues, machines
+          les plus consultées, clics sur les boutons de contact — sans cookie, sans identifiant
+          publicitaire et sans suivi d'un site à l'autre. Aucune de ces mesures ne permet de vous
+          identifier ni de vous recontacter.
+        </p>
+        <p>
+          <span class="todo">
+            TODO:NEEDS_INPUT — confirmer l'activation de Vercel Web Analytics à la mise en ligne,
+            puis la durée de conservation des statistiques
+          </span>
+        </p>
+        <p>
+          Par ailleurs, comme pour tout site, le serveur qui délivre les pages enregistre des
+          journaux techniques (adresse IP, page demandée, date) à des fins de sécurité et de
+          diagnostic. Ces journaux relèvent de l'hébergeur, identifié dans les
+          <a href={path(locale, "legal")}>mentions légales</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("destinataires")}>
+        <p>
+          Vos données ne sont ni vendues, ni louées, ni cédées à des fins publicitaires. Elles ne
+          sont partagées qu'avec les prestataires strictement nécessaires au fonctionnement du
+          site :
+        </p>
+        <ul>
+          <li><strong>Formspree</strong> — acheminement du formulaire de devis vers notre boîte e-mail.</li>
+          <li><strong>Brevo</strong> — gestion et envoi de la newsletter.</li>
+          <li><strong>Vercel</strong> — hébergement des pages et mesure d'audience.</li>
+          <li>
+            <strong>Google</strong> et <strong>YouTube</strong> — uniquement si vous ouvrez la carte
+            ou lancez une vidéo.
+          </li>
+          <li>
+            <strong>WhatsApp (Meta)</strong> — uniquement si vous engagez la conversation
+            vous-même.
+          </li>
+        </ul>
+        <p>
+          Ces prestataires opèrent depuis l'Union européenne ou les États-Unis : vos données peuvent
+          donc être traitées en dehors de la Tunisie. Chacun applique sa propre politique de
+          confidentialité, consultable sur son site.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("conservation")}>
+        <p>
+          Nous ne conservons que ce qui reste utile à la relation commerciale, et rien au-delà.
+        </p>
+        <dl>
+          <dt>Demandes de devis et messages de contact</dt>
+          <dd>
+            <span class="todo">
+              TODO:NEEDS_INPUT — durée de conservation des demandes de devis et des messages de
+              contact
+            </span>
+          </dd>
+
+          <dt>Adresses inscrites à la newsletter</dt>
+          <dd>
+            Conservées tant que vous restez inscrit. Après désinscription :
+            <span class="todo">
+              TODO:NEEDS_INPUT — durée de conservation de l'adresse après désinscription
+            </span>
+          </dd>
+
+          <dt>Statistiques d'audience</dt>
+          <dd>
+            Agrégées, sans donnée identifiante ; durée précisée à la section
+            <a href="#audience">Mesure d'audience</a>.
+          </dd>
+        </dl>
+      </ProseSection>
+
+      <ProseSection {...sec("droits")}>
+        <p>
+          Vous pouvez à tout moment demander l'accès aux données que nous détenons sur vous, leur
+          rectification, leur suppression, ou vous opposer à leur utilisation.
+        </p>
+        <p>
+          Une seule adresse pour tout cela : <a href={mailto}>{CONTACT.email}</a>, ou un courrier au
+          siège social indiqué dans les <a href={path(locale, "legal")}>mentions légales</a>. Une
+          demande de suppression est répercutée chez nos prestataires — Formspree pour les messages,
+          Brevo pour la newsletter.
+        </p>
+        <p>
+          Nous pouvons être amenés à vérifier votre identité avant de donner suite, afin de ne pas
+          communiquer vos données à quelqu'un d'autre.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("securite")}>
+        <p>
+          Le site est entièrement statique et servi en HTTPS : il n'héberge aucune base de données,
+          aucun mot de passe et aucun espace client, ce qui réduit d'autant la surface exposée. Les
+          messages que vous envoyez transitent chiffrés vers nos prestataires, et l'accès à la boîte
+          e-mail de {t("site.name")} est réservé à l'équipe.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("evolution")}>
+        <p>
+          Cette politique peut évoluer si le site change d'outils ou de fonctionnalités. La version
+          publiée sur cette page est toujours la version en vigueur.
+        </p>
+        <p>
+          Dernière mise à jour :
+          <span class="todo">
+            TODO:NEEDS_INPUT — date d'entrée en vigueur de la présente politique
+          </span>
+        </p>
+      </ProseSection>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .doc-page {
+    padding-block: 1.5rem var(--section-y);
+  }
+
+  /* Sommaire: a plaque, like every other framed surface on the site. */
+  .toc {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 38rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  /* Flex row, so a title that wraps stays aligned under itself and never
+     tucks under its own number. */
+  .toc li {
+    display: flex;
+    gap: 0.75rem;
+    counter-increment: toc;
+    padding-block: 0.25rem;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: none;
+    color: var(--color-or);
+    font-family: var(--font-display);
+  }
+  .toc a {
+    color: var(--color-ivoire);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+  .toc a:hover {
+    color: var(--color-or-clair);
+  }
+</style>

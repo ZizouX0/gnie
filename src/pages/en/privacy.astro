@@ -1,0 +1,310 @@
+---
+/**
+ * Privacy policy — the English twin of `/confidentialite/` (specification §4.5).
+ *
+ * Same substance, written in English rather than translated word for word. It
+ * names the services the site really uses — Formspree for the quote form, Brevo
+ * for the newsletter, Vercel for hosting and audience measurement, Google and
+ * YouTube only behind a click-to-load facade — and leaves every retention period
+ * as TODO:NEEDS_INPUT, because none has ever been decided.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProseSection from "@/components/ProseSection.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { CONTACT } from "@/config/site";
+
+const locale = "en" as const;
+const t = useTranslations(locale);
+
+const mailto = `mailto:${CONTACT.email}`;
+
+/** Document outline — drives both the table of contents and the numbering. */
+const S = [
+  { id: "controller", title: "Who handles your data" },
+  { id: "collected", title: "What we collect, why, and on what basis" },
+  { id: "cookies", title: "Cookies and trackers" },
+  { id: "third-party", title: "Third-party content loaded on click" },
+  { id: "analytics", title: "Audience measurement" },
+  { id: "recipients", title: "Recipients and transfers" },
+  { id: "retention", title: "How long we keep it" },
+  { id: "rights", title: "Your rights" },
+  { id: "security", title: "Security" },
+  { id: "changes", title: "Changes to this policy" },
+] as const;
+const sec = (id: (typeof S)[number]["id"]) => {
+  const i = S.findIndex((s) => s.id === id);
+  return { id, index: i + 1, title: S[i].title };
+};
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("footer.privacy") },
+];
+---
+
+<Base
+  locale={locale}
+  page="privacy"
+  title="Privacy policy"
+  description="What GNIE collects on this site, why, which providers are involved (Formspree, Brevo, Google Maps, Vercel), and how to ask for your data to be deleted."
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap doc-page">
+    <SectionHeading
+      as="h1"
+      eyebrow="Your data"
+      title="Privacy policy"
+      intro="What this site collects, what it deliberately does not, who your details are passed to, and how to have them deleted."
+    />
+
+    <nav class="toc plaque" aria-labelledby="toc-h">
+      <h2 id="toc-h" class="eyebrow">Contents</h2>
+      <ol>
+        {S.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ol>
+    </nav>
+
+    <div class="doc">
+      <ProseSection {...sec("controller")}>
+        <p>
+          Data collected on this site is handled by {t("site.company")} ({t("site.name")}), whose
+          offices are in {CONTACT.cityLine}. Full company details are in the
+          <a href={path(locale, "legal")}>legal notice</a>.
+        </p>
+        <p>
+          For any question about this policy, or to exercise your rights, write to
+          <a href={mailto}>{CONTACT.email}</a>.
+        </p>
+        <p>
+          Personal data processing is governed by Tunisian law, in particular organic law no.
+          2004-63 of 27 July 2004 on the protection of personal data.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("collected")}>
+        <p>
+          There is no account, no member area and no basket on this site. Browsing the catalogue
+          never requires you to leave a single detail behind. Only three situations put information
+          about you into circulation.
+        </p>
+
+        <h3>Quote requests and the contact form</h3>
+        <p>
+          The form on the <a href={path(locale, "contact")}>contact page</a> asks for your name,
+          your business, a phone number, an email address, the machine you are interested in and
+          your message. We use that solely to reply to you and prepare a quote.
+        </p>
+        <p>
+          The basis is your own approach: you choose to write to us. We do not use those details for
+          anything else, and we never add them to the newsletter automatically.
+        </p>
+        <p>
+          Submissions are routed by <strong>Formspree</strong>, which forwards the message to the
+          {t("site.name")} inbox. A hidden honeypot field stops bots; it never analyses how you
+          browse.
+        </p>
+
+        <h3>Newsletter</h3>
+        <p>
+          The footer block asks for an email address and nothing else. It goes to
+          <strong>Brevo</strong>, our sending tool, and is used only to send you equipment news a
+          few times a year. The basis is your consent.
+        </p>
+        <p>
+          You can withdraw it at any time: every message carries an unsubscribe link, and an email
+          to <a href={mailto}>{CONTACT.email}</a> works just as well.
+        </p>
+
+        <h3>WhatsApp</h3>
+        <p>
+          The WhatsApp buttons open a conversation with the message already written. Nothing is sent
+          until you send it yourself from the app. From that point {t("site.name")} has your number
+          and your message, and the exchange is governed by WhatsApp's own terms (Meta), over which
+          we have no control.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("cookies")}>
+        <p>
+          This site sets no cookies of its own. It uses no local storage, no advertising pixel, no
+          social network widget and no profiling. That is precisely why you see no consent banner:
+          there is nothing to accept.
+        </p>
+        <p>
+          A third-party service can only set a cookie after a deliberate action on your part — which
+          is what the next section is about.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("third-party")}>
+        <p>Two pieces of content come from outside services, and neither loads on its own:</p>
+        <ul>
+          <li>
+            <strong>Machine videos.</strong> The page first shows nothing but a still image and a
+            play button. The YouTube player is created only when you click, and on the
+            youtube-nocookie.com domain. Without that click, no request reaches YouTube or Google.
+          </li>
+          <li>
+            <strong>The map on the contact page.</strong> Same principle: Google Maps is contacted
+            only when you ask for it. Without that click, no request reaches Google.
+          </li>
+        </ul>
+        <p>
+          Once the content has loaded, that provider's own privacy policy applies to it, and it may
+          then receive your IP address and set its own cookies.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("analytics")}>
+        <p>
+          When it is switched on, audience measurement on this site relies on
+          <strong>Vercel Web Analytics</strong>: aggregated figures — page views, the most-visited
+          machines, clicks on the contact buttons — with no cookie, no advertising identifier and no
+          tracking from one site to another. None of it can identify you or reach you.
+        </p>
+        <p>
+          <span class="todo">
+            TODO:NEEDS_INPUT — confirm that Vercel Web Analytics is enabled at launch, then the
+            retention period for the statistics
+          </span>
+        </p>
+        <p>
+          Separately, as on any website, the server delivering the pages records technical logs (IP
+          address, page requested, timestamp) for security and diagnostics. Those logs are the
+          host's responsibility; the host is identified in the
+          <a href={path(locale, "legal")}>legal notice</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("recipients")}>
+        <p>
+          Your data is never sold, rented or passed on for advertising. It is shared only with the
+          providers the site genuinely needs:
+        </p>
+        <ul>
+          <li><strong>Formspree</strong> — delivering the quote form to our inbox.</li>
+          <li><strong>Brevo</strong> — managing and sending the newsletter.</li>
+          <li><strong>Vercel</strong> — hosting the pages and measuring the audience.</li>
+          <li>
+            <strong>Google</strong> and <strong>YouTube</strong> — only if you open the map or start
+            a video.
+          </li>
+          <li><strong>WhatsApp (Meta)</strong> — only if you start the conversation yourself.</li>
+        </ul>
+        <p>
+          These providers operate from the European Union or the United States, so your data may be
+          processed outside Tunisia. Each applies its own privacy policy, published on its own site.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("retention")}>
+        <p>We keep what remains useful to the commercial relationship, and nothing beyond it.</p>
+        <dl>
+          <dt>Quote requests and contact messages</dt>
+          <dd>
+            <span class="todo">
+              TODO:NEEDS_INPUT — retention period for quote requests and contact messages
+            </span>
+          </dd>
+
+          <dt>Newsletter addresses</dt>
+          <dd>
+            Kept for as long as you stay subscribed. After you unsubscribe:
+            <span class="todo">
+              TODO:NEEDS_INPUT — retention period for the address after unsubscribing
+            </span>
+          </dd>
+
+          <dt>Audience statistics</dt>
+          <dd>
+            Aggregated, with nothing identifying in them; the period is given under
+            <a href="#analytics">Audience measurement</a>.
+          </dd>
+        </dl>
+      </ProseSection>
+
+      <ProseSection {...sec("rights")}>
+        <p>
+          You can ask at any time to see the data we hold about you, to have it corrected or
+          deleted, or to object to our using it.
+        </p>
+        <p>
+          One address covers all of that: <a href={mailto}>{CONTACT.email}</a>, or a letter to the
+          registered office given in the <a href={path(locale, "legal")}>legal notice</a>. A
+          deletion request is passed on to our providers — Formspree for messages, Brevo for the
+          newsletter.
+        </p>
+        <p>
+          We may need to verify your identity before acting, so that we never hand your data to
+          somebody else.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("security")}>
+        <p>
+          The site is fully static and served over HTTPS: it holds no database, no password and no
+          customer area, which keeps the exposed surface small. Messages you send travel encrypted
+          to our providers, and access to the {t("site.name")} inbox is limited to the team.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("changes")}>
+        <p>
+          This policy may change if the site adopts different tools or features. The version
+          published on this page is always the one in force.
+        </p>
+        <p>
+          Last updated:
+          <span class="todo">TODO:NEEDS_INPUT — effective date of this policy</span>
+        </p>
+      </ProseSection>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .doc-page {
+    padding-block: 1.5rem var(--section-y);
+  }
+
+  /* Contents: a plaque, like every other framed surface on the site. */
+  .toc {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 38rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  /* Flex row, so a title that wraps stays aligned under itself and never
+     tucks under its own number. */
+  .toc li {
+    display: flex;
+    gap: 0.75rem;
+    counter-increment: toc;
+    padding-block: 0.25rem;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: none;
+    color: var(--color-or);
+    font-family: var(--font-display);
+  }
+  .toc a {
+    color: var(--color-ivoire);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+  .toc a:hover {
+    color: var(--color-or-clair);
+  }
+</style>

@@ -105,33 +105,49 @@ const groups = specs
     color: var(--color-ivoire);
   }
 
-  /* From tablet up every group stays open: a spec sheet reads best whole.
-     Only the script can force a <details> open, so the summary may be made
-     inert ONLY when the script is there to do it. Without JavaScript the
-     groups stay collapsible and the summary must remain operable — otherwise
-     a desktop visitor can see the first group and nothing else. */
+  /* From tablet up every group starts open, since a spec sheet reads best
+     whole — but it stays a real disclosure control.
+
+     It used to be made inert here (`pointer-events: none`, chevron hidden) on
+     the theory that an always-open group needs no control. That produced a
+     trap: the summary is still a focusable <summary>, so Enter collapsed a
+     group, the hidden chevron gave no sign it had closed, and the inert rule
+     meant the mouse could not reopen it. Defaulting open and leaving the
+     control alone is simpler and has no failure mode. */
   @media (width >= 48rem) {
     .group {
       display: block;
-    }
-    :global(html:not(.no-js)) summary {
-      pointer-events: none;
-      padding-bottom: 0.75rem;
-    }
-    :global(html:not(.no-js)) .chev {
-      display: none;
     }
   }
 </style>
 
 <script>
-  // Desktop: force every group open, since the summary is inert there.
-  const sync = () => {
-    const wide = window.matchMedia("(width >= 48rem)").matches;
-    document.querySelectorAll<HTMLDetailsElement>(".plate .group").forEach((d, i) => {
-      d.open = wide ? true : i === 0;
-    });
-  };
-  sync();
-  window.addEventListener("resize", sync, { passive: true });
+  // Sets the OPENING state only: every group open from tablet up, just the
+  // first on mobile. The groups stay real disclosure controls, so this must
+  // never fight the visitor — once they open or close one themselves, this
+  // stops touching that plate.
+  const mq = window.matchMedia("(width >= 48rem)");
+
+  document.querySelectorAll<HTMLElement>(".plate").forEach((plate) => {
+    // Per plate, not per page: the comparison panel renders several plates
+    // side by side, and each needs its own first group open on mobile.
+    const groups = Array.from(plate.querySelectorAll<HTMLDetailsElement>(".group"));
+    if (groups.length === 0) return;
+
+    let applying = false;
+    let touched = false;
+    // `toggle` fires for our own writes too, so ignore those.
+    groups.forEach((d) => d.addEventListener("toggle", () => { if (!applying) touched = true; }));
+
+    const apply = () => {
+      if (touched) return;
+      applying = true;
+      groups.forEach((d, i) => { d.open = mq.matches || i === 0; });
+      applying = false;
+    };
+
+    apply();
+    // Only on crossing the breakpoint — not on every resize frame.
+    mq.addEventListener("change", apply);
+  });
 </script>

@@ -96,13 +96,29 @@ const organization = {
     <script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
     <script is:inline>
       document.documentElement.classList.remove("no-js");
+      // Removing `no-js` disarms the CSS net that keeps [data-reveal] content
+      // visible, and the script that re-arms it lives at the end of <body>.
+      // If that script never runs — no module support, a blocked inline
+      // module, an error before it — every section below the hero would stay
+      // at opacity 0 for good. This failsafe costs nothing and makes that
+      // impossible: if the reveal script has not announced itself shortly
+      // after load, show everything.
+      addEventListener("load", function () {
+        setTimeout(function () {
+          if (document.documentElement.hasAttribute("data-reveal-ready")) return;
+          var els = document.querySelectorAll("[data-reveal]");
+          for (var i = 0; i < els.length; i++) els[i].classList.add("is-in");
+        }, 1000);
+      });
     </script>
     <slot name="head" />
   </head>
 
   <body>
     <Header locale={locale} current={page} alternate={alternate} />
-    <main id="main">
+    {/* tabindex="-1" so the skip link actually moves focus here,
+        rather than relying on the browser's sequential-focus guess. */}
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer locale={locale} />
@@ -110,6 +126,8 @@ const organization = {
 
     <script>
       // The single orchestrated gesture: fade-up on section entry.
+      // Announce that this ran, so the failsafe in <head> stands down.
+      document.documentElement.setAttribute("data-reveal-ready", "");
       const items = document.querySelectorAll("[data-reveal]");
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || !("IntersectionObserver" in window)) {
@@ -131,3 +149,12 @@ const organization = {
     </script>
   </body>
 </html>
+
+<style>
+  /* The skip link focuses <main> so assistive tech lands inside it. It is a
+     landing point, not a control, so it must not draw a focus ring around
+     the whole page — the jump itself is the feedback. */
+  main:focus-visible {
+    outline: none;
+  }
+</style>

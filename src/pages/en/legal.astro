@@ -1,0 +1,251 @@
+---
+/**
+ * Legal notice — the English twin of `/mentions-legales/` (specification §4.5).
+ *
+ * Same substance, written in English rather than translated word for word. Every
+ * company fact comes from CONTACT or the dictionary; the facts nobody has given
+ * us yet (legal form, share capital, trade register, tax number, publication
+ * director, the host's full identification) stay TODO:NEEDS_INPUT so a missing
+ * registration number always looks missing.
+ */
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProseSection from "@/components/ProseSection.astro";
+import { useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { CONTACT, ENV } from "@/config/site";
+
+const locale = "en" as const;
+const t = useTranslations(locale);
+
+const host = new URL(ENV.siteUrl).host;
+const tel = (n: string) => `tel:${n.replace(/\s/g, "")}`;
+
+/** Document outline — drives both the table of contents and the numbering. */
+const S = [
+  { id: "publisher", title: "Site publisher" },
+  { id: "director", title: "Publication director" },
+  { id: "hosting", title: "Hosting" },
+  { id: "ip", title: "Intellectual property" },
+  { id: "liability", title: "Site content and liability" },
+  { id: "links", title: "Links to third-party services" },
+  { id: "data", title: "Personal data and cookies" },
+  { id: "law", title: "Governing law" },
+] as const;
+const sec = (id: (typeof S)[number]["id"]) => {
+  const i = S.findIndex((s) => s.id === id);
+  return { id, index: i + 1, title: S[i].title };
+};
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: t("footer.legal") },
+];
+---
+
+<Base
+  locale={locale}
+  page="legal"
+  title="Legal notice"
+  description={`Legal notice for ${host}: publisher, hosting, intellectual property, liability and governing law.`}
+>
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  <div class="wrap doc-page">
+    <SectionHeading
+      as="h1"
+      eyebrow="Legal information"
+      title="Legal notice"
+      intro={`Information about ${host} and the company that publishes it.`}
+    />
+
+    <nav class="toc plaque" aria-labelledby="toc-h">
+      <h2 id="toc-h" class="eyebrow">Contents</h2>
+      <ol>
+        {S.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ol>
+    </nav>
+
+    <div class="doc">
+      <ProseSection {...sec("publisher")}>
+        <p>{host} is published by:</p>
+        <dl>
+          <dt>Company name</dt>
+          <dd>{t("site.company")} ({t("site.name")})</dd>
+
+          <dt>Legal form</dt>
+          <dd>
+            <span class="todo">TODO:NEEDS_INPUT — legal form (SARL, SUARL, SA…)</span>
+          </dd>
+
+          <dt>Share capital</dt>
+          <dd><span class="todo">TODO:NEEDS_INPUT — amount of share capital</span></dd>
+
+          <dt>Registered office</dt>
+          <dd>{CONTACT.addressLines.map((line) => <span>{line}</span>)}</dd>
+
+          <dt>Telephone</dt>
+          <dd>
+            <span><a href={tel(CONTACT.phonePrimary)}>{CONTACT.phonePrimary}</a></span>
+            <span><a href={tel(CONTACT.phoneSecondary)}>{CONTACT.phoneSecondary}</a></span>
+          </dd>
+
+          <dt>Email</dt>
+          <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+
+          <dt>Trade register</dt>
+          <dd>
+            <span class="todo">
+              TODO:NEEDS_INPUT — registration number with the Tunisian national business register
+              (RNE, formerly the commercial register)
+            </span>
+          </dd>
+
+          <dt>Tax identification number</dt>
+          <dd>
+            <span class="todo">TODO:NEEDS_INPUT — tax identification number (matricule fiscal)</span>
+          </dd>
+
+          <dt>Activity</dt>
+          <dd>
+            Import, distribution, installation and servicing of professional aesthetic equipment,
+            trading since {CONTACT.since}.
+          </dd>
+        </dl>
+      </ProseSection>
+
+      <ProseSection {...sec("director")}>
+        <p>
+          The director of publication is:
+          <span class="todo">
+            TODO:NEEDS_INPUT — name and role of the publication director
+          </span>
+        </p>
+        <p>
+          They can be reached by post at the registered office, or at
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("hosting")}>
+        <p>
+          This is a static site — pre-generated pages, with no database and no customer account
+          area — hosted and delivered by Vercel.
+        </p>
+        <p>
+          Full identification of the host:
+          <span class="todo">
+            TODO:NEEDS_INPUT — host's registered name, postal address and contact details
+          </span>
+        </p>
+        <p>
+          Server-side technical logs are the host's responsibility; how they are handled is
+          described in the <a href={path(locale, "privacy")}>privacy policy</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("ip")}>
+        <p>
+          The structure of this site, its texts, its visual identity and interface elements, along
+          with the {t("site.name")} name and logo, belong to {t("site.company")}. Reproducing or
+          republishing them, in whole or in part, requires prior written permission.
+        </p>
+        <p>
+          Machine brand names, photographs, videos and technical documentation remain the property
+          of their respective manufacturers. They appear here for the sole purpose of presenting
+          the equipment distributed by {t("site.name")}.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("liability")}>
+        <p>
+          The information published on this site is provided for guidance. Manufacturers may change
+          technical specifications, images and configurations without notice: only a written offer
+          issued by {t("site.name")} is binding.
+        </p>
+        <p>
+          No prices appear anywhere on this site; every machine is quoted individually. Nothing
+          published here is medical advice, a diagnosis, or a promise of results. The machines
+          described are professional devices, intended for practitioners trained to operate them.
+        </p>
+        <p>
+          {t("site.name")} makes every effort to keep the site available and up to date, without
+          being able to guarantee it at all times.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("links")}>
+        <p>
+          The site links to, and can display content from, third-party services — WhatsApp, YouTube
+          and Google Maps in particular. {t("site.name")} has no control over those services and
+          cannot be held responsible for their content or their practices.
+        </p>
+        <p>
+          None of that third-party content is ever loaded behind your back: it appears only after a
+          deliberate action on your part, as explained in the
+          <a href={path(locale, "privacy")}>privacy policy</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("data")}>
+        <p>
+          This site sets no cookies of its own and uses no advertising trackers. What happens to the
+          details you send us — a quote request, a newsletter sign-up — and how long they are kept
+          is set out in the <a href={path(locale, "privacy")}>privacy policy</a>.
+        </p>
+      </ProseSection>
+
+      <ProseSection {...sec("law")}>
+        <p>
+          The site is published from Tunisia and governed by Tunisian law. Any question about this
+          notice can be sent to <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> or by post to
+          the registered office.
+        </p>
+      </ProseSection>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .doc-page {
+    padding-block: 1.5rem var(--section-y);
+  }
+
+  /* Contents: a plaque, like every other framed surface on the site. */
+  .toc {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 38rem;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  /* Flex row, so a title that wraps stays aligned under itself and never
+     tucks under its own number. */
+  .toc li {
+    display: flex;
+    gap: 0.75rem;
+    counter-increment: toc;
+    padding-block: 0.25rem;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: none;
+    color: var(--color-or);
+    font-family: var(--font-display);
+  }
+  .toc a {
+    color: var(--color-ivoire);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+  .toc a:hover {
+    color: var(--color-or-clair);
+  }
+</style>

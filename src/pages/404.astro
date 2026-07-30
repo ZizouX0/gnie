@@ -1,0 +1,157 @@
+---
+/**
+ * 404 — one file for both languages (specification §4.5, site map).
+ *
+ * A static host answers /nonexistent and /en/nonexistent with the same
+ * /404.html, so the page cannot be built in a single language: it carries a
+ * French column and an English column, each pointing at its own routes, and
+ * both are always present. With JavaScript the inline script reads
+ * `location.pathname` and reorders them so the visitor's language leads —
+ * nothing is ever hidden, so the page stays complete and usable with scripting
+ * off, which is precisely the case where the language cannot be guessed.
+ *
+ * The document stays `lang="fr"` because the header and footer around it are
+ * French; each column declares its own `lang`, which is what assistive
+ * technology actually reads.
+ */
+import Base from "@/layouts/Base.astro";
+import Button from "@/components/Button.astro";
+import { path } from "@/i18n/routes";
+import { useTranslations } from "@/i18n/ui";
+
+const fr = useTranslations("fr");
+const en = useTranslations("en");
+---
+
+<Base
+  locale="fr"
+  page="home"
+  title="Page introuvable · Page not found"
+  description="Cette page n'existe pas ou a été déplacée. This page does not exist or has moved."
+  noindex
+>
+  <section class="nf section-y" id="nf" aria-labelledby="nf-title">
+    <div class="wrap">
+      <p class="eyebrow">Erreur 404 · <span lang="en">Error 404</span></p>
+
+      <h1 id="nf-title">
+        <span lang="fr">Page introuvable</span>
+        <span lang="en">Page not found</span>
+      </h1>
+
+      <div class="panels">
+        <div class="panel plaque" lang="fr">
+          <h2>Reprendre la visite</h2>
+          <p>
+            L'adresse demandée n'existe pas, ou a été déplacée. Le catalogue des douze machines
+            reste à un clic.
+          </p>
+          <div class="row">
+            <Button href={path("fr", "home")}>{fr("nav.home")}</Button>
+            <Button href={path("fr", "machines")} variant="outline">{fr("cta.viewAll")}</Button>
+          </div>
+          <p class="alt">
+            Une question précise ? <a href={path("fr", "contact")}>Écrivez-nous</a>.
+          </p>
+        </div>
+
+        <div class="panel plaque" lang="en">
+          <h2>Pick up where you left off</h2>
+          <p>
+            The address you asked for does not exist, or has moved. The catalogue of twelve machines
+            is still one click away.
+          </p>
+          <div class="row">
+            <Button href={path("en", "home")}>{en("nav.home")}</Button>
+            <Button href={path("en", "machines")} variant="outline">{en("cta.viewAll")}</Button>
+          </div>
+          <p class="alt">
+            Something specific in mind? <a href={path("en", "contact")}>Get in touch</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    // The same file answers every unmatched URL, so the only clue to the
+    // visitor's language is the path. When it points at /en/, the English side
+    // leads — both languages stay on the page either way.
+    (function () {
+      var nf = document.getElementById("nf");
+      if (nf && location.pathname.indexOf("/en") === 0) nf.dataset.first = "en";
+    })();
+  </script>
+</Base>
+
+<style>
+  h1 {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  h1 span {
+    max-width: 22ch;
+  }
+
+  .panels {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2.75rem;
+    max-width: 56rem;
+  }
+  @media (width >= 48rem) {
+    .panels {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Reordering only — never hiding: the other language stays one glance away. */
+  .nf[data-first="en"] h1 span[lang="fr"],
+  .nf[data-first="en"] .panel[lang="fr"] {
+    order: 2;
+  }
+  .nf[data-first="en"] h1 span[lang="en"],
+  .nf[data-first="en"] .panel[lang="en"] {
+    order: 1;
+  }
+
+  .panel {
+    padding: 1.75rem 1.5rem;
+  }
+  .panel h2 {
+    font-size: var(--text-h3);
+  }
+  .panel p {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    margin-top: 0.75rem;
+    max-width: 36ch;
+  }
+  .panel .alt {
+    margin-top: 1.25rem;
+  }
+  .panel .alt a {
+    color: var(--color-or);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .panel .alt a:hover {
+    color: var(--color-or-clair);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  /* Narrow screens: one decision per line, each a full-width target. */
+  @media (width < 30rem) {
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>
