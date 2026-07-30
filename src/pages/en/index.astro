@@ -1,0 +1,34 @@
+---
+import Base from "@/layouts/Base.astro";
+import HomeHero from "@/components/HomeHero.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { useTranslations } from "@/i18n/ui";
+
+const locale = "en" as const;
+const t = useTranslations(locale);
+---
+
+<Base
+  locale={locale}
+  page="home"
+  title="Professional aesthetic equipment in Tunisia"
+  description="GNIE supplies and installs premium aesthetic equipment from leading international brands for clinics, medspas and beauty institutes across Tunisia."
+>
+  <HomeHero
+    locale={locale}
+    headline="The equipment that makes the"
+    accent="difference."
+    sub="GNIE imports and installs premium aesthetic technology from the world's leading manufacturers, for clinics, medspas and institutes that expect more."
+    trust={[
+      "<b>12</b> machines in the catalogue",
+      "<b>Installation &amp; training</b> included",
+      "<b>Local service</b> by our own technicians",
+    ]}
+  />
+
+  <CTABlock
+    locale={locale}
+    title="Advice, a quote, or a demonstration?"
+    text={t("machine.reassurance")}
+  />
+</Base>

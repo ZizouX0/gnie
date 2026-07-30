@@ -1,0 +1,312 @@
+---
+/**
+ * Build-time reference for the design system. Excluded from the sitemap
+ * (astro.config.mjs) and marked noindex — never a public page.
+ */
+import { getCollection } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import Button from "@/components/Button.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CategoryPill from "@/components/CategoryPill.astro";
+import BenefitCard from "@/components/BenefitCard.astro";
+import SpecPlate from "@/components/SpecPlate.astro";
+import MachineCard from "@/components/MachineCard.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { categories, categoryLabel, useTranslations } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+const locale = "fr" as const;
+const t = useTranslations(locale);
+
+const machines = await getCollection("machines", (m) => m.id.startsWith("fr/"));
+const sample = machines.find((m) => m.id === "fr/cryolipolyse-7d-360")!;
+const cards = machines
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const tokens = [
+  { name: "Noir", hex: "#0B0B0D", note: "fond de page" },
+  { name: "Graphite", hex: "#131316", note: "alternance de sections" },
+  { name: "Carbone", hex: "#1C1C21", note: "cartes, surfaces" },
+  { name: "Or", hex: "#C9A24B", note: "titres, filets, CTA" },
+  { name: "Or clair", hex: "#E9D5A1", note: "survol, accents" },
+  { name: "Ivoire", hex: "#F3EEE4", note: "texte courant" },
+  { name: "Gris", hex: "#98938A", note: "texte secondaire" },
+];
+
+const scale = [
+  { token: "--text-display", label: "Display", cls: "s-display" },
+  { token: "--text-h2", label: "Titre de section", cls: "s-h2" },
+  { token: "--text-h3", label: "Titre de carte", cls: "s-h3" },
+  { token: "--text-body", label: "Texte courant", cls: "s-body" },
+  { token: "--text-small", label: "Petit texte", cls: "s-small" },
+];
+---
+
+<Base
+  locale={locale}
+  page="home"
+  title="Styleguide — GNIE v2"
+  description="Référence interne du système de design."
+  noindex
+>
+  <div class="wrap sg">
+    <SectionHeading
+      as="h1"
+      eyebrow="Référence interne · Phase 1"
+      title="Système de design"
+      intro="Tous les jetons et composants de l'identité GNIE, en un seul endroit. Cette page n'est pas publiée dans le plan du site."
+    />
+
+    <!-- COLOURS -->
+    <section>
+      <h2 class="sg-h">Palette</h2>
+      <div class="swatches">
+        {
+          tokens.map((c) => (
+            <div>
+              <div class="chip" style={`background:${c.hex}`}></div>
+              <p class="n">{c.name}</p>
+              <p class="h">{c.hex}</p>
+              <p class="note">{c.note}</p>
+            </div>
+          ))
+        }
+      </div>
+      <p class="rule-demo hairline"></p>
+      <p class="note">Filet — <code>--ligne</code> : or à 28 % d'opacité.</p>
+    </section>
+
+    <!-- TYPE -->
+    <section>
+      <h2 class="sg-h">Échelle typographique</h2>
+      <div class="type">
+        {
+          scale.map((s) => (
+            <div class="trow">
+              <code>{s.token}</code>
+              <p class={s.cls}>Cryolipolysis 7D 360°</p>
+              <span class="note">{s.label}</span>
+            </div>
+          ))
+        }
+        <div class="trow">
+          <code>.eyebrow</code>
+          <p class="eyebrow">Cryolipolyse — remodelage</p>
+          <span class="note">Motif récurrent</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section>
+      <h2 class="sg-h">Boutons</h2>
+      <div class="row">
+        <Button href="#">{t("cta.quote")}</Button>
+        <Button href="#" variant="outline">{t("cta.whatsapp")}</Button>
+      </div>
+      <div class="row narrow">
+        <Button href="#" block>Pleine largeur (mobile)</Button>
+      </div>
+    </section>
+
+    <!-- PILLS -->
+    <section>
+      <h2 class="sg-h">Filtres de catégorie</h2>
+      <div class="row wrap-row">
+        <CategoryPill label={t("catalog.all")} value="all" count={12} active />
+        {
+          categories.map((c) => (
+            <CategoryPill label={categoryLabel(locale, c)} value={c} />
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- BREADCRUMB + LANG -->
+    <section>
+      <h2 class="sg-h">Fil d'Ariane</h2>
+      <Breadcrumb
+        items={[
+          { label: t("breadcrumb.home"), href: path(locale, "home") },
+          { label: t("nav.machines"), href: path(locale, "machines") },
+          { label: sample.data.name },
+        ]}
+      />
+    </section>
+
+    <!-- BENEFIT CARDS -->
+    <section>
+      <h2 class="sg-h">Cartes bénéfices</h2>
+      <div class="bens">
+        {
+          sample.data.benefits.slice(0, 3).map((b, i) => (
+            <BenefitCard index={i + 1} title={b.title} text={b.text} />
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- SPEC PLATE -->
+    <section>
+      <h2 class="sg-h">Plaque technique</h2>
+      <p class="note mb">
+        Élément signature. Sur mobile chaque groupe se replie en <code>&lt;details&gt;</code> natif.
+        Les valeurs manquantes ne sont jamais affichées.
+      </p>
+      <SpecPlate specs={sample.data.specs} />
+    </section>
+
+    <!-- MACHINE CARDS -->
+    <section>
+      <h2 class="sg-h">Cartes machines</h2>
+      <div class="cards">
+        {
+          cards.map((m) => (
+            <MachineCard
+              locale={locale}
+              slug={m.id.replace("fr/", "")}
+              name={m.data.name}
+              category={m.data.category}
+              excerpt={m.data.excerpt}
+              image={m.data.heroImage}
+              miniLabel={m.data.specs[0]?.rows[0]?.label}
+              miniValue={m.data.specs[0]?.rows[0]?.value}
+            />
+          ))
+        }
+      </div>
+    </section>
+  </div>
+
+  <CTABlock
+    locale={locale}
+    title="Bloc d'appel à l'action"
+    text={t("machine.reassurance")}
+    machineSlug="cryolipolyse-7d-360"
+    machineName={sample.data.name}
+  />
+</Base>
+
+<style>
+  .sg {
+    padding-block: 2.5rem 4rem;
+  }
+  .sg section {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--ligne-faint);
+  }
+  .sg-h {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-or);
+    margin-bottom: 1.5rem;
+  }
+  .note {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+  }
+  .mb {
+    margin-bottom: 1.25rem;
+  }
+  code {
+    font-size: 0.75rem;
+    color: var(--color-or-clair);
+    background: rgb(201 162 75 / 0.09);
+    padding: 0.125rem 0.375rem;
+    border-radius: 2px;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 1rem;
+  }
+  .chip {
+    height: 3.5rem;
+    border: 1px solid var(--ligne-faint);
+    border-radius: var(--radius-plaque);
+  }
+  .swatches .n {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-gris);
+    margin-top: 0.5rem;
+  }
+  .swatches .h {
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+  .rule-demo {
+    margin: 1.75rem 0 0.5rem;
+  }
+
+  .type {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .trow {
+    display: grid;
+    gap: 0.375rem;
+  }
+  @media (width >= 48rem) {
+    .trow {
+      grid-template-columns: 11rem 1fr 10rem;
+      align-items: baseline;
+      gap: 1.5rem;
+    }
+  }
+  .s-display {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 600;
+    line-height: 1.05;
+  }
+  .s-h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 600;
+  }
+  .s-h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 600;
+  }
+  .s-body {
+    font-size: var(--text-body);
+  }
+  .s-small {
+    font-size: var(--text-small);
+  }
+
+  .row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .wrap-row {
+    flex-wrap: wrap;
+  }
+  .narrow {
+    max-width: 20rem;
+    margin-top: 1rem;
+  }
+
+  .bens,
+  .cards {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (width >= 48rem) {
+    .bens,
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

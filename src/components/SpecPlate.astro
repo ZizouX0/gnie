@@ -1,0 +1,133 @@
+---
+/**
+ * The signature device: technical identity as an engraved plate.
+ * Rows whose value is still unknown are hidden rather than shown as
+ * placeholders (spec decision D7) — a visitor must never read "TODO".
+ * On mobile each group is a native <details>, so it works without JS.
+ */
+interface SpecGroup {
+  group: string;
+  rows: { label: string; value: string }[];
+}
+interface Props {
+  specs: SpecGroup[];
+  class?: string;
+}
+const { specs, class: className = "" } = Astro.props;
+
+const MISSING = "TODO:NEEDS_INPUT";
+const groups = specs
+  .map((g) => ({ ...g, rows: g.rows.filter((r) => !r.value.includes(MISSING)) }))
+  .filter((g) => g.rows.length > 0);
+---
+
+{
+  groups.length > 0 && (
+    <div class:list={["plaque plate", className]} data-reveal>
+      {groups.map((g, i) => (
+        <details class="group" open={i === 0}>
+          <summary>
+            <span class="eyebrow">{g.group}</span>
+            <span class="chev" aria-hidden="true"></span>
+          </summary>
+          <dl>
+            {g.rows.map((row) => (
+              <div class="row">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .plate {
+    overflow: hidden;
+  }
+  .group + .group {
+    border-top: 1px solid var(--ligne-faint);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.125rem 1.5rem;
+    cursor: pointer;
+    min-height: 2.75rem;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .chev {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 1px solid var(--color-or);
+    border-bottom: 1px solid var(--color-or);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+    flex: none;
+  }
+  [open] > summary .chev {
+    transform: rotate(-135deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chev { transition: none; }
+  }
+  dl {
+    padding: 0 1.5rem 1rem;
+    margin: 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 0.6875rem 0;
+    border-top: 1px solid var(--ligne-ghost);
+    font-size: var(--text-small);
+  }
+  .row:first-child {
+    border-top: 0;
+  }
+  dt {
+    color: var(--color-gris);
+  }
+  dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 500;
+    color: var(--color-ivoire);
+  }
+
+  /* From tablet up every group stays open: a spec sheet reads best whole. */
+  @media (width >= 48rem) {
+    .group {
+      display: block;
+    }
+    summary {
+      pointer-events: none;
+      padding-bottom: 0.75rem;
+    }
+    .chev {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Desktop: force every group open, since the summary is inert there.
+  const sync = () => {
+    const wide = window.matchMedia("(width >= 48rem)").matches;
+    document.querySelectorAll<HTMLDetailsElement>(".plate .group").forEach((d, i) => {
+      d.open = wide ? true : i === 0;
+    });
+  };
+  sync();
+  window.addEventListener("resize", sync, { passive: true });
+</script>

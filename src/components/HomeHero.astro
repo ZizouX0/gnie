@@ -1,0 +1,174 @@
+---
+import { Image } from "astro:assets";
+import Button from "./Button.astro";
+import hero from "@/assets/home/hero-home.jpg";
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { ENV, CONTACT } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  headline: string;
+  accent: string;
+  sub: string;
+  trust: string[];
+}
+const { locale, headline, accent, sub, trust } = Astro.props;
+const t = useTranslations(locale);
+
+const number = ENV.whatsapp.replace(/[^\d]/g, "");
+const waHref = number
+  ? `https://wa.me/${number}?text=${encodeURIComponent(t("wa.generic"))}`
+  : null;
+---
+
+<section class="hero">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="eyebrow">{t("site.tagline")}</p>
+      <h1>
+        {headline}<br /><em>{accent}</em>
+      </h1>
+      <p class="sub">{sub}</p>
+      <div class="row">
+        <Button href={path(locale, "machines")}>{t("cta.discover")}</Button>
+        {
+          waHref && (
+            <Button href={waHref} variant="outline" external>
+              {t("cta.whatsapp")}
+            </Button>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="visual">
+      <div class="frame">
+        <div class="shot">
+          <Image
+            src={hero}
+            alt="VISBODY M30 — scanner corporel 3D"
+            widths={[420, 620, 900]}
+            sizes="(width >= 62rem) 30rem, 92vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <ul class="trust">
+      {
+        trust.map((item) => (
+          <li set:html={item} />
+        ))
+      }
+      <li><b>{CONTACT.cityLine.split(" · ").slice(0, 2).join(", ")}</b></li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
+  .glow {
+    position: absolute;
+    top: -12rem;
+    right: -8rem;
+    width: 38rem;
+    height: 38rem;
+    background: radial-gradient(circle, rgb(201 162 75 / 0.15) 0%, rgb(201 162 75 / 0) 62%);
+    pointer-events: none;
+  }
+  .grid {
+    display: grid;
+    gap: 2.75rem;
+    padding-block: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+  @media (width >= 62rem) {
+    .grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3.75rem;
+    }
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    margin-top: 1.25rem;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--color-or);
+  }
+  .sub {
+    color: var(--color-gris);
+    font-size: 1.125rem;
+    margin: 1.375rem 0 2.25rem;
+    max-width: 32rem;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  @media (width < 30rem) {
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .frame {
+    border: 1px solid var(--ligne);
+    background: var(--color-graphite);
+    border-radius: var(--radius-plaque);
+    padding: 0.75rem;
+  }
+  .shot {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+  .shot :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: 52% 50%;
+    filter: saturate(0.94) contrast(1.04);
+  }
+  .shot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(11 11 13 / 0.1),
+      rgb(11 11 13 / 0) 38%,
+      rgb(11 11 13 / 0.32)
+    );
+    pointer-events: none;
+  }
+
+  .trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 1.375rem 0 1.625rem;
+    border-top: 1px solid var(--ligne-faint);
+    font-size: 0.8125rem;
+    color: var(--color-gris);
+  }
+  .trust :global(b) {
+    color: var(--color-ivoire);
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import Base from "@/layouts/Base.astro";
+import HomeHero from "@/components/HomeHero.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { useTranslations } from "@/i18n/ui";
+
+const locale = "fr" as const;
+const t = useTranslations(locale);
+---
+
+<Base
+  locale={locale}
+  page="home"
+  title="Équipements esthétiques professionnels en Tunisie"
+  description="GNIE distribue et installe les équipements esthétiques premium des grandes marques internationales pour les cliniques, medspas et instituts en Tunisie."
+>
+  <HomeHero
+    locale={locale}
+    headline="L'équipement qui fait la"
+    accent="différence."
+    sub="GNIE importe et installe les technologies esthétiques premium des plus grandes marques internationales, pour les cliniques, medspas et instituts exigeants."
+    trust={[
+      "<b>12</b> machines au catalogue",
+      "<b>Installation &amp; formation</b> incluses",
+      "<b>SAV local</b> assuré par nos techniciens",
+    ]}
+  />
+
+  <CTABlock
+    locale={locale}
+    title="Un conseil, un devis, une démonstration ?"
+    text={t("machine.reassurance")}
+  />
+</Base>

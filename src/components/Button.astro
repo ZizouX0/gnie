@@ -1,0 +1,55 @@
+---
+interface Props {
+  href: string;
+  variant?: "primary" | "outline";
+  block?: boolean;
+  external?: boolean;
+  ariaLabel?: string;
+  class?: string;
+}
+const {
+  href,
+  variant = "primary",
+  block = false,
+  external = false,
+  ariaLabel,
+  class: className = "",
+} = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={["btn-base", variant, { block }, className]}
+  aria-label={ariaLabel}
+  {...external ? { target: "_blank", rel: "noopener noreferrer" } : {}}
+>
+  <slot />
+</a>
+
+<style>
+  .primary {
+    background: var(--color-or);
+    color: var(--color-noir);
+    border: 1px solid var(--color-or);
+  }
+  .primary:hover,
+  .primary:focus-visible {
+    background: var(--color-or-clair);
+    border-color: var(--color-or-clair);
+  }
+  .outline {
+    background: transparent;
+    color: var(--color-or);
+    border: 1px solid var(--color-or);
+  }
+  .outline:hover,
+  .outline:focus-visible {
+    background: rgb(201 162 75 / 0.1);
+    color: var(--color-or-clair);
+    border-color: var(--color-or-clair);
+  }
+  .block {
+    display: flex;
+    width: 100%;
+  }
+</style>

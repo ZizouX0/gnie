@@ -1,0 +1,234 @@
+---
+import { Image } from "astro:assets";
+import mark from "@/assets/brand/gnie-mark-gold.png";
+import wordmark from "@/assets/brand/gnie-wordmark-gold.png";
+import LangSwitcher from "./LangSwitcher.astro";
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { path, type PageKey } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+  current?: PageKey;
+  alternate: { locale: Locale; href: string };
+}
+const { locale, current, alternate } = Astro.props;
+const t = useTranslations(locale);
+
+const links: { key: PageKey; label: string }[] = [
+  { key: "home", label: t("nav.home") },
+  { key: "machines", label: t("nav.machines") },
+  { key: "contact", label: t("nav.contact") },
+];
+---
+
+<a class="skip" href="#main">{t("nav.skip")}</a>
+
+<header>
+  <div class="wrap bar">
+    <a class="lock" href={path(locale, "home")} aria-label={t("site.name")}>
+      <Image src={mark} alt="" width={88} height={97} class="mk" loading="eager" />
+      <Image src={wordmark} alt={t("site.name")} width={160} height={49} class="wd" loading="eager" />
+    </a>
+
+    <nav class="desk" aria-label={t("nav.menu")}>
+      {
+        links.map((l) => (
+          <a href={path(locale, l.key)} class:list={{ on: current === l.key }}>
+            {l.label}
+          </a>
+        ))
+      }
+      <LangSwitcher locale={locale} alternate={alternate} />
+      <a class="quote" href={`${path(locale, "contact")}`}>{t("cta.quote")}</a>
+    </nav>
+
+    <!-- Mobile: native <details>, so the menu works with zero JavaScript. -->
+    <details class="mob">
+      <summary aria-label={t("nav.menu")}>
+        <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+      </summary>
+      <div class="panel">
+        <nav aria-label={t("nav.menu")}>
+          {
+            links.map((l) => (
+              <a href={path(locale, l.key)} class:list={{ on: current === l.key }}>
+                {l.label}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="panel-foot">
+          <LangSwitcher locale={locale} alternate={alternate} />
+          <a class="quote" href={path(locale, "contact")}>{t("cta.quote")}</a>
+        </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--color-or);
+    color: var(--color-noir);
+    padding: 0.75rem 1.25rem;
+    font-weight: 700;
+    font-size: var(--text-small);
+  }
+  .skip:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgb(11 11 13 / 0.92);
+    border-bottom: 1px solid var(--ligne-faint);
+    backdrop-filter: blur(8px);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-h);
+  }
+
+  .lock {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    flex: none;
+  }
+  .mk {
+    height: 2.25rem;
+    width: auto;
+  }
+  .wd {
+    height: 0.875rem;
+    width: auto;
+  }
+
+  nav.desk {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  nav.desk a {
+    position: relative;
+    color: var(--color-ivoire);
+    text-decoration: none;
+    padding-block: 0.375rem;
+  }
+  nav.desk a.on {
+    color: var(--color-or);
+  }
+  /* gold underline slides in on hover */
+  nav.desk a:not(.quote)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: var(--color-or);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  nav.desk a.on::after {
+    transform: scaleX(1);
+  }
+  nav.desk a:hover::after,
+  nav.desk a:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    nav.desk a::after { transition: none; }
+  }
+
+  .quote {
+    border: 1px solid var(--color-or);
+    color: var(--color-or);
+    padding: 0.5rem 1.125rem;
+    border-radius: var(--radius-plaque);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    min-height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+  }
+  .quote:hover {
+    background: rgb(201 162 75 / 0.1);
+    color: var(--color-or-clair);
+  }
+
+  .mob summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    cursor: pointer;
+  }
+  .mob summary::-webkit-details-marker {
+    display: none;
+  }
+  .burger {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3125rem;
+    width: 1.5rem;
+  }
+  .burger i {
+    display: block;
+    height: 1.5px;
+    background: var(--color-or-clair);
+  }
+  .panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--header-h);
+    background: var(--color-noir);
+    border-bottom: 1px solid var(--ligne);
+    padding: 1.25rem;
+  }
+  .panel nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .panel nav a {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--ligne-ghost);
+    color: var(--color-ivoire);
+    text-decoration: none;
+    font-size: 1.0625rem;
+  }
+  .panel nav a.on {
+    color: var(--color-or);
+  }
+  .panel-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.25rem;
+  }
+
+  @media (width >= 62rem) {
+    nav.desk { display: flex; }
+    .mob { display: none; }
+  }
+</style>

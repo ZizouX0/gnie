@@ -1,0 +1,66 @@
+---
+/**
+ * Filter pill. Active state is carried by weight, background AND an underline —
+ * never by colour alone (accessibility baseline §11).
+ */
+interface Props {
+  label: string;
+  value: string;
+  count?: number;
+  active?: boolean;
+  href?: string;
+}
+const { label, value, count, active = false, href } = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  class:list={["pill", { active }]}
+  data-filter={value}
+  {...href ? { href } : { type: "button", "aria-pressed": String(active) }}
+>
+  <span>{label}</span>
+  {count !== undefined && <span class="count">{count}</span>}
+</Tag>
+
+<style>
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 1.125rem;
+    border: 1px solid var(--ligne);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ivoire);
+    font: inherit;
+    font-size: var(--text-small);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .pill:hover {
+    border-color: var(--color-or);
+    color: var(--color-or-clair);
+  }
+  .pill.active {
+    background: var(--color-or);
+    border-color: var(--color-or);
+    color: var(--color-noir);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .count {
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-gris);
+  }
+  .pill.active .count {
+    color: rgb(11 11 13 / 0.65);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pill { transition: none; }
+  }
+</style>
