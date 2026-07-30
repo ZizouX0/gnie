@@ -1,0 +1,45 @@
+---
+/**
+ * Home — "Pourquoi GNIE" (specification §4.3.4).
+ *
+ * Three or four trust points, written in the page files so the French and the
+ * English each say what they mean. The cards are the same numbered plaques the
+ * machine pages use for their benefits: one card family across the site.
+ */
+import SectionHeading from "@/components/SectionHeading.astro";
+import BenefitCard from "@/components/BenefitCard.astro";
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  points: { title: string; text: string }[];
+}
+const { eyebrow, title, intro, points } = Astro.props;
+---
+
+<section class="why">
+  <div class="wrap">
+    <SectionHeading eyebrow={eyebrow} title={title} intro={intro} />
+
+    <div class="points">
+      {points.map((p, i) => <BenefitCard index={i + 1} title={p.title} text={p.text} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+    padding-block: var(--section-y);
+  }
+
+  /* auto-fit rather than a fixed count: three points read as one full row of
+     three, four as one full row of four — neither leaves an empty cell. */
+  .points {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+</style>

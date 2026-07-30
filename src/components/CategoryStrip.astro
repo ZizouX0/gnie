@@ -1,0 +1,142 @@
+---
+/**
+ * Home — categories strip (specification §4.3.2).
+ *
+ * The seven families as tiles. Each tile is a real link to the catalogue's own
+ * hash filter (`/machines/#analyse`) — the exact URL a shared filtered view
+ * carries — so the catalogue arrives already narrowed, and with JavaScript off
+ * the visitor simply lands on the full catalogue instead of a dead link.
+ *
+ * Counts come from the collection, never from a hand-written figure: machine
+ * #13 moves them by itself.
+ */
+import { getCollection } from "astro:content";
+import SectionHeading from "@/components/SectionHeading.astro";
+import { categories, categoryLabel, useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+}
+const { locale, eyebrow, title, intro } = Astro.props;
+const t = useTranslations(locale);
+
+const entries = await getCollection("machines", (m) => m.id.startsWith(`${locale}/`));
+const tiles = categories.map((c) => {
+  const count = entries.filter((m) => m.data.category === c).length;
+  return {
+    label: categoryLabel(locale, c),
+    href: `${path(locale, "machines")}#${c}`,
+    count,
+    unit: count === 1 ? t("catalog.countOne") : t("catalog.count"),
+  };
+});
+---
+
+<section class="strip">
+  <div class="wrap">
+    <SectionHeading eyebrow={eyebrow} title={title} intro={intro} />
+
+    <ul class="tiles" data-reveal>
+      {
+        tiles.map((tile) => (
+          <li>
+            <a class="tile plaque" href={tile.href}>
+              <span class="label">{tile.label}</span>
+              <span class="foot">
+                <span class="count">
+                  {tile.count} {tile.unit}
+                </span>
+                <span class="go" aria-hidden="true">
+                  →
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Second section of the page: the graphite band of the home rhythm. */
+  .strip {
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+    padding-block: var(--section-y);
+  }
+
+  /* Seven tiles never divide evenly into a fixed column count, so they flow and
+     the last row grows to fill instead of leaving a hole in the grid. */
+  .tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tiles li {
+    flex: 1 1 13rem;
+    min-width: 0;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.75rem;
+    height: 100%;
+    padding: 1.25rem 1.25rem 1.125rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+  }
+  .tile:hover {
+    border-color: var(--color-or);
+    background: rgb(201 162 75 / 0.05);
+  }
+
+  .label {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--ligne-faint);
+  }
+  .count {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+  }
+  .go {
+    color: var(--color-or);
+    transition: transform 0.25s ease;
+  }
+  .tile:hover .go {
+    transform: translateX(3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tile {
+      transition: border-color 0.2s ease;
+    }
+    .go {
+      transition: none;
+    }
+    .tile:hover .go {
+      transform: none;
+    }
+  }
+</style>

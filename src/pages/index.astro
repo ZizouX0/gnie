@@ -1,6 +1,21 @@
 ---
+/**
+ * French home page (`/`) — specification §4.3.
+ *
+ * Section order: hero · catégories · machines phares · pourquoi GNIE · marques ·
+ * à propos · newsletter · appel à l'action final.
+ *
+ * Every sentence of the page lives here; the components only lay it out. The
+ * English twin (`/en/`) carries the same structure with its own copy.
+ */
 import Base from "@/layouts/Base.astro";
 import HomeHero from "@/components/HomeHero.astro";
+import CategoryStrip from "@/components/CategoryStrip.astro";
+import FeaturedMachines from "@/components/FeaturedMachines.astro";
+import WhyGnie from "@/components/WhyGnie.astro";
+import BrandsStrip from "@/components/BrandsStrip.astro";
+import AboutBlock from "@/components/AboutBlock.astro";
+import NewsletterBlock from "@/components/NewsletterBlock.astro";
 import CTABlock from "@/components/CTABlock.astro";
 import { useTranslations } from "@/i18n/ui";
 
@@ -24,6 +39,65 @@ const t = useTranslations(locale);
       "<b>Installation &amp; formation</b> incluses",
       "<b>SAV local</b> assuré par nos techniciens",
     ]}
+  />
+
+  <CategoryStrip
+    locale={locale}
+    eyebrow="Le catalogue"
+    title="Sept familles de technologies"
+    intro="Chaque famille répond à une demande précise de votre clientèle. Choisissez la vôtre : le catalogue s'ouvre déjà filtré."
+  />
+
+  <FeaturedMachines
+    locale={locale}
+    eyebrow="Sélection GNIE"
+    title="Nos trois machines phares"
+    intro="Trois équipements représentatifs du catalogue : la cryolipolyse nouvelle génération, la plateforme de remodelage multi-technologies et l'analyse corporelle 3D."
+  />
+
+  <WhyGnie
+    eyebrow="Notre rôle"
+    title="Pourquoi GNIE"
+    intro="Choisir une machine, c'est aussi choisir qui l'installe, qui forme vos équipes et qui répond quand elle s'arrête."
+    points={[
+      {
+        title: "Distributeur officiel",
+        text: "Nous importons directement auprès des fabricants : un seul interlocuteur, de la sélection de la machine à sa mise en service dans votre établissement.",
+      },
+      {
+        title: "Installation & formation",
+        text: "Nos techniciens installent l'équipement sur place et forment vos équipes à son utilisation avant la première séance client.",
+      },
+      {
+        title: "SAV local",
+        text: "Le service après-vente est assuré en Tunisie par nos propres techniciens : votre machine reste dans votre cabine, pas dans un colis.",
+      },
+      {
+        title: "Marques internationales",
+        text: "Notre catalogue réunit les gammes de fabricants reconnus — PZLASER, VISBODY, HOWBODY — réparties en sept familles de technologies.",
+      },
+    ]}
+  />
+
+  <BrandsStrip label="Marques distribuées" />
+
+  <AboutBlock
+    locale={locale}
+    eyebrow="À propos"
+    title="Un partenaire tunisien, depuis 2015"
+    paragraphs={[
+      "Global Nouvelle Innovation Esthétique importe, installe et entretient des équipements esthétiques professionnels pour les cliniques, medspas et instituts de Tunisie.",
+      "Depuis nos bureaux de Montplaisir, à Tunis, nous accompagnons chaque établissement dans la durée : choix de l'équipement adapté à son activité, installation, formation des équipes et suivi technique.",
+    ]}
+    sinceLabel="Depuis"
+    locationLabel="Nos bureaux"
+  />
+
+  <NewsletterBlock
+    locale={locale}
+    eyebrow="Newsletter"
+    title="Les nouveautés, quatre fois par an"
+    text="Nouvelles machines au catalogue, conseils d'équipement et retours d'expérience de nos installations. Une lettre par trimestre, rien de plus."
   />
 
   <CTABlock

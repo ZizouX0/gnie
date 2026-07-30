@@ -1,0 +1,137 @@
+---
+/**
+ * Home — newsletter signup (specification §4.3.7).
+ *
+ * A plain HTML form posting straight to Brevo: no script, and it works with
+ * JavaScript disabled. The Brevo URL is an environment variable (§8) — when it
+ * is missing the block renders the same "coming soon" notice the footer shows,
+ * never a form that would silently swallow an address.
+ */
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { ENV } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  eyebrow: string;
+  title: string;
+  text: string;
+}
+const { locale, eyebrow, title, text } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="news section-y">
+  <div class="wrap">
+    <div class="panel plaque" data-reveal>
+      <div class="copy">
+        <p class="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p class="text">{text}</p>
+      </div>
+
+      {
+        ENV.brevo ? (
+          <form class="form" action={ENV.brevo} method="post" target="_blank" rel="noopener">
+            {/* The footer owns `nl-email`; this one needs its own id. */}
+            <label class="sr" for="home-nl-email">
+              {t("footer.newsletterPlaceholder")}
+            </label>
+            <input
+              id="home-nl-email"
+              type="email"
+              name="EMAIL"
+              required
+              autocomplete="email"
+              placeholder={t("footer.newsletterPlaceholder")}
+            />
+            <button type="submit">{t("footer.newsletterSubmit")}</button>
+          </form>
+        ) : (
+          <p class="off" data-newsletter-disabled>
+            {t("footer.newsletterDisabled")}
+          </p>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .panel {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  @media (width >= 62rem) {
+    .panel {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3rem;
+    }
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  .text {
+    color: var(--color-gris);
+    margin-top: 0.875rem;
+    max-width: 34rem;
+  }
+
+  .form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+  .form input {
+    flex: 1 1 12rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--color-noir);
+    border: 1px solid var(--ligne);
+    border-radius: var(--radius-plaque);
+    color: var(--color-ivoire);
+    font: inherit;
+    font-size: var(--text-small);
+  }
+  .form input::placeholder {
+    color: var(--color-gris);
+  }
+  .form button {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.5rem;
+    background: var(--color-or);
+    color: var(--color-noir);
+    border: 0;
+    border-radius: var(--radius-plaque);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .form button:hover {
+    background: var(--color-or-clair);
+  }
+
+  .off {
+    margin: 0;
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    border: 1px dashed var(--ligne);
+    border-radius: var(--radius-plaque);
+    padding: 0.75rem 1rem;
+  }
+
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+</style>
