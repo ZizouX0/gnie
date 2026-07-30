@@ -1,0 +1,180 @@
+:root{
+  --noir:#0B0B0D; --graphite:#131316; --carbone:#1C1C21;
+  --or:#C9A24B; --or-clair:#E9D5A1; --ivoire:#F3EEE4; --gris:#98938A;
+  --ligne:rgba(201,162,75,.28); --ligne-faint:rgba(201,162,75,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:0}
+html,body{background:var(--noir);}
+body{
+  font-family:'Manrope',sans-serif; font-weight:400;
+  color:var(--ivoire); font-size:10.5pt; line-height:1.6;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.page{
+  position:relative; width:210mm; height:297mm; overflow:hidden;
+  background:var(--noir); padding:21mm 19mm 17mm;
+  page-break-after:always; display:flex; flex-direction:column;
+}
+.page:last-child{page-break-after:auto}
+.page.alt{background:var(--graphite)}
+
+/* ——— running furniture ——— */
+.runner{position:absolute;top:9mm;left:19mm;right:19mm;display:flex;
+  justify-content:space-between;font-size:6.9pt;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gris)}
+.runner b{color:var(--or);font-weight:700}
+.folio{position:absolute;bottom:9mm;left:19mm;right:19mm;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:7pt;letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
+.folio .num{font-family:'Cormorant Garamond',serif;font-size:13.5pt;color:var(--or);letter-spacing:0}
+.rule{height:1px;background:var(--ligne);width:100%}
+
+/* ——— type ——— */
+.eyebrow{font-size:7.2pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--or)}
+h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34pt;line-height:1.04;letter-spacing:-.01em}
+h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24pt;line-height:1.12;margin:2.5mm 0 3.5mm}
+h3{font-family:'Manrope',sans-serif;font-weight:700;font-size:10.6pt;letter-spacing:.01em;color:var(--or-clair);margin:0 0 1mm}
+p{margin:0 0 2.6mm;max-width:158mm}
+p.lead{font-size:12pt;line-height:1.55;color:var(--ivoire)}
+strong{font-weight:700;color:#fff}
+em{color:var(--or-clair);font-style:italic}
+a{color:var(--or-clair);text-decoration:none}
+.muted{color:var(--gris)}
+.small{font-size:9.2pt;line-height:1.56}
+code{font-family:'Manrope',monospace;font-size:8pt;color:var(--or-clair);
+  background:rgba(201,162,75,.09);padding:.4mm 1.2mm;border-radius:2px}
+.section-head{margin-bottom:4mm}
+.section-head .rule{margin-top:3mm}
+.flow{flex:1;min-height:0}
+
+/* ——— layout helpers ——— */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm}
+.stack{display:flex;flex-direction:column;gap:3mm}
+.mt{margin-top:4mm}
+.mt2{margin-top:7mm}
+
+/* ——— the plaque (signature device) ——— */
+.plaque{border:1px solid var(--ligne);background:var(--carbone);border-radius:2px}
+.plaque-head{font-size:7.2pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--or);padding:2.6mm 4mm;border-bottom:1px solid var(--ligne)}
+.plaque-body{padding:1.5mm 4mm 2.5mm}
+.plaque.tight .plaque-body{padding:.8mm 3.5mm 1.4mm}
+.plaque.tight .row{padding:1.1mm 0;font-size:8.6pt}
+.row{display:flex;justify-content:space-between;gap:4mm;
+  padding:1.8mm 0;border-bottom:1px solid var(--ligne-faint);font-size:9.2pt}
+.row:last-child{border-bottom:0}
+.row .k{color:var(--gris)}
+.row .v{text-align:right;color:var(--ivoire);font-weight:500}
+
+/* ——— tables ——— */
+table{width:100%;border-collapse:collapse;font-size:9.2pt}
+th{font-size:7pt;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--or);text-align:left;padding:0 3mm 1.8mm 0;border-bottom:1px solid var(--ligne)}
+td{padding:2mm 3mm 2mm 0;border-bottom:1px solid var(--ligne-faint);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.id{color:var(--or);font-weight:700;white-space:nowrap;width:9mm}
+td.nowrap{white-space:nowrap}
+.star{color:var(--or)}
+
+/* ——— cards / callouts ——— */
+.card{border:1px solid var(--ligne);background:var(--carbone);border-radius:2px;padding:4mm}
+.card .eyebrow{display:block;margin-bottom:1.6mm}
+.q{border-left:2px solid var(--or);padding:.5mm 0 .5mm 4mm;margin-bottom:3.4mm}
+.q .qh{font-weight:700;color:#fff;font-size:9.6pt}
+.q .qb{font-size:9.2pt;color:var(--gris);line-height:1.5}
+.numlist{counter-reset:n;display:flex;flex-direction:column;gap:2.6mm}
+.numlist li{list-style:none;display:flex;gap:3.5mm;counter-increment:n}
+.numlist li::before{content:counter(n,decimal-leading-zero);
+  font-family:'Cormorant Garamond',serif;font-size:14.5pt;color:var(--or);
+  line-height:1;min-width:7mm;padding-top:.6mm}
+.numlist .t{font-weight:700;color:#fff;font-size:10pt}
+.numlist .d{font-size:9.2pt;color:var(--gris);line-height:1.5}
+ul.dash{list-style:none}
+ul.dash li{position:relative;padding-left:4mm;font-size:9.2pt;margin-bottom:1.4mm;line-height:1.5}
+ul.dash li::before{content:"";position:absolute;left:0;top:2.1mm;width:2mm;height:1px;background:var(--or)}
+
+/* ——— cover ——— */
+.cover{justify-content:space-between;background:
+  radial-gradient(120% 90% at 78% 8%, rgba(201,162,75,.13) 0%, rgba(201,162,75,0) 55%),
+  var(--noir)}
+.cover img.logo{width:38mm;display:block}
+.cover .ttl{font-size:48pt;line-height:.98}
+.cover .sub{font-family:'Cormorant Garamond',serif;font-size:18pt;color:var(--or-clair);
+  font-weight:400;margin-top:3mm;letter-spacing:.005em}
+.cover .meta{display:flex;justify-content:space-between;font-size:7.4pt;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gris);padding-top:3.5mm}
+
+/* ——— swatches / design page ——— */
+.sw{display:flex;flex-direction:column;gap:0}
+.sw .chip{height:13mm;border:1px solid var(--ligne-faint);border-radius:2px}
+.sw .lbl{font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-top:1.4mm}
+.sw .hex{font-size:8pt;color:var(--ivoire);font-weight:500}
+.pill{display:inline-block;border:1px solid var(--ligne);border-radius:999px;
+  padding:1.2mm 3.4mm;font-size:8.2pt;color:var(--or-clair);margin:0 1.4mm 1.6mm 0}
+.btn-demo{display:inline-block;background:var(--or);color:#0B0B0D;font-weight:700;
+  font-size:8.4pt;letter-spacing:.06em;padding:2.2mm 5mm;border-radius:2px}
+.btn-demo.ghost{background:transparent;border:1px solid var(--or);color:var(--or)}
+.shot{border:1px solid var(--ligne);border-radius:2px;background:var(--graphite);overflow:hidden}
+.shot img{width:100%;height:40mm;object-fit:cover;display:block}
+.shot .cap{padding:2.2mm 3mm;font-size:7.6pt;color:var(--gris);letter-spacing:.08em;text-transform:uppercase}
+.shot .cap b{color:var(--or);font-weight:700;display:block;letter-spacing:.14em;font-size:7pt}
+
+/* ——— phase timeline ——— */
+.phase{display:grid;grid-template-columns:12mm 1fr;gap:0 4mm;padding-bottom:4mm}
+.phase .n{font-family:'Cormorant Garamond',serif;font-size:30pt;color:var(--or);line-height:.9}
+.phase .stop{display:inline-block;font-size:7pt;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--noir);background:var(--or-clair);padding:.7mm 2mm;border-radius:2px}
+.term{display:grid;grid-template-columns:auto 1fr;gap:1.5mm 4mm;font-size:9.2pt}
+.term dt{color:var(--or-clair);font-weight:700;white-space:nowrap}
+.term dd{color:var(--ivoire)}
+pre.cmd{background:var(--carbone);border:1px solid var(--ligne);border-radius:2px;
+  padding:4mm 4.5mm;font-size:8.6pt;line-height:1.7;color:var(--or-clair);
+  font-family:'Manrope',monospace;white-space:pre-wrap}
+pre.cmd .c{color:var(--gris)}
+/* ——— client deck additions ——— */
+.page.full{padding:0;justify-content:flex-start}
+.shotpage{position:relative;width:100%;height:100%;display:flex;flex-direction:column;
+  padding:19mm 19mm 17mm}
+.shotpage .head{padding:0 0 5mm}
+.shotpage .body{padding:0;display:flex;align-items:flex-start}
+.shotpage .browser{border:1px solid var(--ligne);border-radius:3px;overflow:hidden;width:100%;
+  background:var(--carbone)}
+.shotpage .browser .chrome{display:flex;align-items:center;gap:5px;padding:3mm 4mm;
+  border-bottom:1px solid var(--ligne-faint);background:rgba(255,255,255,.02)}
+.shotpage .browser .chrome i{width:2.2mm;height:2.2mm;border-radius:50%;background:rgba(201,162,75,.35);display:block}
+.shotpage .browser .chrome span{margin-left:4mm;font-size:6.4pt;letter-spacing:.12em;color:var(--gris)}
+.shotpage .browser img{width:100%;display:block}
+.shotpage .cap{padding:4.5mm 0 0;font-size:8.6pt;color:var(--gris);line-height:1.5}
+.mobrow{display:grid;grid-template-columns:1fr 1.02fr;gap:9mm;align-items:start}
+.phonefrm{border:1px solid var(--ligne);border-radius:5mm;padding:2.5mm;background:var(--carbone)}
+.phonefrm img{width:100%;display:block;border-radius:3.5mm}
+.big{font-family:'Cormorant Garamond',serif;font-size:40pt;color:var(--or);line-height:1}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm}
+.kpi .b{border:1px solid var(--ligne-faint);background:var(--carbone);border-radius:2px;padding:4mm}
+.kpi .n{font-family:'Cormorant Garamond',serif;font-size:26pt;color:var(--or);line-height:1}
+.kpi .l{font-size:7.6pt;color:var(--gris);margin-top:1.5mm;line-height:1.4}
+.checkline{display:flex;gap:3.5mm;align-items:flex-start;padding:2.2mm 0;
+  border-bottom:1px solid var(--ligne-faint)}
+.checkline:last-child{border-bottom:0}
+.box{width:4mm;height:4mm;border:1px solid var(--or);border-radius:1px;flex:0 0 auto;margin-top:1mm}
+.checkline .tx{font-size:9pt;line-height:1.5}
+.checkline .tx b{color:#fff;display:block;font-weight:700}
+.checkline .tx span{color:var(--gris)}
+.priceplate{border:1px solid var(--or);background:linear-gradient(180deg,rgba(201,162,75,.07),rgba(201,162,75,0));
+  border-radius:2px;padding:6mm 7mm}
+.priceplate .amt{font-family:'Cormorant Garamond',serif;font-size:42pt;color:var(--or);line-height:1}
+.priceplate .cur{font-size:13pt;letter-spacing:.1em;color:var(--or-clair)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:7mm}
+.yes li::before{background:var(--or)}
+.no li::before{background:var(--gris)}
+.no li{color:var(--gris)}
+table.val td{padding:2.4mm 3mm 2.4mm 0}
+table.val td.mark{width:22mm;border-bottom:1px solid var(--ligne-faint)}
+.sign{display:grid;grid-template-columns:1fr 1fr;gap:9mm;margin-top:8mm}
+.sign .f{border-top:1px solid var(--ligne);padding-top:2.5mm;font-size:7.6pt;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
+
+table.val td{padding:2mm 3mm 2mm 0}
+table.val{font-size:8.8pt}
