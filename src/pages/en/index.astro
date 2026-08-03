@@ -1,0 +1,101 @@
+---
+/**
+ * English home page (`/en/`) — specification §4.3.
+ *
+ * Section order: hero · categories · featured machines · why GNIE · brands ·
+ * about · newsletter · final call to action.
+ *
+ * Every sentence of the page lives here; the components only lay it out. The
+ * French twin (`/`) carries the same structure with its own copy.
+ */
+import Base from "@/layouts/Base.astro";
+import HomeHero from "@/components/HomeHero.astro";
+import FeaturedMachines from "@/components/FeaturedMachines.astro";
+import WhyGnie from "@/components/WhyGnie.astro";
+import BrandsStrip from "@/components/BrandsStrip.astro";
+import AboutBlock from "@/components/AboutBlock.astro";
+import NewsletterBlock from "@/components/NewsletterBlock.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { useTranslations } from "@/i18n/ui";
+
+const locale = "en" as const;
+const t = useTranslations(locale);
+---
+
+<Base
+  locale={locale}
+  page="home"
+  title="Professional aesthetic equipment in Tunisia"
+  description="GNIE supplies and installs premium aesthetic equipment from leading international brands for clinics, medspas and beauty institutes across Tunisia."
+>
+  <HomeHero
+    locale={locale}
+    headline="The equipment that makes the"
+    accent="difference."
+    sub="GNIE imports and installs premium aesthetic technology from the world's leading manufacturers, for clinics, medspas and institutes that expect more."
+    trust={[
+      "<b>12</b> machines in the catalogue",
+      "<b>Installation &amp; training</b> included",
+      "<b>Local service</b> by our own technicians",
+    ]}
+  />
+
+
+  <FeaturedMachines
+    locale={locale}
+    eyebrow="GNIE selection"
+    title="Our flagship machine"
+    intro="A look at the catalogue: fourth-generation 360° fat freezing, seven applicators and four zones treated at once."
+  />
+
+  <WhyGnie
+    eyebrow="Our role"
+    title="Why GNIE"
+    intro="Choosing a machine also means choosing who installs it, who trains your team, and who answers when it stops."
+    points={[
+      {
+        title: "Official distributor",
+        text: "We import straight from the manufacturers: one single contact, from choosing the machine to commissioning it in your premises.",
+      },
+      {
+        title: "Installation & training",
+        text: "Our technicians install the equipment on site and train your team to operate it before the first client session.",
+      },
+      {
+        title: "Local after-sales",
+        text: "After-sales service is handled in Tunisia by our own technicians: your machine stays in your treatment room, not in a shipping crate.",
+      },
+      {
+        title: "International brands",
+        text: "Our catalogue brings together established manufacturers — PZLASER, VISBODY, HOWBODY — across seven technology families.",
+      },
+    ]}
+  />
+
+  <BrandsStrip label="Brands we distribute" />
+
+  <AboutBlock
+    locale={locale}
+    eyebrow="About"
+    title="A Tunisian partner, since 2015"
+    paragraphs={[
+      "Global Nouvelle Innovation Esthétique imports, installs and maintains professional aesthetic equipment for clinics, medspas and beauty institutes across Tunisia.",
+      "From our offices in Montplaisir, Tunis, we support each business for the long run: choosing the right equipment for its activity, installing it, training the team and following up technically.",
+    ]}
+    sinceLabel="Since"
+    locationLabel="Our offices"
+  />
+
+  <NewsletterBlock
+    locale={locale}
+    eyebrow="Newsletter"
+    title="What's new, four times a year"
+    text="New machines in the catalogue, equipment guidance and feedback from our installations. One letter per quarter, nothing more."
+  />
+
+  <CTABlock
+    locale={locale}
+    title="Advice, a quote, or a demonstration?"
+    text={t("machine.reassurance")}
+  />
+</Base>

@@ -1,0 +1,229 @@
+---
+/**
+ * Multi-angle toggle (spec decision D12): one large view plus thumbnails that
+ * swap it in place. The "turn it around" feeling out of the shots we already
+ * own — no carousel, nothing autoplays (D16).
+ *
+ * Fewer than two images and the component renders absolutely nothing, so a
+ * machine page never shows an empty gallery section.
+ *
+ * Without JavaScript the stage becomes a plain grid of every shot and the
+ * (useless) thumbnails are hidden — never a single-image dead end. Because the
+ * `no-js` class is resolved in <head>, the right layout paints first time: no
+ * flash, no layout shift.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { useTranslations, type Locale } from "@/i18n/ui";
+
+interface Props {
+  /** Extra product shots, in content order. Below 2 the component is silent. */
+  images: ImageMetadata[];
+  /** Machine name — feeds the image alternatives and the thumb labels. */
+  name: string;
+  locale: Locale;
+  class?: string;
+}
+const { images, name, locale, class: className = "" } = Astro.props;
+const t = useTranslations(locale);
+
+const views = images.length >= 2 ? images : [];
+
+/** Stable per-build id so the thumb list can point at its visible label. */
+const uid = `gal-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+---
+
+{
+  views.length > 0 && (
+    <div class:list={["gal", className]} data-gallery data-reveal>
+      <div class="stage plaque">
+        {views.map((img, i) => (
+          <div class:list={["shot", { "is-on": i === 0 }]} data-shot={i}>
+            <Image
+              src={img}
+              alt={`${name} — ${i + 1}`}
+              widths={[520, 800, 1040]}
+              sizes="(width >= 40rem) 32rem, 92vw"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        ))}
+      </div>
+
+      <p class="eyebrow label" id={uid}>
+        {t("machine.views")}
+      </p>
+      <ul class="thumbs" aria-labelledby={uid}>
+        {views.map((img, i) => (
+          <li>
+            <button
+              type="button"
+              class:list={["thumb", { "is-on": i === 0 }]}
+              data-go={i}
+              aria-pressed={i === 0 ? "true" : "false"}
+              aria-label={`${t("machine.views")} — ${name} ${i + 1}`}
+            >
+              <Image src={img} alt="" widths={[88, 176]} sizes="88px" loading="lazy" />
+              <span class="mark" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  /* ── Stage ─────────────────────────────────────────────────
+     Manufacturer shots run from 0.35 to 2.03 in ratio, so the plate holds a
+     constant height and lets each view keep its own aspect inside it: never
+     cropped, never resizing the page as it is swapped. The cap keeps the
+     plate from dominating a wide column (a page can widen it with a class). */
+  .gal {
+    max-width: 34rem;
+  }
+  .stage {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-noir);
+  }
+  /*
+   * Gallery shots arrive in wildly different aspects — portrait model photos
+   * next to landscape diagrams. A fixed square box letterboxed the portraits
+   * into a field of black, so instead the stage keeps a constant HEIGHT and
+   * each image shows at its own aspect, centred. Constant height means
+   * switching views costs no layout shift.
+   */
+  .shot :global(img) {
+    display: block;
+    height: clamp(15rem, 42vw, 26rem);
+    width: auto;
+    max-width: 100%;
+    margin-inline: auto;
+    object-fit: contain;
+    background: var(--color-noir);
+    filter: saturate(0.9);
+  }
+  /* No JS: every shot is listed, so let them size naturally in the grid. */
+  :global(html.no-js) .shot :global(img) {
+    height: auto;
+    width: 100%;
+  }
+
+  /* With JS the stage holds one view at a time. */
+  :global(html:not(.no-js)) .stage {
+    display: block;
+    gap: 0;
+  }
+  :global(html:not(.no-js)) .shot {
+    display: none;
+  }
+  :global(html:not(.no-js)) .shot.is-on {
+    display: block;
+  }
+  /* No JS: the thumbnails cannot do anything, so they are not exposed. */
+  :global(html.no-js) .label,
+  :global(html.no-js) .thumbs {
+    display: none;
+  }
+
+  /* ── Thumbnails ───────────────────────────────────────────── */
+  .label {
+    margin: 1.5rem 0 0.75rem;
+  }
+  .thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .thumb {
+    position: relative;
+    display: block;
+    width: 5.5rem; /* 88px — the button itself is the touch target */
+    padding: 0;
+    border: 1px solid var(--ligne-faint);
+    border-radius: var(--radius-plaque);
+    background: var(--color-carbone);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+  }
+  .thumb :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background: var(--color-noir);
+    opacity: 0.62;
+    transition: opacity 0.2s ease;
+  }
+  .thumb:hover :global(img),
+  .thumb:focus-visible :global(img) {
+    opacity: 0.9;
+  }
+
+  /* Active state is carried by three things at once — a solid gold frame, a
+     full-opacity image and the presence of the bottom marker — so it never
+     depends on colour alone. aria-pressed carries it for assistive tech. */
+  .thumb.is-on {
+    border-color: var(--color-or);
+  }
+  .thumb.is-on :global(img) {
+    opacity: 1;
+  }
+  .mark {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--color-or);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .thumb.is-on .mark {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .thumb,
+    .thumb :global(img),
+    .mark {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Multi-angle toggle: swap which shot is on, keep aria-pressed honest.
+  document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((root) => {
+    const shots = Array.from(root.querySelectorAll<HTMLElement>(".shot"));
+    const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>(".thumb"));
+    if (shots.length < 2 || shots.length !== thumbs.length) return;
+
+    const show = (next: number) => {
+      const i = (next + shots.length) % shots.length;
+      shots.forEach((s, n) => s.classList.toggle("is-on", n === i));
+      thumbs.forEach((b, n) => {
+        b.classList.toggle("is-on", n === i);
+        b.setAttribute("aria-pressed", String(n === i));
+      });
+      return i;
+    };
+
+    thumbs.forEach((btn, i) => {
+      btn.addEventListener("click", () => show(i));
+      // Arrow keys walk the row, as a group of related controls should.
+      btn.addEventListener("keydown", (e: KeyboardEvent) => {
+        const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        thumbs[show(i + step)]?.focus();
+      });
+    });
+  });
+</script>

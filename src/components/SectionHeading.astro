@@ -1,0 +1,46 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  as?: "h1" | "h2";
+  align?: "start" | "center";
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  intro,
+  as: Tag = "h2",
+  align = "start",
+  class: className = "",
+} = Astro.props;
+---
+
+<header class:list={["heading", align, className]} data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <Tag class="title">{title}</Tag>
+  {intro && <p class="intro">{intro}</p>}
+</header>
+
+<style>
+  .heading {
+    margin-bottom: 2.75rem;
+  }
+  .center {
+    text-align: center;
+    margin-inline: auto;
+  }
+  .title {
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  .intro {
+    color: var(--color-gris);
+    margin-top: 0.875rem;
+    max-width: 40rem;
+  }
+  .center .intro {
+    margin-inline: auto;
+  }
+</style>

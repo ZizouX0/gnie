@@ -1,0 +1,354 @@
+---
+/**
+ * The quote form (specification §4.4 and §7) — the site's second conversion
+ * channel next to WhatsApp.
+ *
+ * Built as a plain HTML form posting to Formspree: no fetch, no JSON, no
+ * client-side submit. With JavaScript disabled it works exactly the same, minus
+ * the pre-selection below.
+ *
+ * Three behaviours worth knowing:
+ *   · MACHINE LIST — read from the content collection, filtered to the current
+ *     locale and sorted by `order`, like the catalogue. Adding machine #13 adds
+ *     an option for free. The option carries its slug so the pre-selection can
+ *     match it, while its VALUE is the machine name — the notification e-mail
+ *     must read "Cryolipolyse 7D 360°", not a slug.
+ *   · PRE-SELECTION — the quote buttons link to `?machine=<slug>` (CTABlock,
+ *     MachinePage). A static build cannot read a query string, so this is the
+ *     one thing here that needs the client; without it the visitor simply picks
+ *     from the list.
+ *   · ENDPOINT — `ENV.formspree` may be empty at build time. Rather than a form
+ *     that silently posts nowhere, the whole fieldset renders disabled under a
+ *     notice, the same way the footer newsletter degrades without its Brevo URL.
+ *
+ * Field NAMES are deliberately language-independent (`name`, `phone`, …) so a
+ * French and an English enquiry land in the same inbox with the same keys; the
+ * localized wording travels in `_subject` and `_language`.
+ *
+ * The honeypot is a real, visible-in-the-DOM text input moved off-screen: bots
+ * fill it, humans never see it and screen readers never reach it. It is named
+ * `_gotcha`, which Formspree itself treats as a trap, so a caught submission is
+ * dropped server-side too.
+ */
+import { getCollection } from "astro:content";
+import type { Locale } from "@/i18n/ui";
+import { ENV } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  /** Every word on the form. The component writes none of them. */
+  labels: {
+    /** Accessible name of the field group; not displayed. */
+    legend: string;
+    required: string;
+    name: string;
+    establishment: string;
+    phone: string;
+    email: string;
+    machine: string;
+    /** First option, standing for "no machine in particular". */
+    machineNone: string;
+    machineOther: string;
+    message: string;
+    submit: string;
+    /** Subject line of the e-mail Formspree sends to GNIE. */
+    subject: string;
+    /** Instruction on the honeypot, for anything that ignores the styling. */
+    trap: string;
+    /** Shown in place of a working form when no endpoint is configured. */
+    disabled: string;
+  };
+}
+const { locale, eyebrow, title, intro, labels } = Astro.props;
+
+const machines = (await getCollection("machines", (m) => m.id.startsWith(`${locale}/`)))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((m) => ({ slug: m.id.slice(m.id.indexOf("/") + 1), name: m.data.name }));
+
+/** Provided at deploy time; without it the form renders disabled, never broken. */
+const endpoint = ENV.formspree ? `https://formspree.io/f/${ENV.formspree}` : null;
+const post: Record<string, string> = endpoint ? { method: "post", action: endpoint } : {};
+---
+
+<div class="block" data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2>{title}</h2>
+  {intro && <p class="intro">{intro}</p>}
+
+  <form class="form" {...post}>
+    {!endpoint && <p class="off">{labels.disabled}</p>}
+
+    <fieldset disabled={!endpoint}>
+      <legend class="sr">{labels.legend}</legend>
+      <p class="req-note">{labels.required}</p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="q-name">
+            {labels.name}
+            <span class="req" aria-hidden="true">*</span>
+            <span class="flag" aria-hidden="true">⚠</span>
+          </label>
+          <input id="q-name" name="name" type="text" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="q-org">{labels.establishment}</label>
+          <input id="q-org" name="establishment" type="text" autocomplete="organization" />
+        </div>
+
+        <div class="field">
+          <label for="q-phone">
+            {labels.phone}
+            <span class="req" aria-hidden="true">*</span>
+            <span class="flag" aria-hidden="true">⚠</span>
+          </label>
+          <input
+            id="q-phone"
+            name="phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="q-email">
+            {labels.email}
+            <span class="req" aria-hidden="true">*</span>
+            <span class="flag" aria-hidden="true">⚠</span>
+          </label>
+          <input id="q-email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field full">
+          <label for="q-machine">{labels.machine}</label>
+          <select id="q-machine" name="machine" data-machine-select>
+            <option value="">{labels.machineNone}</option>
+            {
+              machines.map((m) => (
+                <option value={m.name} data-slug={m.slug}>
+                  {m.name}
+                </option>
+              ))
+            }
+            <option value={labels.machineOther}>{labels.machineOther}</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label for="q-message">
+            {labels.message}
+            <span class="req" aria-hidden="true">*</span>
+            <span class="flag" aria-hidden="true">⚠</span>
+          </label>
+          <textarea id="q-message" name="message" rows="6" required></textarea>
+        </div>
+      </div>
+
+      {/* Spam trap: in the DOM, off the screen, out of the accessibility tree
+          and out of the tab order. Never `type=hidden` — bots skip those. */}
+      <div class="trap" aria-hidden="true">
+        <label for="q-site">{labels.trap}</label>
+        <input id="q-site" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <input type="hidden" name="_subject" value={labels.subject} />
+      <input type="hidden" name="_language" value={locale} />
+
+      <button type="submit" class="btn-base submit">{labels.submit}</button>
+    </fieldset>
+  </form>
+</div>
+
+<style>
+  h2 {
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  .intro {
+    color: var(--color-gris);
+    margin-top: 0.875rem;
+    max-width: 38rem;
+  }
+
+  .form {
+    position: relative; /* contains the off-screen trap */
+    margin-top: 2rem;
+  }
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0; /* a fieldset defaults to min-content and would fight the grid */
+  }
+  fieldset[disabled] {
+    opacity: 0.55;
+  }
+
+  .req-note {
+    color: var(--color-gris);
+    font-size: 0.75rem;
+    margin: 0 0 1.5rem;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  /* Two per line only once a field can still hold a full phone number
+     without wrapping — below that a single column reads faster. */
+  @media (width >= 40rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .full {
+    grid-column: 1 / -1;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+  }
+  .req {
+    color: var(--color-or);
+    margin-left: 0.125rem;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 2.75rem; /* 44px touch target */
+    padding: 0.625rem 0.875rem;
+    background: var(--color-carbone);
+    border: 1px solid var(--ligne);
+    border-radius: var(--radius-plaque);
+    color: var(--color-ivoire);
+    font: inherit;
+    font-size: var(--text-small);
+    /* Lets the browser draw the native select popup and the calendar-style
+       chrome dark, instead of a white panel over a black page. */
+    color-scheme: dark;
+    transition: border-color 0.2s ease;
+  }
+  textarea {
+    min-height: 9rem;
+    line-height: 1.65;
+    resize: vertical;
+  }
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: var(--color-or);
+  }
+
+  /* Error state, once the visitor has actually had a go at the field.
+     Three cues, none of them colour on its own: the native browser message,
+     a heavier inset rule, and the ⚠ that appears in the label. */
+  :is(input, select, textarea):user-invalid {
+    border-color: var(--color-or-clair);
+    box-shadow: inset 0 0 0 1px var(--color-or-clair);
+  }
+  .flag {
+    display: none;
+    margin-left: 0.375rem;
+    color: var(--color-or-clair);
+  }
+  .field:has(:user-invalid) .flag {
+    display: inline;
+  }
+  .field:has(:user-invalid) label {
+    color: var(--color-or-clair);
+  }
+
+  /* The trap: rendered, laid out, simply nowhere a person can see it. */
+  .trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .submit {
+    width: 100%;
+    margin-top: 1.75rem;
+    background: var(--color-or);
+    color: var(--color-noir);
+    border: 1px solid var(--color-or);
+    cursor: pointer;
+  }
+  @media (width >= 30rem) {
+    .submit {
+      width: auto;
+    }
+  }
+  .submit:hover:not(:disabled),
+  .submit:focus-visible {
+    background: var(--color-or-clair);
+    border-color: var(--color-or-clair);
+  }
+  .submit:disabled {
+    cursor: not-allowed;
+  }
+
+  /* Same dashed, quiet notice the footer uses when Brevo is not configured. */
+  .off {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    border: 1px dashed var(--ligne);
+    border-radius: var(--radius-plaque);
+    padding: 0.875rem 1.125rem;
+    margin: 0 0 1.75rem;
+  }
+
+  /* Available to assistive technology, absent from the design. */
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    input,
+    select,
+    textarea {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /* Pre-selection: `?machine=<slug>` is what every quote button carries.
+     Matching on the option's slug rather than its text keeps the value that
+     reaches GNIE's inbox a readable machine name. */
+  const select = document.querySelector<HTMLSelectElement>("[data-machine-select]");
+  const slug = new URL(location.href).searchParams.get("machine");
+  if (select && slug) {
+    const match = [...select.options].find((o) => o.dataset.slug === slug);
+    if (match) select.value = match.value;
+  }
+</script>

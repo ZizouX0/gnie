@@ -1,0 +1,533 @@
+---
+/**
+ * The machine page — one template, 12 machines, two languages.
+ *
+ * The two routes (`/machines/[slug]` and `/en/machines/[slug]`) do nothing but
+ * enumerate their half of the collection and hand the entry over, so the FR and
+ * EN pages physically cannot drift apart.
+ *
+ * Section order is fixed by specification §4.1 — outcomes first, proof in the
+ * middle, engineering on demand, contact everywhere:
+ *   breadcrumb · hero · benefits · applications · technology · video ·
+ *   specs · gallery · CTA · related
+ *
+ * Sections that have no content disappear entirely (applications, video,
+ * gallery) rather than rendering an empty shell, and the light/dark alternation
+ * is computed over the sections that actually render, so the rhythm survives
+ * any omission. Values still marked TODO:NEEDS_INPUT are never shown (D7).
+ */
+import { getEntry, type CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import Base from "@/layouts/Base.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Button from "@/components/Button.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import BenefitCard from "@/components/BenefitCard.astro";
+import SpecPlate from "@/components/SpecPlate.astro";
+import VideoFacade from "@/components/VideoFacade.astro";
+import MachineGallery from "@/components/MachineGallery.astro";
+import MachineCard from "@/components/MachineCard.astro";
+import CTABlock from "@/components/CTABlock.astro";
+import { categoryLabel, useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { ENV } from "@/config/site";
+
+interface Props {
+  entry: CollectionEntry<"machines">;
+  locale: Locale;
+}
+const { entry, locale } = Astro.props;
+const t = useTranslations(locale);
+const d = entry.data;
+
+/** Ids are "{locale}/{slug}" and slugs are identical across languages. */
+const slugOf = (id: string) => id.slice(id.indexOf("/") + 1);
+const slug = slugOf(entry.id);
+
+/* ── conversion targets ──────────────────────────────────────────
+   The quote button carries the machine so the contact form arrives
+   pre-selected; WhatsApp opens with the message already written. */
+const quoteHref = `${path(locale, "contact")}?machine=${encodeURIComponent(slug)}`;
+const waNumber = ENV.whatsapp.replace(/[^\d]/g, "");
+const waHref = waNumber
+  ? `https://wa.me/${waNumber}?text=${encodeURIComponent(`${t("wa.machine")} ${d.name}.`)}`
+  : null;
+
+/* ── hero facts ──────────────────────────────────────────────────
+   Two figures lifted from the machine's own spec table — never written by
+   hand. Rows still awaiting client input are skipped (D7), and only short
+   values qualify, so the line stays a line instead of becoming a paragraph. */
+const MISSING = "TODO:NEEDS_INPUT";
+const facts = d.specs
+  .flatMap((g) => g.rows)
+  .filter((r) => !r.value.includes(MISSING) && r.value.length <= 32 && r.label.length <= 30)
+  .slice(0, 2);
+
+/* ── conditional sections ────────────────────────────────────── */
+const hasApplications = d.applications.length > 0;
+const hasVideo = Boolean(d.videoId);
+const hasGallery = d.gallery.length >= 2; // MachineGallery self-hides below 2
+
+/** Alternation is driven by what renders, not by a hardcoded index. */
+const rendered = [
+  "benefits",
+  ...(hasApplications ? ["applications"] : []),
+  "technology",
+  ...(hasVideo ? ["video"] : []),
+  "specs",
+  ...(hasGallery ? ["gallery"] : []),
+];
+const shaded = (key: string) => rendered.indexOf(key) % 2 === 1;
+
+/* ── related machines ────────────────────────────────────────────
+   Resolved in the CURRENT language. A slug that does not resolve is a content
+   error: fail the build loudly rather than ship a dead card. */
+const related = await Promise.all(
+  d.related.map(async (rel) => {
+    const target = await getEntry("machines", `${locale}/${rel}`);
+    if (!target) {
+      throw new Error(
+        `[MachinePage] ${entry.id}: related machine "${rel}" has no ${locale} content file ` +
+          `(expected src/content/machines/${locale}/${rel}.md).`,
+      );
+    }
+    return target;
+  }),
+);
+
+/** The same plaque-flavoured mini spec the catalogue cards use. */
+const miniSpec = (m: CollectionEntry<"machines">) =>
+  m.data.specs
+    .flatMap((g) => g.rows)
+    .find((r) => !r.value.includes(MISSING) && r.value.length <= 32);
+
+/* ── structured data ─────────────────────────────────────────────
+   Product without offers: this is a quote-driven business, no price exists
+   anywhere on the site (specification §1). */
+const site = Astro.site ?? new URL("https://gnie-aesthetics.com");
+const product = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: d.name,
+  image: new URL(d.heroImage.src, site).href,
+  description: d.seo.description,
+  category: categoryLabel(locale, d.category),
+  url: new URL(path(locale, "machines", slug), site).href,
+  ...(d.brand ? { brand: { "@type": "Brand", name: d.brand } } : {}),
+};
+
+/**
+ * Built from a pattern, not a prefix. A French article has to agree with the
+ * noun it introduces, and the catalogue spans both genders and names starting
+ * with a vowel — a fixed "la" produced "Intéressé par la EMS 16 ?" and "par la
+ * Électrolyse". The French pattern leads with the name so no article is needed
+ * at all, which is correct for every machine. Each locale owns its own
+ * punctuation, including the French non-breaking space before "?".
+ */
+const ctaTitle = t("machine.interested").replace("{name}", d.name);
+
+const crumbs = [
+  { label: t("breadcrumb.home"), href: path(locale, "home") },
+  { label: d.name },
+];
+---
+
+<Base
+  locale={locale}
+  page="machines"
+  slug={slug}
+  title={d.seo.title}
+  description={d.seo.description}
+  machine={d.name}
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(product)} is:inline />
+
+  <div class="wrap">
+    <Breadcrumb items={crumbs} />
+  </div>
+
+  {/* ── 2. Hero ───────────────────────────────────────────────── */}
+  <section class="hero" aria-labelledby="machine-title">
+    <div class="wrap hgrid">
+      <div class="copy">
+        <p class="eyebrow">{categoryLabel(locale, d.category)}</p>
+        <h1 id="machine-title">{d.name}</h1>
+        <p class="tagline">{d.tagline}</p>
+
+        <div class="row">
+          <Button href={quoteHref}>{t("cta.quote")}</Button>
+          {
+            waHref && (
+              <Button href={waHref} variant="outline" external>
+                {t("cta.whatsapp")}
+              </Button>
+            )
+          }
+        </div>
+
+        {
+          (d.brand || facts.length > 0) && (
+            <dl class="facts">
+              {d.brand && (
+                <div class="fact">
+                  <dt>{t("machine.brand")}</dt>
+                  <dd>{d.brand}</dd>
+                </div>
+              )}
+              {facts.map((f) => (
+                <div class="fact">
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+
+      <div class="visual">
+        <div class="frame">
+          <div class="shot">
+            <Image
+              src={d.heroImage}
+              alt={`${d.name} — ${categoryLabel(locale, d.category)}`}
+              widths={[420, 640, 900]}
+              sizes="(width >= 62rem) 28rem, 92vw"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── 3. Benefits ───────────────────────────────────────────── */}
+  <section class:list={["section-y", { shade: shaded("benefits") }]}>
+    <div class="wrap">
+      <SectionHeading eyebrow={d.name} title={t("machine.why")} />
+      <div class="benefits">
+        {
+          d.benefits.map((b, i) => (
+            <BenefitCard index={i + 1} title={b.title} text={b.text} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ── 4. Applications — omitted entirely when the machine has none ── */}
+  {
+    hasApplications && (
+      <section class:list={["section-y", { shade: shaded("applications") }]}>
+        <div class="wrap">
+          <SectionHeading eyebrow={d.name} title={t("machine.applications")} />
+          <ul class="chips" data-reveal>
+            {d.applications.map((a) => (
+              <li>{a}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ── 5. Technology ─────────────────────────────────────────── */}
+  <section class:list={["section-y", { shade: shaded("technology") }]}>
+    <div class="wrap">
+      <SectionHeading eyebrow={d.name} title={t("machine.technology")} />
+      <ol class="tech">
+        {
+          d.technology.map((b, i) => (
+            <li class:list={["block", { flip: i % 2 === 1 }]} data-reveal>
+              <div class="head">
+                <span class="num" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3>{b.title}</h3>
+              </div>
+              <p>{b.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ── 6. Video — only where official footage exists (D11) ───── */}
+  {
+    hasVideo && (
+      <section class:list={["section-y", { shade: shaded("video") }]}>
+        <div class="wrap">
+          <SectionHeading eyebrow={d.name} title={t("machine.video")} />
+          <div class="col">
+            <VideoFacade
+              videoId={d.videoId!}
+              title={d.name}
+              poster={d.heroImage}
+              locale={locale}
+            />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ── 7. Spec plate ────────────────────────────────────────── */}
+  <section class:list={["section-y", { shade: shaded("specs") }]}>
+    <div class="wrap">
+      <SectionHeading eyebrow={d.name} title={t("machine.specs")} />
+      <div class="col">
+        <SpecPlate specs={d.specs} />
+      </div>
+    </div>
+  </section>
+
+  {/* ── 8. Gallery — the component itself is silent below 2 shots ── */}
+  {
+    hasGallery && (
+      <section class:list={["section-y", { shade: shaded("gallery") }]}>
+        <div class="wrap">
+          <SectionHeading eyebrow={d.name} title={t("machine.gallery")} />
+          <div class="col">
+            <MachineGallery images={d.gallery} name={d.name} locale={locale} />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ── 9. CTA — the form arrives with this machine pre-selected ── */}
+  <CTABlock
+    locale={locale}
+    title={ctaTitle}
+    text={t("machine.reassurance")}
+    machineSlug={slug}
+    machineName={d.name}
+  />
+
+  {/* ── 10. Related — omitted when there is nothing to relate to ── */}
+  {related.length > 0 && (
+  <section class="section-y">
+    <div class="wrap">
+      <SectionHeading eyebrow={t("nav.machines")} title={t("machine.related")} />
+      <div class="related">
+        {
+          related.map((m) => {
+            const mini = miniSpec(m);
+            return (
+              <MachineCard
+                locale={locale}
+                slug={slugOf(m.id)}
+                name={m.data.name}
+                category={m.data.category}
+                excerpt={m.data.excerpt}
+                image={m.data.heroImage}
+                miniLabel={mini?.label}
+                miniValue={mini?.value}
+              />
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+  )}
+
+</Base>
+
+<style>
+  /* Alternating surfaces, hairline-separated so two identical neighbours
+     (possible when a section is omitted) never merge into one slab. */
+  .shade {
+    background: var(--color-graphite);
+    border-block: 1px solid var(--ligne-faint);
+  }
+
+  /* ── Hero ──────────────────────────────────────────────────── */
+  .hero {
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .hgrid {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (width >= 62rem) {
+    .hgrid {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4rem;
+    }
+  }
+
+  h1 {
+    font-size: var(--text-display);
+    margin-top: 1rem;
+  }
+  .tagline {
+    color: var(--color-gris);
+    font-size: 1.125rem;
+    margin: 1.25rem 0 2.25rem;
+    max-width: 34rem;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  /* Small screens: one decision per line, each a full-width target. */
+  @media (width < 30rem) {
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* Brand + two figures: the reassurance line, straight from the spec table. */
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem 2.5rem;
+    margin: 2.25rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ligne-faint);
+  }
+  .fact {
+    min-width: 0;
+  }
+  .facts dt {
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gris);
+  }
+  .facts dd {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-small);
+    font-weight: 700;
+    color: var(--color-or-clair);
+  }
+
+  .frame {
+    border: 1px solid var(--ligne);
+    background: var(--color-graphite);
+    border-radius: var(--radius-plaque);
+    padding: 0.75rem;
+  }
+  .shot {
+    background: var(--color-noir);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  /* Manufacturer shots run from 0.36 to 1.78 in ratio: the frame is fixed and
+     the machine is contained inside it, never cropped. */
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    filter: saturate(0.88) brightness(0.97);
+  }
+
+  /* ── Benefits ─────────────────────────────────────────────── */
+  /* Fixed column counts, not auto-fit: with 3–6 benefits a 3-wide grid always
+     fills its rows (3+3, 3+2, 3+1 reading as a deliberate 4th) instead of
+     leaving a 4-column row two cards short. */
+  .benefits {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (width >= 40rem) {
+    .benefits {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (width >= 62rem) {
+    .benefits {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ── Applications ─────────────────────────────────────────── */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chips li {
+    border: 1px solid var(--ligne);
+    border-radius: 999px;
+    padding: 0.5rem 1.125rem;
+    font-size: var(--text-small);
+    color: var(--color-ivoire);
+    background: rgb(201 162 75 / 0.04);
+  }
+
+  /* ── Technology ───────────────────────────────────────────── */
+  .tech {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 64rem;
+  }
+  .block {
+    display: grid;
+    gap: 0.75rem 3rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--ligne-faint);
+  }
+  .block:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .block .num {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1;
+    color: var(--color-or);
+    margin-bottom: 0.5rem;
+  }
+  .block h3 {
+    font-size: var(--text-h3);
+  }
+  .block p {
+    color: var(--color-gris);
+    margin: 0;
+    max-width: 40rem;
+  }
+  /* Alternating layout: the title side swaps, so the eye zig-zags down the
+     column instead of reading four identical rows. */
+  @media (width >= 48rem) {
+    .block {
+      grid-template-columns: 1fr 1.3fr;
+      align-items: start;
+    }
+    .block.flip .head {
+      order: 2;
+    }
+    .block.flip p {
+      order: 1;
+      justify-self: end;
+    }
+  }
+
+  /* ── Media & plate column ────────────────────────────────────
+     A spec sheet, a video and a product view all read best in a column,
+     not stretched across a 75rem page. */
+  .col {
+    max-width: 46rem;
+  }
+
+  /* ── Related ──────────────────────────────────────────────── */
+  .related {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    max-width: 46rem;
+  }
+</style>

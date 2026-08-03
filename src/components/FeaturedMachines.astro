@@ -1,0 +1,114 @@
+---
+/**
+ * Home — featured machines (specification §4.3.3, decision D3).
+ *
+ * The three flagships are not named here: the selection lives in the content
+ * files (`featured: true` on Cryolipolysis 7D 360°, V-Shape Platinum and
+ * Visbody-M30), so changing the spread is a one-line content edit in each
+ * language, exactly like every other machine fact.
+ */
+import { getCollection, type CollectionEntry } from "astro:content";
+import SectionHeading from "@/components/SectionHeading.astro";
+import MachineCard from "@/components/MachineCard.astro";
+import { useTranslations, type Locale } from "@/i18n/ui";
+
+interface Props {
+  locale: Locale;
+  eyebrow: string;
+  title: string;
+  intro?: string;
+}
+const { locale, eyebrow, title, intro } = Astro.props;
+const t = useTranslations(locale);
+
+const featured = (
+  await getCollection("machines", (m) => m.id.startsWith(`${locale}/`) && m.data.featured)
+).sort((a, b) => a.data.order - b.data.order);
+
+/* An empty home spread is a content error, not a layout to render politely. */
+if (featured.length === 0) {
+  throw new Error(
+    `[FeaturedMachines] no ${locale} machine carries \`featured: true\` — ` +
+      `expected the three flagships of specification D3 in src/content/machines/${locale}/.`,
+  );
+}
+
+/** Ids are "{locale}/{slug}". */
+const slugOf = (id: string) => id.slice(id.indexOf("/") + 1);
+
+/** The plaque-flavoured mini spec of the card, same rule as the machine pages (D7). */
+const MISSING = "TODO:NEEDS_INPUT";
+const miniSpec = (m: CollectionEntry<"machines">) =>
+  m.data.specs
+    .flatMap((g) => g.rows)
+    .find((r) => !r.value.includes(MISSING) && r.value.length <= 32);
+---
+
+<section class="section-y" id="machines">
+  <div class="wrap">
+    <SectionHeading eyebrow={eyebrow} title={title} intro={intro} />
+
+    <div class:list={["grid", { solo: featured.length === 1 }]}>
+      {
+        featured.map((m) => {
+          const mini = miniSpec(m);
+          return (
+            <MachineCard
+              locale={locale}
+              slug={slugOf(m.id)}
+              name={m.data.name}
+              category={m.data.category}
+              excerpt={m.data.excerpt}
+              image={m.data.heroImage}
+              miniLabel={mini?.label}
+              miniValue={mini?.value}
+              large
+            />
+          );
+        })
+      }
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Large cards need width: one column until the page can give each of the
+     three a real one, rather than a two-up row leaving the third stranded. */
+  .grid {
+    display: grid;
+    gap: 1.75rem 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (width >= 62rem) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    /* A lone card in a three-up grid reads as two missing cards. Given the
+       whole row to itself it reads as a deliberate feature instead. */
+    .grid.solo {
+      grid-template-columns: minmax(0, 34rem);
+    }
+  }
+  .grid > :global(article) {
+    min-width: 0;
+  }
+
+  .all {
+    margin: 2.25rem 0 0;
+  }
+  .all a {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-or);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ligne);
+    padding-bottom: 0.25rem;
+  }
+  .all a:hover {
+    color: var(--color-or-clair);
+    border-bottom-color: var(--color-or-clair);
+  }
+</style>

@@ -1,0 +1,212 @@
+---
+/**
+ * Click-to-load Google Map (specification §4.4).
+ *
+ * Same contract as VideoFacade (D11): the built page contains no iframe, no
+ * Google script and no preconnect — only a drawn placeholder and a button. The
+ * embed is created on click, so nothing third-party touches the page unless the
+ * visitor asks for it, and the map cannot slow the first paint.
+ *
+ * Without JavaScript the button is hidden (`html.no-js`) and the overlay becomes
+ * a real link to Google Maps, so a dead control is never exposed to the keyboard.
+ *
+ * The destination is built from `CONTACT` — the address is never retyped here.
+ */
+import type { Locale } from "@/i18n/ui";
+import { CONTACT } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  /** Caption of the load button. */
+  action: string;
+  /** Caption of the no-JS link out to Google Maps. */
+  linkLabel: string;
+  /** Accessible name of the loaded frame. */
+  frameTitle: string;
+  /** One line under the frame explaining when Google is contacted. */
+  note: string;
+  class?: string;
+}
+const { locale, action, linkLabel, frameTitle, note, class: className = "" } = Astro.props;
+
+const query = CONTACT.addressLines.join(", ");
+/** Keyless embed — the same URL the "share → embed" panel produces. */
+const embed = `https://www.google.com/maps?q=${encodeURIComponent(query)}&hl=${locale}&output=embed`;
+const link = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const host = "google.com";
+---
+
+<div class:list={["mf", className]} data-map-facade data-embed={embed} data-frame-title={frameTitle}>
+  <div class="stage plaque">
+    <button type="button" class="veil trigger" aria-label={`${action} — ${CONTACT.cityLine}`}>
+      <span class="disc" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+          <path
+            d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"
+            fill="currentColor"></path>
+        </svg>
+      </span>
+      <span class="cap">{action}</span>
+      <span class="addr">{CONTACT.cityLine}</span>
+    </button>
+
+    <noscript>
+      <a class="veil" href={link} target="_blank" rel="noopener noreferrer">
+        <span class="disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+            <path
+              d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"
+              fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="cap">{linkLabel}</span>
+        <span class="addr">{CONTACT.cityLine}</span>
+        <span class="host">{host} ↗</span>
+      </a>
+    </noscript>
+  </div>
+
+  <p class="note">{note}</p>
+</div>
+
+<style>
+  /* The placeholder is drawn, not fetched: a plaque surface ruled with the
+     site's own hairlines. Zero bytes, and no request before the click. */
+  .stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent 0 2.75rem,
+        var(--ligne-ghost) 2.75rem calc(2.75rem + 1px)
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 2.75rem,
+        var(--ligne-ghost) 2.75rem calc(2.75rem + 1px)
+      ),
+      var(--color-carbone);
+  }
+  /* The ratio is fixed from the first paint, so swapping in the iframe moves
+     nothing on the page. */
+  @media (width >= 40rem) {
+    .stage {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  .stage :global(.embed) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* Overlay: shared by the button (JS) and the noscript link (no JS). */
+  .veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    border: 0;
+    background: none;
+    color: var(--color-ivoire);
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
+    padding: 1rem;
+  }
+  /* The overlay fills a clipping frame, so the site-wide outset focus ring
+     would be cut off: draw it inside instead. */
+  .veil:focus-visible {
+    outline: 2px solid var(--color-or);
+    outline-offset: -6px;
+  }
+
+  /* No JS: the button cannot work, so it is never focusable — the link shows. */
+  :global(html.no-js) .trigger {
+    display: none;
+  }
+
+  .disc {
+    display: grid;
+    place-items: center;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-or);
+    background: rgb(201 162 75 / 0.1);
+    color: var(--color-or);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .veil:hover .disc,
+  .veil:focus-visible .disc {
+    background: var(--color-or);
+    color: var(--color-noir);
+    transform: scale(1.05);
+  }
+
+  .cap {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-or);
+  }
+  .addr {
+    font-size: var(--text-small);
+    color: var(--color-ivoire);
+  }
+  .host {
+    font-size: 0.75rem;
+    color: var(--color-gris);
+  }
+
+  .note {
+    color: var(--color-gris);
+    font-size: 0.75rem;
+    margin: 0.875rem 0 0;
+    max-width: 42rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .disc {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .veil:hover .disc,
+    .veil:focus-visible .disc {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // The only third-party contact on this page, and only after a deliberate click.
+  document.querySelectorAll<HTMLElement>("[data-map-facade]").forEach((root) => {
+    const stage = root.querySelector<HTMLElement>(".stage");
+    const trigger = root.querySelector<HTMLButtonElement>(".trigger");
+    const src = root.dataset.embed;
+    if (!stage || !trigger || !src) return;
+
+    trigger.addEventListener("click", () => {
+      const frame = document.createElement("iframe");
+      frame.className = "embed";
+      frame.src = src;
+      frame.title = root.dataset.frameTitle ?? "";
+      frame.loading = "lazy";
+      frame.referrerPolicy = "no-referrer-when-downgrade";
+      frame.allowFullscreen = true;
+      stage.replaceChildren(frame);
+      // Keyboard users land inside the map they just asked for.
+      frame.focus();
+    });
+  });
+</script>

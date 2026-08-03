@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* Self-hosted: no external request, no layout shift. */
+@import "@fontsource/cormorant-garamond/latin-400.css";
+@import "@fontsource/cormorant-garamond/latin-600.css";
+@import "@fontsource/manrope/latin-400.css";
+@import "@fontsource/manrope/latin-500.css";
+@import "@fontsource/manrope/latin-700.css";
+
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — the single source of the GNIE identity.
+   Direction: "instrument de précision". One gold, never more.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-noir: #0b0b0d;
+  --color-graphite: #131316;
+  --color-carbone: #1c1c21;
+  --color-or: #c9a24b;
+  --color-or-clair: #e9d5a1;
+  --color-ivoire: #f3eee4;
+  --color-gris: #98938a;
+
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --text-display: clamp(2.4rem, 5vw, 4rem);
+  --text-h2: clamp(1.7rem, 3vw, 2.4rem);
+  --text-h3: 1.25rem;
+  --text-body: 1.0625rem;
+  --text-small: 0.875rem;
+
+  --radius-plaque: 2px;
+}
+
+:root {
+  /* hairlines: gold at low opacity does the structural work */
+  --ligne: rgb(201 162 75 / 0.28);
+  --ligne-faint: rgb(201 162 75 / 0.14);
+  --ligne-ghost: rgb(201 162 75 / 0.09);
+  --section-y: clamp(4rem, 9vw, 7.5rem);
+  --wrap: 75rem;
+  --header-h: 4.875rem;
+}
+
+/* ── base ─────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  background: var(--color-noir);
+  color: var(--color-ivoire);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+::selection {
+  background: var(--color-or);
+  color: var(--color-noir);
+}
+
+/* Keyboard focus is always visible, site-wide. */
+:where(a, button, summary, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-or);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* ── utilities ────────────────────────────────────────────── */
+@utility wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) { padding-inline: 2.5rem; }
+}
+
+/* The recurring motif: small gold uppercase label above every title. */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-or);
+}
+
+@utility hairline {
+  height: 1px;
+  background: var(--ligne);
+}
+
+@utility section-y {
+  padding-block: var(--section-y);
+}
+
+/* ── motion: one orchestrated gesture, disabled on request ── */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* No JS, or reduced motion: content is simply there. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; }
+}
+html.no-js [data-reveal] { opacity: 1; transform: none; }
+
+/* ── shared component surfaces ───────────────────────────── */
+@utility plaque {
+  border: 1px solid var(--ligne);
+  background: var(--color-carbone);
+  border-radius: var(--radius-plaque);
+}
+
+@utility btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem; /* 44px touch target */
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-plaque);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}

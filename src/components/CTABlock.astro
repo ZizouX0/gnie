@@ -1,0 +1,73 @@
+---
+import Button from "./Button.astro";
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { ENV } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  text?: string;
+  /** Preselects the machine in the contact form and prefills the WhatsApp message. */
+  machineSlug?: string;
+  machineName?: string;
+}
+const { locale, title, text, machineSlug, machineName } = Astro.props;
+const t = useTranslations(locale);
+
+const quoteHref = machineSlug
+  ? `${path(locale, "contact")}?machine=${machineSlug}`
+  : path(locale, "contact");
+
+const waText = machineName ? `${t("wa.machine")} ${machineName}.` : t("wa.generic");
+const number = ENV.whatsapp.replace(/[^\d]/g, "");
+const waHref = number ? `https://wa.me/${number}?text=${encodeURIComponent(waText)}` : null;
+---
+
+<section class="cta">
+  <div class="wrap" data-reveal>
+    <p class="eyebrow">{t("cta.quote")}</p>
+    <h2>{title}</h2>
+    {text && <p class="text">{text}</p>}
+    <div class="row">
+      <Button href={quoteHref}>{t("cta.quote")}</Button>
+      {
+        waHref && (
+          <Button href={waHref} variant="outline" external>
+            {t("cta.whatsappLong")}
+          </Button>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    background: var(--color-graphite);
+    border-top: 1px solid var(--ligne-faint);
+    border-bottom: 1px solid var(--ligne-faint);
+    padding-block: clamp(3rem, 7vw, 4.75rem);
+  }
+  h2 {
+    font-size: var(--text-h2);
+    margin-top: 0.75rem;
+  }
+  .text {
+    color: var(--color-gris);
+    margin-top: 1rem;
+    max-width: 38rem;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  @media (width < 30rem) {
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>

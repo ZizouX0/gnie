@@ -1,0 +1,221 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import mark from "@/assets/brand/gnie-mark-gold.png";
+import wordmark from "@/assets/brand/gnie-wordmark-gold.png";
+import { useTranslations, type Locale } from "@/i18n/ui";
+import { path } from "@/i18n/routes";
+import { CONTACT } from "@/config/site";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+
+// Provided at deploy time; without it the block renders disabled rather than broken.
+const brevo = import.meta.env.PUBLIC_BREVO_FORM_URL;
+
+/* This branch ships three machines and no catalogue, so the footer lists them
+   directly rather than linking to a page that is not here. */
+const demoMachines = (await getCollection("machines", (m) => m.id.startsWith(`${locale}/`)))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((m) => ({ slug: m.id.slice(m.id.indexOf("/") + 1), name: m.data.name }));
+---
+
+<footer>
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="lock">
+          <Image src={mark} alt="" width={92} height={102} class="mk" />
+          <Image src={wordmark} alt={t("site.name")} width={160} height={49} class="wd" />
+        </div>
+        <p class="about">{t("site.company")} — {t("footer.since")}</p>
+      </div>
+
+      <nav aria-labelledby="f-machines">
+        <h2 id="f-machines" class="eyebrow">{t("footer.machines")}</h2>
+        {demoMachines.map((m) => <a href={path(locale, "machines", m.slug)}>{m.name}</a>)}
+      </nav>
+
+      <nav aria-labelledby="f-company">
+        <h2 id="f-company" class="eyebrow">{t("footer.company")}</h2>
+        <a href={path(locale, "home")}>{t("nav.home")}</a>
+        <a href={path(locale, "contact")}>{t("nav.contact")}</a>
+      </nav>
+
+      <div>
+        <h2 class="eyebrow">{t("footer.contact")}</h2>
+        <address>
+          {CONTACT.addressLines.map((line) => <span>{line}</span>)}
+          <a href={`tel:${CONTACT.phonePrimaryE164}`}>{CONTACT.phonePrimary}</a>
+          {CONTACT.email && <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>}
+        </address>
+
+        <h2 class="eyebrow news-h">{t("footer.newsletter")}</h2>
+        <p class="news-t">{t("footer.newsletterText")}</p>
+        {
+          brevo ? (
+            <form class="news" action={brevo} method="post" target="_blank" rel="noopener">
+              <label class="sr" for="nl-email">{t("footer.newsletterPlaceholder")}</label>
+              <input
+                id="nl-email"
+                type="email"
+                name="EMAIL"
+                required
+                placeholder={t("footer.newsletterPlaceholder")}
+              />
+              <button type="submit">{t("footer.newsletterSubmit")}</button>
+            </form>
+          ) : (
+            <p class="news-off" data-newsletter-disabled>{t("footer.newsletterDisabled")}</p>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="bot">
+      <span>© {year} {t("site.name")} — {t("footer.rights")}</span>
+      <span>{CONTACT.cityLine}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--color-noir);
+    border-top: 1px solid var(--ligne-faint);
+    padding-block: 3.5rem 2.25rem;
+  }
+  .grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (width >= 48rem) {
+    .grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+  @media (width >= 62rem) {
+    .grid {
+      grid-template-columns: 1.5fr 1fr 1fr 1.3fr;
+    }
+  }
+
+  .lock {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.125rem;
+  }
+  .mk {
+    height: 2.5rem;
+    width: auto;
+  }
+  .wd {
+    height: 0.9375rem;
+    width: auto;
+  }
+  .about {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    max-width: 24rem;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+  nav {
+    display: flex;
+    flex-direction: column;
+  }
+  nav a,
+  address a,
+  address span {
+    display: block;
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    text-decoration: none;
+    line-height: 1.9;
+  }
+  nav a:hover,
+  address a:hover {
+    color: var(--color-or-clair);
+  }
+  address {
+    font-style: normal;
+  }
+
+  .news-h {
+    margin-top: 1.75rem;
+  }
+  .news-t {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    margin-bottom: 0.75rem;
+  }
+  .news {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .news input {
+    flex: 1 1 10rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--color-carbone);
+    border: 1px solid var(--ligne);
+    border-radius: var(--radius-plaque);
+    color: var(--color-ivoire);
+    font: inherit;
+    font-size: var(--text-small);
+  }
+  .news input::placeholder {
+    color: var(--color-gris);
+  }
+  .news button {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.25rem;
+    background: var(--color-or);
+    color: var(--color-noir);
+    border: 0;
+    border-radius: var(--radius-plaque);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .news button:hover {
+    background: var(--color-or-clair);
+  }
+  .news-off {
+    color: var(--color-gris);
+    font-size: var(--text-small);
+    border: 1px dashed var(--ligne);
+    border-radius: var(--radius-plaque);
+    padding: 0.75rem 1rem;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .bot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    justify-content: space-between;
+    border-top: 1px solid var(--ligne-faint);
+    margin-top: 2.75rem;
+    padding-top: 1.375rem;
+    font-size: 0.75rem;
+    color: var(--color-gris);
+  }
+</style>

@@ -1,0 +1,153 @@
+---
+/**
+ * The signature device: technical identity as an engraved plate.
+ * Rows whose value is still unknown are hidden rather than shown as
+ * placeholders (spec decision D7) — a visitor must never read "TODO".
+ * On mobile each group is a native <details>, so it works without JS.
+ */
+interface SpecGroup {
+  group: string;
+  rows: { label: string; value: string }[];
+}
+interface Props {
+  specs: SpecGroup[];
+  class?: string;
+}
+const { specs, class: className = "" } = Astro.props;
+
+const MISSING = "TODO:NEEDS_INPUT";
+const groups = specs
+  .map((g) => ({ ...g, rows: g.rows.filter((r) => !r.value.includes(MISSING)) }))
+  .filter((g) => g.rows.length > 0);
+---
+
+{
+  groups.length > 0 && (
+    <div class:list={["plaque plate", className]} data-reveal>
+      {groups.map((g, i) => (
+        <details class="group" open={i === 0}>
+          <summary>
+            <span class="eyebrow">{g.group}</span>
+            <span class="chev" aria-hidden="true"></span>
+          </summary>
+          <dl>
+            {g.rows.map((row) => (
+              <div class="row">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .plate {
+    overflow: hidden;
+  }
+  .group + .group {
+    border-top: 1px solid var(--ligne-faint);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.125rem 1.5rem;
+    cursor: pointer;
+    min-height: 2.75rem;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .chev {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 1px solid var(--color-or);
+    border-bottom: 1px solid var(--color-or);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+    flex: none;
+  }
+  [open] > summary .chev {
+    transform: rotate(-135deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chev { transition: none; }
+  }
+  dl {
+    padding: 0 1.5rem 1rem;
+    margin: 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 0.6875rem 0;
+    border-top: 1px solid var(--ligne-ghost);
+    font-size: var(--text-small);
+  }
+  .row:first-child {
+    border-top: 0;
+  }
+  dt {
+    color: var(--color-gris);
+  }
+  dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 500;
+    color: var(--color-ivoire);
+  }
+
+  /* From tablet up every group starts open, since a spec sheet reads best
+     whole — but it stays a real disclosure control.
+
+     It used to be made inert here (`pointer-events: none`, chevron hidden) on
+     the theory that an always-open group needs no control. That produced a
+     trap: the summary is still a focusable <summary>, so Enter collapsed a
+     group, the hidden chevron gave no sign it had closed, and the inert rule
+     meant the mouse could not reopen it. Defaulting open and leaving the
+     control alone is simpler and has no failure mode. */
+  @media (width >= 48rem) {
+    .group {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  // Sets the OPENING state only: every group open from tablet up, just the
+  // first on mobile. The groups stay real disclosure controls, so this must
+  // never fight the visitor — once they open or close one themselves, this
+  // stops touching that plate.
+  const mq = window.matchMedia("(width >= 48rem)");
+
+  document.querySelectorAll<HTMLElement>(".plate").forEach((plate) => {
+    // Per plate, not per page: the comparison panel renders several plates
+    // side by side, and each needs its own first group open on mobile.
+    const groups = Array.from(plate.querySelectorAll<HTMLDetailsElement>(".group"));
+    if (groups.length === 0) return;
+
+    let applying = false;
+    let touched = false;
+    // `toggle` fires for our own writes too, so ignore those.
+    groups.forEach((d) => d.addEventListener("toggle", () => { if (!applying) touched = true; }));
+
+    const apply = () => {
+      if (touched) return;
+      applying = true;
+      groups.forEach((d, i) => { d.open = mq.matches || i === 0; });
+      applying = false;
+    };
+
+    apply();
+    // Only on crossing the breakpoint — not on every resize frame.
+    mq.addEventListener("change", apply);
+  });
+</script>
