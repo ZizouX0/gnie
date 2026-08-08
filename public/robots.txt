@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /dev/
 
-Sitemap: https://gnie-aesthetics.com/sitemap-index.xml
+Sitemap: https://gnie-laser.com/sitemap-index.xml

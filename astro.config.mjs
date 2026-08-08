@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
-const SITE = process.env.PUBLIC_SITE_URL ?? "https://gnie-aesthetics.com";
+const SITE = process.env.PUBLIC_SITE_URL ?? "https://gnie-laser.com";
 
 export default defineConfig({
   site: SITE,

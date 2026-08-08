@@ -31,7 +31,7 @@ const {
   noindex = false,
 } = Astro.props;
 
-const site = Astro.site ?? new URL("https://gnie-aesthetics.com");
+const site = Astro.site ?? new URL("https://gnie-laser.com");
 const canonical = new URL(path(locale, page, slug), site).href;
 const alternates = hreflangPairs(page, slug);
 const alternate = alternatePath(locale, page, slug);

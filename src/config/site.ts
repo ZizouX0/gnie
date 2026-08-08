@@ -25,7 +25,7 @@ export const CONTACT = {
   phoneSecondaryE164: "+21690157560",
   /**
    * EMPTY ON PURPOSE — the client has not supplied a professional address.
-   * `contact@gnie-aesthetics.com` used to sit here as a stand-in and reached
+   * `contact@gnie-laser.com` used to sit here as a stand-in and reached
    * production copy: a legal notice printed it as the company's official
    * contact, and the privacy policy named it as the sole route for exercising
    * data rights. It appears in no source document and no mailbox is known to
@@ -52,7 +52,7 @@ export const ENV = {
   whatsapp: import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? "",
   formspree: import.meta.env.PUBLIC_FORMSPREE_ID ?? "",
   brevo: import.meta.env.PUBLIC_BREVO_FORM_URL ?? "",
-  siteUrl: import.meta.env.PUBLIC_SITE_URL ?? "https://gnie-aesthetics.com",
+  siteUrl: import.meta.env.PUBLIC_SITE_URL ?? "https://gnie-laser.com",
 } as const;
 
 export const BRANDS = ["PZLASER", "VISBODY", "HOWBODY"] as const;
