@@ -84,6 +84,13 @@ export function readMachines(root, locale) {
         const m = fm.match(new RegExp(`^${key}:\\s*"([^"]*)"`, "m"));
         return m ? m[1] : undefined;
       };
+      /* A draft machine has no page to share, so it gets no card. This script
+         runs outside Astro and reads the front matter itself, so it cannot use
+         src/lib/machines.ts — the filter has to be repeated here, and this is
+         the only place in the project where that is true. Without it the
+         generator writes 34 orphan cards into public/og/ and reports a
+         catalogue twice the size of the one that ships. */
+      if (/^draft:\s*true\s*$/m.test(fm)) return null;
       const name = scalar("name");
       const category = scalar("category");
       const hero = scalar("heroImage");
@@ -98,7 +105,8 @@ export function readMachines(root, locale) {
         // Front matter paths are relative to the content file.
         heroImage: join(dir, hero),
       };
-    });
+    })
+    .filter(Boolean);
 }
 
 /* ── page copy ─────────────────────────────────────────────────── */
