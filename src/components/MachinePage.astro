@@ -16,7 +16,8 @@
  * is computed over the sections that actually render, so the rhythm survives
  * any omission. Values still marked TODO:NEEDS_INPUT are never shown (D7).
  */
-import { getEntry, type CollectionEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { relatedMachine } from "@/lib/machines";
 import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -84,11 +85,11 @@ const shaded = (key: string) => rendered.indexOf(key) % 2 === 1;
    error: fail the build loudly rather than ship a dead card. */
 const related = await Promise.all(
   d.related.map(async (rel) => {
-    const target = await getEntry("machines", `${locale}/${rel}`);
+    const target = await relatedMachine(locale, rel);
     if (!target) {
       throw new Error(
-        `[MachinePage] ${entry.id}: related machine "${rel}" has no ${locale} content file ` +
-          `(expected src/content/machines/${locale}/${rel}.md).`,
+        `[MachinePage] ${entry.id}: related machine "${rel}" has no published ${locale} content ` +
+          `(expected src/content/machines/${locale}/${rel}.md, not marked draft).`,
       );
     }
     return target;

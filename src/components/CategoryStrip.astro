@@ -10,7 +10,7 @@
  * Counts come from the collection, never from a hand-written figure: machine
  * #13 moves them by itself.
  */
-import { getCollection } from "astro:content";
+import { publishedMachines } from "@/lib/machines";
 import SectionHeading from "@/components/SectionHeading.astro";
 import { categories, categoryLabel, useTranslations, type Locale } from "@/i18n/ui";
 import { path } from "@/i18n/routes";
@@ -24,16 +24,22 @@ interface Props {
 const { locale, eyebrow, title, intro } = Astro.props;
 const t = useTranslations(locale);
 
-const entries = await getCollection("machines", (m) => m.id.startsWith(`${locale}/`));
-const tiles = categories.map((c) => {
-  const count = entries.filter((m) => m.data.category === c).length;
-  return {
-    label: categoryLabel(locale, c),
-    href: `${path(locale, "machines")}#${c}`,
-    count,
-    unit: count === 1 ? t("catalog.countOne") : t("catalog.count"),
-  };
-});
+const entries = await publishedMachines(locale);
+/* A family with nothing published behind it is a promise the catalogue cannot
+   keep: the tile would link to a filter that shows an empty grid. Categories
+   are declared ahead of the machines that fill them, so this is the normal
+   state of a new family, not an error. */
+const tiles = categories
+  .map((c) => {
+    const count = entries.filter((m) => m.data.category === c).length;
+    return {
+      label: categoryLabel(locale, c),
+      href: `${path(locale, "machines")}#${c}`,
+      count,
+      unit: count === 1 ? t("catalog.countOne") : t("catalog.count"),
+    };
+  })
+  .filter((tile) => tile.count > 0);
 ---
 
 <section class="strip">

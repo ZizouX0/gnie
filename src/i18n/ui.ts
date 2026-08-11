@@ -6,14 +6,26 @@ export const locales = ["fr", "en"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "fr";
 
+/**
+ * Declaration order is display order — in the catalogue filter row and in the
+ * category strip on the home page. Kept in step with the enum in
+ * `src/content.config.ts`; a category listed in one and not the other is a
+ * type error at the first `categoryLabel` call.
+ *
+ * A category with no published machine renders no tile and no filter pill, so
+ * a family can be declared here ahead of the machines that will fill it.
+ */
 export const categories = [
   "laser",
-  "cryolipolyse",
+  "resurfacing",
+  "epilation",
+  "hifu",
   "remodelage",
+  "cryolipolyse",
   "visage",
   "pressotherapie",
+  "perinee",
   "analyse",
-  "epilation",
 ] as const;
 export type Category = (typeof categories)[number];
 
@@ -59,7 +71,7 @@ export const ui = {
        clinic actually types. The h1 above stays short on the page itself. */
     "catalog.seoTitle": "Machines esthétiques professionnelles en Tunisie",
     "catalog.intro":
-      "Treize équipements professionnels, sept familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
+      "Treize équipements professionnels, huit familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
     "catalog.all": "Toutes",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -70,6 +82,9 @@ export const ui = {
     "catalog.clear": "Réinitialiser",
 
     "cat.laser": "Laser pigmentaire & détatouage",
+    "cat.resurfacing": "Lasers fractionnés & resurfaçage",
+    "cat.hifu": "Raffermissement HIFU & RF",
+    "cat.perinee": "Rééducation périnéale",
     "cat.cryolipolyse": "Cryolipolyse",
     "cat.remodelage": "Remodelage corporel",
     "cat.visage": "Soin du visage",
@@ -137,7 +152,7 @@ export const ui = {
     "catalog.title": "Our machines",
     "catalog.seoTitle": "Professional aesthetic machines in Tunisia",
     "catalog.intro":
-      "Thirteen professional devices across seven technology families, selected for demanding clinics and institutes.",
+      "Thirteen professional devices across eight technology families, selected for demanding clinics and institutes.",
     "catalog.all": "All",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -148,6 +163,9 @@ export const ui = {
     "catalog.clear": "Reset",
 
     "cat.laser": "Pigment & tattoo laser",
+    "cat.resurfacing": "Fractional lasers & resurfacing",
+    "cat.hifu": "HIFU & RF tightening",
+    "cat.perinee": "Pelvic floor rehabilitation",
     "cat.cryolipolyse": "Fat freezing",
     "cat.remodelage": "Body contouring",
     "cat.visage": "Facial care",

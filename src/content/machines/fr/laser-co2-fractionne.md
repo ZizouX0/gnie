@@ -1,6 +1,6 @@
 ---
 name: "Laser CO2 Fractionné"
-category: "laser"
+category: "resurfacing"
 tagline: "Le laser CO2 fractionné 10600 nm à tube RF Coherent (USA) pour un resurfaçage cutané de précision : peau lissée, texture affinée, cicatrices visiblement atténuées."
 excerpt: "Laser CO2 fractionné 70 W équipé d'un tube RF Coherent importé des USA et d'un bras laser 7 articulations sud-coréen. Resurfaçage cutané, atténuation des cicatrices d'acné et des taches de rousseur."
 heroImage: "../../../assets/machines/laser-co2-fractionne/laser-co2-fractionne-hero.jpg"

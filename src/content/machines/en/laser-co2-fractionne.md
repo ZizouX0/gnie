@@ -1,6 +1,6 @@
 ---
 name: "Fractional CO2 Laser"
-category: "laser"
+category: "resurfacing"
 tagline: "The 10600 nm fractional CO2 laser with a USA Coherent RF tube for precision skin resurfacing: smoother skin, refined texture, visibly softened scars."
 excerpt: "70 W fractional CO2 laser fitted with a USA-imported Coherent RF tube and a 7-joint South Korean laser arm. Skin resurfacing, acne scar and freckle appearance reduction."
 heroImage: "../../../assets/machines/laser-co2-fractionne/laser-co2-fractionne-hero.jpg"

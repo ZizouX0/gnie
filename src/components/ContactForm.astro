@@ -30,7 +30,7 @@
  * `_gotcha`, which Formspree itself treats as a trap, so a caught submission is
  * dropped server-side too.
  */
-import { getCollection } from "astro:content";
+import { publishedMachines } from "@/lib/machines";
 import type { Locale } from "@/i18n/ui";
 import { ENV } from "@/config/site";
 
@@ -64,9 +64,10 @@ interface Props {
 }
 const { locale, eyebrow, title, intro, labels } = Astro.props;
 
-const machines = (await getCollection("machines", (m) => m.id.startsWith(`${locale}/`)))
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((m) => ({ slug: m.id.slice(m.id.indexOf("/") + 1), name: m.data.name }));
+const machines = (await publishedMachines(locale)).map((m) => ({
+  slug: m.id.slice(m.id.indexOf("/") + 1),
+  name: m.data.name,
+}));
 
 /** Provided at deploy time; without it the form renders disabled, never broken. */
 const endpoint = ENV.formspree ? `https://formspree.io/f/${ENV.formspree}` : null;

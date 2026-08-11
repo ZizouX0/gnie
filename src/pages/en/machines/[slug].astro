@@ -5,11 +5,11 @@
  * Slugs are identical to the French ones, which is what makes the language
  * switcher and the hreflang pairs exact. All markup is shared.
  */
-import { getCollection } from "astro:content";
+import { publishedMachines } from "@/lib/machines";
 import MachinePage from "@/components/MachinePage.astro";
 
 export async function getStaticPaths() {
-  const machines = await getCollection("machines", (m) => m.id.startsWith("en/"));
+  const machines = await publishedMachines("en");
   return machines.map((entry) => ({
     params: { slug: entry.id.slice("en/".length) },
     props: { entry },

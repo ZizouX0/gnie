@@ -14,12 +14,15 @@ const machines = defineCollection({
       brand: z.string().optional(),
       category: z.enum([
         "laser",
+        "resurfacing",
         "cryolipolyse",
         "remodelage",
         "visage",
         "pressotherapie",
         "analyse",
         "epilation",
+        "hifu",
+        "perinee",
       ]),
       tagline: z.string(),
       excerpt: z.string(),
@@ -38,6 +41,18 @@ const machines = defineCollection({
       videoId: z.string().optional(),
       related: z.array(z.string()).length(2),
       featured: z.boolean().default(false),
+      /**
+       * A machine whose copy is written but which must not reach the public
+       * site yet — in practice, one still waiting on usable product
+       * photography. Draft entries build nothing: no page, no catalogue card,
+       * no category count, no sitemap entry, no sharing card.
+       *
+       * Everything that reads this collection goes through the helpers in
+       * `src/lib/machines.ts`, which apply the filter once. Reach for those
+       * rather than calling getCollection directly, or a new surface will
+       * quietly start publishing drafts.
+       */
+      draft: z.boolean().default(false),
       order: z.number(),
       seo: z.object({
         /* 53, not 60: the layout appends " | GNIE" (7 characters), so this

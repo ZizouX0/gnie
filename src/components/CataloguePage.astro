@@ -19,7 +19,8 @@
  *
  * No value marked TODO:NEEDS_INPUT is ever passed on (D7).
  */
-import { getCollection, type CollectionEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { publishedMachines } from "@/lib/machines";
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
@@ -37,9 +38,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const entries = (await getCollection("machines", (m) => m.id.startsWith(`${locale}/`))).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const entries = await publishedMachines(locale);
 
 /* ── spec helpers ────────────────────────────────────────────────
    Everything the catalogue shows of a spec table goes through here, so the
@@ -95,7 +94,11 @@ const machines = entries.map((entry) => {
 const count = (c: string) => machines.filter((m) => m.data.category === c).length;
 const pills = [
   { value: "all", label: t("catalog.all"), count: machines.length },
-  ...categories.map((c) => ({ value: c, label: categoryLabel(locale, c), count: count(c) })),
+  /* Only families that have something to show: an empty pill filters the grid
+     down to nothing and reads as a broken filter, not as an empty shelf. */
+  ...categories
+    .map((c) => ({ value: c, label: categoryLabel(locale, c), count: count(c) }))
+    .filter((pill) => pill.count > 0),
 ];
 
 const total = machines.length;

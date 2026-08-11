@@ -7,7 +7,8 @@
  * Visbody-M30), so changing the spread is a one-line content edit in each
  * language, exactly like every other machine fact.
  */
-import { getCollection, type CollectionEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { featuredMachines } from "@/lib/machines";
 import SectionHeading from "@/components/SectionHeading.astro";
 import MachineCard from "@/components/MachineCard.astro";
 import { useTranslations, type Locale } from "@/i18n/ui";
@@ -22,9 +23,7 @@ interface Props {
 const { locale, eyebrow, title, intro } = Astro.props;
 const t = useTranslations(locale);
 
-const featured = (
-  await getCollection("machines", (m) => m.id.startsWith(`${locale}/`) && m.data.featured)
-).sort((a, b) => a.data.order - b.data.order);
+const featured = await featuredMachines(locale);
 
 /* An empty home spread is a content error, not a layout to render politely. */
 if (featured.length === 0) {

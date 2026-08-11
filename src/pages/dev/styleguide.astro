@@ -3,7 +3,7 @@
  * Build-time reference for the design system. Excluded from the sitemap
  * (astro.config.mjs) and marked noindex — never a public page.
  */
-import { getCollection } from "astro:content";
+import { publishedMachines } from "@/lib/machines";
 import Base from "@/layouts/Base.astro";
 import Button from "@/components/Button.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
@@ -21,7 +21,7 @@ import { path } from "@/i18n/routes";
 const locale = "fr" as const;
 const t = useTranslations(locale);
 
-const machines = await getCollection("machines", (m) => m.id.startsWith("fr/"));
+const machines = await publishedMachines("fr");
 const sample = machines.find((m) => m.id === "fr/cryolipolyse-7d-360")!;
 const cards = machines
   .sort((a, b) => a.data.order - b.data.order)
