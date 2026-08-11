@@ -62,7 +62,7 @@ specs:
       - { label: "Alimentation", value: "TODO:NEEDS_INPUT" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
-related: ["v-shape-platinum", "cryolipolyse-7d-360"]
+related: ["ems-16", "v-shape-platinum"]
 featured: false
 order: 6
 seo:
