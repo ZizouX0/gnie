@@ -65,7 +65,7 @@ specs:
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
 videoId: "e-gJUsTJzC8"
-related: ["cryolipolyse-7d-360", "ems-16"]
+related: ["cryolipolyse-7d-360", "presso-3-en-1"]
 featured: true
 order: 3
 seo:

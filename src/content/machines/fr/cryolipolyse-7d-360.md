@@ -70,7 +70,7 @@ specs:
       - { label: "Humidité relative", value: "≤80%" }
       - { label: "Pression atmosphérique", value: "86kPa~106kPa" }
 videoId: "gaZDpWDmA_g"
-related: ["v-shape-platinum", "ems-16"]
+related: ["v-shape-platinum", "visbody-m30"]
 featured: true
 order: 2
 seo:

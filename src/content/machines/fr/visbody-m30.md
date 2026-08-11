@@ -62,7 +62,7 @@ specs:
       - { label: "Charge maximale du plateau (test)", value: "180kg" }
       - { label: "Taille maximale (test)", value: "200cm" }
 videoId: "OqesJJg_vyQ"
-related: ["howbody-h6", "ems-16"]
+related: ["howbody-h6", "cryolipolyse-7d-360"]
 featured: true
 order: 7
 seo:

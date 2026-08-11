@@ -71,7 +71,7 @@ specs:
       - { label: "Dimensions", value: "650 x 400 x 1125 mm (L x W x H)" }
       - { label: "Weight", value: "Approximately 25 kg" }
       - { label: "Versions", value: "H6 · H6 PRO" }
-related: ["visbody-m30", "ems-16"]
+related: ["visbody-m30", "v-shape-platinum"]
 featured: false
 order: 12
 seo:
