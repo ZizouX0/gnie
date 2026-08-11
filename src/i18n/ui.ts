@@ -59,7 +59,7 @@ export const ui = {
        clinic actually types. The h1 above stays short on the page itself. */
     "catalog.seoTitle": "Machines esthétiques professionnelles en Tunisie",
     "catalog.intro":
-      "Onze équipements professionnels, sept familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
+      "Douze équipements professionnels, sept familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
     "catalog.all": "Toutes",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -137,7 +137,7 @@ export const ui = {
     "catalog.title": "Our machines",
     "catalog.seoTitle": "Professional aesthetic machines in Tunisia",
     "catalog.intro":
-      "Eleven professional devices across seven technology families, selected for demanding clinics and institutes.",
+      "Twelve professional devices across seven technology families, selected for demanding clinics and institutes.",
     "catalog.all": "All",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
