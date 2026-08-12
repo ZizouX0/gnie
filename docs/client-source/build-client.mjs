@@ -27,9 +27,27 @@ for (const [src, out] of jobs) {
   const p = await browser.newPage();
   await p.goto(`file://${tmp}`, { waitUntil: 'load' });
   await p.evaluate(() => document.fonts.ready);
+  /* Each .page is a fixed A4 box, so content that outgrows it does not push the
+     page taller — it silently overlaps the footer, and the PDF still "builds".
+     Adding one row to a table is enough to do it. Catch it here rather than in
+     the client's inbox. build-manque.mjs carries the same check. */
+  const over = await p.evaluate(() =>
+    Array.from(document.querySelectorAll('.page'))
+      .map((s, i) => {
+        const f = s.querySelector('.flow');
+        return f && f.scrollHeight > f.clientHeight + 2
+          ? `page ${i + 1}: +${f.scrollHeight - f.clientHeight}px`
+          : null;
+      })
+      .filter(Boolean),
+  );
+  if (over.length) {
+    console.error(`OVERFLOW in ${src} — ${over.join(', ')}`);
+    process.exitCode = 1;
+  }
   await p.pdf({ path: out, format: 'A4', printBackground: true, preferCSSPageSize: true,
                 margin: { top:0, right:0, bottom:0, left:0 } });
   await p.close();
-  console.log('built', out);
+  console.log(over.length ? `built (WITH OVERFLOW) ${out}` : `built ${out}`);
 }
 await browser.close();
