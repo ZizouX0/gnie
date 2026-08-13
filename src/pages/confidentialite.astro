@@ -5,7 +5,7 @@
  * The page describes what the site actually does, service by service: Formspree
  * routes the quote form, Brevo runs the newsletter, the YouTube embed and the
  * Google map are click-to-load facades that contact nobody until you ask, and
- * Vercel hosts the pages and measures the audience. Retention periods have never
+ * Cloudflare hosts the pages and measures the audience. Retention periods have never
  * been decided, so they stay TODO:NEEDS_INPUT rather than becoming an invented
  * number a visitor could rely on.
  */
@@ -53,7 +53,7 @@ const crumbs = [
   locale={locale}
   page="privacy"
   title="Politique de confidentialité"
-  description="Quelles données GNIE collecte sur ce site, pourquoi, avec quels prestataires (Formspree, Brevo, Google Maps, Vercel) et comment en demander la suppression."
+  description="Quelles données GNIE collecte sur ce site, pourquoi, avec quels prestataires (Formspree, Brevo, Google Maps, Cloudflare) et comment en demander la suppression."
 >
   <div class="wrap">
     <Breadcrumb items={crumbs} />
@@ -178,14 +178,14 @@ const crumbs = [
       <ProseSection {...sec("audience")}>
         <p>
           Lorsqu'elle est activée, la mesure d'audience du site repose sur
-          <strong>Vercel Web Analytics</strong> : des statistiques agrégées — pages vues, machines
+          <strong>Cloudflare Web Analytics</strong> : des statistiques agrégées — pages vues, machines
           les plus consultées, clics sur les boutons de contact — sans cookie, sans identifiant
           publicitaire et sans suivi d'un site à l'autre. Aucune de ces mesures ne permet de vous
           identifier ni de vous recontacter.
         </p>
         <p>
           <span class="todo">
-            TODO:NEEDS_INPUT — confirmer l'activation de Vercel Web Analytics à la mise en ligne,
+            TODO:NEEDS_INPUT — confirmer l'activation de Cloudflare Web Analytics à la mise en ligne,
             puis la durée de conservation des statistiques
           </span>
         </p>
@@ -206,7 +206,7 @@ const crumbs = [
         <ul>
           <li><strong>Formspree</strong> — acheminement du formulaire de devis vers notre boîte e-mail.</li>
           <li><strong>Brevo</strong> — gestion et envoi de la newsletter.</li>
-          <li><strong>Vercel</strong> — hébergement des pages et mesure d'audience.</li>
+          <li><strong>Cloudflare</strong> — hébergement des pages et mesure d'audience.</li>
           <li>
             <strong>Google</strong> et <strong>YouTube</strong> — uniquement si vous ouvrez la carte
             ou lancez une vidéo.

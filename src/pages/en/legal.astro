@@ -135,14 +135,18 @@ const crumbs = [
       <ProseSection {...sec("hosting")}>
         <p>
           This is a static site — pre-generated pages, with no database and no customer account
-          area — hosted and delivered by Vercel.
+          area — hosted and delivered by Cloudflare.
         </p>
-        <p>
-          Full identification of the host:
-          <span class="todo">
-            TODO:NEEDS_INPUT — host's registered name, postal address and contact details
-          </span>
-        </p>
+        <dl class="pairs">
+          <dt>Host</dt>
+          <dd>Cloudflare, Inc.</dd>
+          <dt>Legal form</dt>
+          <dd>A Delaware corporation, United States</dd>
+          <dt>Address</dt>
+          <dd>101 Townsend Street, San Francisco, CA 94107, United States</dd>
+          <dt>Contact</dt>
+          <dd><a href="https://www.cloudflare.com/">cloudflare.com</a></dd>
+        </dl>
         <p>
           Server-side technical logs are the host's responsibility; how they are handled is
           described in the <a href={path(locale, "privacy")}>privacy policy</a>.

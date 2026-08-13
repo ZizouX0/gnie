@@ -4,7 +4,7 @@
  *
  * Same substance, written in English rather than translated word for word. It
  * names the services the site really uses — Formspree for the quote form, Brevo
- * for the newsletter, Vercel for hosting and audience measurement, Google and
+ * for the newsletter, Cloudflare for hosting and audience measurement, Google and
  * YouTube only behind a click-to-load facade — and leaves every retention period
  * as TODO:NEEDS_INPUT, because none has ever been decided.
  */
@@ -52,7 +52,7 @@ const crumbs = [
   locale={locale}
   page="privacy"
   title="Privacy policy"
-  description="What GNIE collects on this site, why, which providers are involved (Formspree, Brevo, Google Maps, Vercel), and how to ask for your data to be deleted."
+  description="What GNIE collects on this site, why, which providers are involved (Formspree, Brevo, Google Maps, Cloudflare), and how to ask for your data to be deleted."
 >
   <div class="wrap">
     <Breadcrumb items={crumbs} />
@@ -168,13 +168,13 @@ const crumbs = [
       <ProseSection {...sec("analytics")}>
         <p>
           When it is switched on, audience measurement on this site relies on
-          <strong>Vercel Web Analytics</strong>: aggregated figures — page views, the most-visited
+          <strong>Cloudflare Web Analytics</strong>: aggregated figures — page views, the most-visited
           machines, clicks on the contact buttons — with no cookie, no advertising identifier and no
           tracking from one site to another. None of it can identify you or reach you.
         </p>
         <p>
           <span class="todo">
-            TODO:NEEDS_INPUT — confirm that Vercel Web Analytics is enabled at launch, then the
+            TODO:NEEDS_INPUT — confirm that Cloudflare Web Analytics is enabled at launch, then the
             retention period for the statistics
           </span>
         </p>
@@ -194,7 +194,7 @@ const crumbs = [
         <ul>
           <li><strong>Formspree</strong> — delivering the quote form to our inbox.</li>
           <li><strong>Brevo</strong> — managing and sending the newsletter.</li>
-          <li><strong>Vercel</strong> — hosting the pages and measuring the audience.</li>
+          <li><strong>Cloudflare</strong> — hosting the pages and measuring the audience.</li>
           <li>
             <strong>Google</strong> and <strong>YouTube</strong> — only if you open the map or start
             a video.

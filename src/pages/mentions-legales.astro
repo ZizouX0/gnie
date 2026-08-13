@@ -131,14 +131,18 @@ const crumbs = [
       <ProseSection {...sec("hebergement")}>
         <p>
           Le site est un site statique — des pages pré-générées, sans base de données ni espace
-          client — hébergé et diffusé par Vercel.
+          client — hébergé et diffusé par Cloudflare.
         </p>
-        <p>
-          Identification complète de l'hébergeur&nbsp;:
-          <span class="todo">
-            TODO:NEEDS_INPUT — raison sociale, adresse postale et contact de l'hébergeur
-          </span>
-        </p>
+        <dl class="pairs">
+          <dt>Hébergeur</dt>
+          <dd>Cloudflare, Inc.</dd>
+          <dt>Forme juridique</dt>
+          <dd>Société de droit du Delaware, États-Unis</dd>
+          <dt>Adresse</dt>
+          <dd>101 Townsend Street, San Francisco, CA 94107, États-Unis</dd>
+          <dt>Contact</dt>
+          <dd><a href="https://www.cloudflare.com/fr-fr/">cloudflare.com</a></dd>
+        </dl>
         <p>
           Les journaux techniques du serveur relèvent de l'hébergeur ; leur traitement est décrit
           dans la <a href={path(locale, "privacy")}>politique de confidentialité</a>.
