@@ -106,7 +106,7 @@ const organization = {
   "@type": ["Organization", "LocalBusiness"],
   "@id": new URL("#organization", site).href,
   name: "GNIE",
-  legalName: "Global Nouvelle Innovation Esthétique",
+  legalName: CONTACT.legalName,
   url: site.href,
   logo: new URL(logo.src, site).href,
   foundingDate: String(CONTACT.since),
@@ -233,7 +233,7 @@ const organization = {
         </section>
 
         <footer>
-          <span>Global Nouvelle Innovation Esthétique</span>
+          <span>{CONTACT.legalName}</span>
           <span>© {new Date().getFullYear()} GNIE</span>
         </footer>
       </div>

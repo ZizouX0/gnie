@@ -1,3 +1,5 @@
+import { CONTACT } from "@/config/site";
+
 /**
  * Every UI string on the site. Components never contain sentences.
  * A missing key is a TypeScript error, not a silent fallback to the wrong language.
@@ -33,7 +35,7 @@ export const ui = {
   fr: {
     "site.name": "GNIE",
     "site.tagline": "Équipements esthétiques professionnels — Tunisie",
-    "site.company": "Global Nouvelle Innovation Esthétique",
+    "site.company": CONTACT.legalName,
 
     "nav.home": "Accueil",
     "nav.machines": "Machines",
@@ -116,7 +118,7 @@ export const ui = {
   en: {
     "site.name": "GNIE",
     "site.tagline": "Professional aesthetic equipment — Tunisia",
-    "site.company": "Global Nouvelle Innovation Esthétique",
+    "site.company": CONTACT.legalName,
 
     "nav.home": "Home",
     "nav.machines": "Machines",

@@ -3,6 +3,7 @@
  * English holding page (`/en/`) — the French twin's structure with its own copy.
  */
 import Holding from "../../layouts/Holding.astro";
+import { CONTACT } from "@/config/site";
 ---
 
 <Holding
@@ -15,7 +16,7 @@ import Holding from "../../layouts/Holding.astro";
   intro="GNIE imports and installs premium aesthetic technology from the world's leading manufacturers, for the clinics, medspas and institutes across Tunisia that expect more."
   bodyTitle="In the meantime, we are already here"
   body={[
-    "Global Nouvelle Innovation Esthétique has supported Tunisian businesses since 2015: choosing the right equipment for their activity, importing it straight from the manufacturers, installing it on site and training their teams.",
+    `${CONTACT.legalName} has supported Tunisian businesses since 2015: choosing the right equipment for their activity, importing it straight from the manufacturers, installing it on site and training their teams.`,
     "After-sales service is handled in Tunisia by our own technicians. Your machine stays in your treatment room, not in a shipping crate.",
     "Our site will soon present every device in detail: technologies, treatment areas, technical specifications and imagery. Until then, one call is enough for advice, a quote or a demonstration.",
   ]}

@@ -7,7 +7,7 @@ Version 1.0 — July 2026 · Supersedes nothing: the French CDC (`gniecdctechniq
 
 ## 1. What this project is
 
-A **premium showcase website** for GNIE (Global Nouvelle Innovation Esthétique), a Tunis-based distributor of professional aesthetic equipment (machines selling at €15,000–€30,000). The site replaces the current one-page v1 at **gnie-aesthetics.com**.
+A **premium showcase website** for GNIE (Groupe Nasra Import Export), a Tunis-based distributor of professional aesthetic equipment (machines selling at €15,000–€30,000). The site replaces the current one-page v1 at **gnie-aesthetics.com**.
 
 **The single business goal: generate qualified leads.** Every page exists to move a clinic owner one step closer to sending a WhatsApp message or a quote request. One converted lead pays for the site many times over.
 

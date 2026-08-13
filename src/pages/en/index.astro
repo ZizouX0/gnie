@@ -18,6 +18,7 @@ import AboutBlock from "@/components/AboutBlock.astro";
 import NewsletterBlock from "@/components/NewsletterBlock.astro";
 import CTABlock from "@/components/CTABlock.astro";
 import { useTranslations } from "@/i18n/ui";
+import { CONTACT } from "@/config/site";
 
 const locale = "en" as const;
 const t = useTranslations(locale);
@@ -86,7 +87,7 @@ const t = useTranslations(locale);
     eyebrow="About"
     title="A Tunisian partner, since 2015"
     paragraphs={[
-      "Global Nouvelle Innovation Esthétique imports, installs and maintains professional aesthetic equipment for clinics, medspas and beauty institutes across Tunisia.",
+      `${CONTACT.legalName} imports, installs and maintains professional aesthetic equipment for clinics, medspas and beauty institutes across Tunisia.`,
       "From our offices in Montplaisir, Tunis, we support each business for the long run: choosing the right equipment for its activity, installing it, training the team and following up technically.",
     ]}
     sinceLabel="Since"

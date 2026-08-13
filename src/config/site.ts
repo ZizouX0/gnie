@@ -6,6 +6,28 @@
  * Everything third-party lives in environment variables, never here.
  */
 export const CONTACT = {
+  /**
+   * What the four letters stand for: **Groupe Nasra Import Export**.
+   *
+   * This was wrong for most of the project — the site printed "Global Nouvelle
+   * Innovation Esthétique", an expansion that fits the initials and reads
+   * plausibly for an aesthetics distributor, and was never anything but a
+   * guess. It reached production in twelve places, including the legal
+   * notice's "Dénomination sociale" and the privacy policy's data controller,
+   * where a wrong company name is not a typo but a false statement about who
+   * is legally responsible.
+   *
+   * It lives here now, once, because it was written out twelve times and that
+   * is why correcting it was a hunt. Both legal notices, both privacy
+   * policies, both footers, the Organization JSON-LD on every page, the OG
+   * images and the holding page all read this value.
+   *
+   * Not translated: a registered company name is the same string in every
+   * language. The exact registry styling — hyphens, any SARL/SUARL suffix —
+   * still needs confirming against the RNE extract, which the client owes us
+   * along with the legal form and share capital.
+   */
+  legalName: "Groupe Nasra Import Export",
   addressLines: [
     "Imm. Emmeraude de Tunis",
     "Rue Mohamed Badra, Bureau A-2-8",

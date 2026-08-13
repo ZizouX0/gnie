@@ -18,6 +18,7 @@ import AboutBlock from "@/components/AboutBlock.astro";
 import NewsletterBlock from "@/components/NewsletterBlock.astro";
 import CTABlock from "@/components/CTABlock.astro";
 import { useTranslations } from "@/i18n/ui";
+import { CONTACT } from "@/config/site";
 
 const locale = "fr" as const;
 const t = useTranslations(locale);
@@ -86,7 +87,7 @@ const t = useTranslations(locale);
     eyebrow="À propos"
     title="Un partenaire tunisien, depuis 2015"
     paragraphs={[
-      "Global Nouvelle Innovation Esthétique importe, installe et entretient des équipements esthétiques professionnels pour les cliniques, medspas et instituts de Tunisie.",
+      `${CONTACT.legalName} importe, installe et entretient des équipements esthétiques professionnels pour les cliniques, medspas et instituts de Tunisie.`,
       "Depuis nos bureaux de Montplaisir, à Tunis, nous accompagnons chaque établissement dans la durée : choix de l'équipement adapté à son activité, installation, formation des équipes et suivi technique.",
     ]}
     sinceLabel="Depuis"

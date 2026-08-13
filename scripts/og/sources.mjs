@@ -22,6 +22,26 @@ export function readLocales(root) {
 }
 
 /**
+ * Values in `ui.ts` that are not string literals but references into
+ * `src/config/site.ts` — currently `"site.company": CONTACT.legalName`.
+ *
+ * The scanner below matches quoted values only. A reference it cannot see is
+ * not an error there, it is an absence: the key simply drops out of the
+ * dictionary and the card renders a hole. That is precisely what happened the
+ * first time the company name moved into the config, so references are now
+ * resolved rather than skipped.
+ */
+function readContact(root) {
+  const src = read(root, "src/config/site.ts");
+  const start = src.indexOf("export const CONTACT = {");
+  if (start < 0) throw new Error("site.ts: could not find `export const CONTACT`");
+  const body = src.slice(start, src.indexOf("\n} as const;", start));
+  const out = {};
+  for (const m of body.matchAll(/^\s{2}(\w+):\s*"((?:[^"\\]|\\.)*)",/gm)) out[m[1]] = unescape(m[2]);
+  return out;
+}
+
+/**
  * The UI dictionary, one flat map per locale. The file is a literal of quoted
  * keys and quoted string values, so it is read with a scanner rather than by
  * importing TypeScript into Node.
@@ -30,6 +50,7 @@ export function readUi(root, locales) {
   const src = read(root, "src/i18n/ui.ts");
   const start = src.indexOf("export const ui = {");
   if (start < 0) throw new Error("ui.ts: could not find `export const ui`");
+  const contact = readContact(root);
   const out = {};
   for (const locale of locales) {
     const head = src.indexOf(`\n  ${locale}: {`, start);
@@ -41,6 +62,11 @@ export function readUi(root, locales) {
     const dict = {};
     for (const m of body.matchAll(/"([\w.]+)":\s*\n?\s*"((?:[^"\\]|\\.)*)"/g)) {
       dict[m[1]] = unescape(m[2]);
+    }
+    for (const m of body.matchAll(/"([\w.]+)":\s*CONTACT\.(\w+),/g)) {
+      const value = contact[m[2]];
+      if (value === undefined) throw new Error(`ui.ts: "${m[1]}" reads CONTACT.${m[2]}, absent from site.ts`);
+      dict[m[1]] = value;
     }
     if (Object.keys(dict).length === 0) throw new Error(`ui.ts: empty block for "${locale}"`);
     out[locale] = dict;
