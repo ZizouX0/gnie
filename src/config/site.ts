@@ -24,17 +24,26 @@ export const CONTACT = {
   phonePrimaryE164: "+21655157506",
   phoneSecondaryE164: "+21690157560",
   /**
-   * EMPTY ON PURPOSE — the client has not supplied a professional address.
-   * `contact@gnie-laser.com` used to sit here as a stand-in and reached
-   * production copy: a legal notice printed it as the company's official
-   * contact, and the privacy policy named it as the sole route for exercising
-   * data rights. It appears in no source document and no mailbox is known to
-   * exist, so requests to it would silently bounce. The only address ever
-   * observed is `grtarek@yahoo.fr`, from catalogue 5, unconfirmed and
-   * personal. Every consumer hides its e-mail row while this is empty; fill
-   * it in and they all light up.
+   * The company's professional address, on a real Microsoft 365 mailbox
+   * bought through GoDaddy.
+   *
+   * This field sat empty for most of the project, and the comment that lived
+   * here is worth keeping in mind: this exact string had once been invented as
+   * a placeholder and reached production, where the legal notice printed it as
+   * the company's official contact and the privacy policy named it as the sole
+   * route for exercising data rights — with no mailbox behind it. Requests
+   * would have bounced silently.
+   *
+   * What makes it safe now is not that it looks plausible but that it is
+   * demonstrably delivering: the client's Cloudflare account was created with
+   * this address and activated, which Cloudflare does not allow without
+   * verifying the mailbox receives.
+   *
+   * Seventeen places across eight files read this, including every legal
+   * page in both languages. If it ever stops being monitored, empty it rather
+   * than leave it printed — every consumer hides its row when this is "".
    */
-  email: "",
+  email: "contact@gnie-laser.com",
   since: 2015,
   /** Geo for the Organization JSON-LD. */
   locality: "Tunis",
