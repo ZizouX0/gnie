@@ -291,6 +291,18 @@ Relevé le 13 août 2026, une fois les étapes 1 et 2 terminées.
 | En-têtes de sécurité | HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy` |
 | Routes du site réel (`/machines/`, `/contact/`, `/mentions-legales/`) | 404 — la page d'attente n'expose rien |
 | `sitemap-0.xml` | 2 adresses |
+| Redirection `http://` → `https://` | 301, chemin conservé, sur les deux hôtes |
+| Test de messagerie aller-retour | **réussi** — voir ci-dessous |
+
+**Le test de messagerie a été fait dans les deux sens** le soir de la migration :
+un message envoyé depuis Gmail vers `contact@gnie-laser.com` est arrivé, et la
+réponse envoyée depuis cette adresse est arrivée **dans la boîte de réception**
+de Gmail, pas dans les indésirables.
+
+Ce dernier point vaut preuve d'authentification : la politique `DMARC` du
+domaine est `p=quarantine`. Si `SPF` et `DKIM` avaient tous deux échoué après le
+changement de serveurs de noms, Gmail aurait classé la réponse en indésirables.
+L'arrivée en boîte de réception démontre que l'alignement fonctionne toujours.
 
 **Sur le `SPF`.** L'enregistrement pointe vers `secureserver.net` (GoDaddy)
 alors que la boîte est hébergée par Microsoft 365, ce qui donne l'impression
