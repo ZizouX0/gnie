@@ -48,6 +48,9 @@ interface Props {
   /** Prefilled first message, so the visitor does not start from a blank chat. */
   whatsappMessage: string;
   emailLabel: string;
+  /** Subject and opening line, so the mail client opens on a written message. */
+  emailSubject: string;
+  emailBody: string;
   switchLabel: string;
   switchHref: string;
 }
@@ -69,6 +72,8 @@ const {
   whatsappLabel,
   whatsappMessage,
   emailLabel,
+  emailSubject,
+  emailBody,
   switchLabel,
   switchHref,
 } = Astro.props;
@@ -77,6 +82,14 @@ const {
 const waNumber = ENV.whatsapp.replace(/[^\d]/g, "");
 const waHref = waNumber
   ? `https://wa.me/${waNumber}?text=${encodeURIComponent(whatsappMessage)}`
+  : null;
+
+/* Subject and opening line prefilled, for the same reason the WhatsApp message
+   is: a blank compose window is a small piece of work handed to someone who
+   was only mildly interested. The address alone still works if the mail client
+   ignores the parameters. */
+const mailHref = CONTACT.email
+  ? `mailto:${CONTACT.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`
   : null;
 
 const site = Astro.site ?? new URL("https://gnie-laser.com");
@@ -201,10 +214,10 @@ const organization = {
             }
 
             {
-              CONTACT.email && (
+              mailHref && (
                 <p class="mail">
                   <span class="lbl">{emailLabel}</span>
-                  <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                  <a href={mailHref}>{CONTACT.email}</a>
                 </p>
               )
             }
