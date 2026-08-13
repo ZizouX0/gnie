@@ -1,0 +1,25 @@
+/**
+ * Cloudflare Workers config — THE HOLDING PAGE.
+ *
+ * Used with `npx wrangler deploy -c wrangler.soon.jsonc`, against a build
+ * produced by `npm run build:soon`. See wrangler.jsonc for why there are two.
+ *
+ * Same Worker name as the real config, deliberately: deploying the real site
+ * later replaces this one at the same URL rather than leaving a stray holding
+ * page live on a second address.
+ *
+ * `dist-soon/` contains the two holding pages and nothing else — Astro never
+ * compiles the real pages in this mode, and scripts/check-holding.mjs fails
+ * the build if anything from the catalogue appears. See docs/COMING-SOON.md.
+ *
+ * No `not_found_handling`: this build has no 404 page to serve, so the default
+ * is correct. The real config sets it.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gnie",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./dist-soon"
+  }
+}

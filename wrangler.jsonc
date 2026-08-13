@@ -1,0 +1,36 @@
+/**
+ * Cloudflare Workers config — THE REAL SITE.
+ *
+ * Cloudflare closed the Pages creation flow for new projects, so the site is
+ * served by a Worker with static assets instead. Functionally the same thing
+ * for a static site: files on Cloudflare's edge, unlimited bandwidth, free.
+ *
+ * There is no `main` entry point on purpose. This Worker runs no code — it
+ * only serves the contents of `assets.directory`, which is what a static site
+ * needs and nothing more.
+ *
+ * Two configs exist, and which one is used is a dashboard setting rather than
+ * a code change:
+ *
+ *   holding page   build `npm run build:soon`
+ *                  deploy `npx wrangler deploy -c wrangler.soon.jsonc`
+ *
+ *   real site      build `npm run build`
+ *                  deploy `npx wrangler deploy`
+ *
+ * Keeping both in the repo means launch day is two fields in Settings → Build,
+ * with nothing to edit, review or push under time pressure.
+ *
+ * `_headers` ships inside dist/ (from public/_headers) and Workers applies it
+ * to static assets, so the security and caching rules survive this move.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gnie",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./dist",
+    // The site builds a real 404 page; serve it instead of a bare Worker error.
+    "not_found_handling": "404-page"
+  }
+}
