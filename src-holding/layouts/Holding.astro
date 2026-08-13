@@ -17,8 +17,8 @@
  *
  * WhatsApp and e-mail follow the same rule as the rest of the site: when the
  * value is missing they render nothing at all, rather than a button that
- * fails or an empty row. The phone numbers are always present and carry the
- * page on their own until the other two are configured.
+ * fails or an empty row. One phone number is always present and carries the
+ * page on its own until the other two are configured.
  */
 import "@fontsource/cormorant-garamond/latin-400.css";
 import "@fontsource/cormorant-garamond/latin-600.css";
@@ -118,7 +118,8 @@ const organization = {
     postalCode: CONTACT.postalCode,
     addressCountry: CONTACT.country,
   },
-  telephone: CONTACT.phonePrimaryE164,
+  // The number displayed on this page, so the markup and the page agree.
+  telephone: CONTACT.phoneSecondaryE164,
   areaServed: "TN",
 };
 ---
@@ -196,9 +197,11 @@ const organization = {
             <p class="note">{contactNote}</p>
           </div>
           <div>
+            {/* One number, and it is the one carrying WhatsApp. Showing two
+                made a visitor choose before they had a reason to; showing the
+                WhatsApp line means calling and messaging land in the same
+                place. The second number stays in site.ts for the real site. */}
             <p class="tels">
-              <a href={`tel:${CONTACT.phonePrimaryE164}`}>{CONTACT.phonePrimary}</a>
-              <span aria-hidden="true">·</span>
               <a href={`tel:${CONTACT.phoneSecondaryE164}`}>{CONTACT.phoneSecondary}</a>
             </p>
 
