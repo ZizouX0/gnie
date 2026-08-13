@@ -1,0 +1,437 @@
+---
+/**
+ * The holding page shell — one layout, two languages.
+ *
+ * Deliberately standalone. It imports the same two typefaces as the site but
+ * declares its own handful of tokens instead of pulling in global.css and
+ * Tailwind, because this page has a lifecycle of weeks and then gets deleted:
+ * carrying the whole design system for one screen would mean maintaining two
+ * consumers of it for no benefit. The five values below are copied from
+ * `src/styles/global.css`, which remains the source of truth.
+ *
+ * No JavaScript, no form, no cookie. The absence of a form is a decision, not
+ * an omission — collecting an e-mail address would trigger the very privacy-
+ * policy obligation this page exists to wait for. The phone numbers are real
+ * and verified, so they carry the whole contact job on their own.
+ */
+import "@fontsource/cormorant-garamond/latin-400.css";
+import "@fontsource/cormorant-garamond/latin-600.css";
+import "@fontsource/manrope/latin-400.css";
+import "@fontsource/manrope/latin-500.css";
+import logo from "@/assets/brand/gnie-logo-gold.png";
+import { Image } from "astro:assets";
+import { CONTACT } from "@/config/site";
+
+interface Props {
+  locale: "fr" | "en";
+  title: string;
+  description: string;
+  eyebrow: string;
+  headline: string;
+  accent: string;
+  intro: string;
+  bodyTitle: string;
+  body: string[];
+  catalogueTitle: string;
+  catalogue: { n: string; label: string }[];
+  contactTitle: string;
+  contactNote: string;
+  addressLabel: string;
+  switchLabel: string;
+  switchHref: string;
+}
+const {
+  locale,
+  title,
+  description,
+  eyebrow,
+  headline,
+  accent,
+  intro,
+  bodyTitle,
+  body,
+  catalogueTitle,
+  catalogue,
+  contactTitle,
+  contactNote,
+  addressLabel,
+  switchLabel,
+  switchHref,
+} = Astro.props;
+
+const site = Astro.site ?? new URL("https://gnie-laser.com");
+const canonical = new URL(locale === "fr" ? "/" : "/en/", site).href;
+
+/**
+ * The company entity, exactly as the real site emits it, minus what is still
+ * unknown. It is worth carrying on a holding page: it is what lets a search
+ * for "GNIE Tunis" resolve to this address and these numbers while the
+ * catalogue is still off the air.
+ */
+const organization = {
+  "@context": "https://schema.org",
+  "@type": ["Organization", "LocalBusiness"],
+  "@id": new URL("#organization", site).href,
+  name: "GNIE",
+  legalName: "Global Nouvelle Innovation Esthétique",
+  url: site.href,
+  logo: new URL(logo.src, site).href,
+  foundingDate: String(CONTACT.since),
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: CONTACT.addressLines.join(", "),
+    addressLocality: CONTACT.locality,
+    addressRegion: CONTACT.region,
+    postalCode: CONTACT.postalCode,
+    addressCountry: CONTACT.country,
+  },
+  telephone: CONTACT.phonePrimaryE164,
+  areaServed: "TN",
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="fr" href={new URL("/", site).href} />
+    <link rel="alternate" hreflang="en" href={new URL("/en/", site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL("/", site).href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GNIE" />
+    <meta property="og:locale" content={locale === "fr" ? "fr_TN" : "en_US"} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
+  </head>
+
+  <body>
+    <main>
+      <div class="wrap">
+        <header class="head">
+          <Image src={logo} alt="GNIE" widths={[120, 240]} sizes="120px" loading="eager" />
+          <a class="lang" href={switchHref} hreflang={locale === "fr" ? "en" : "fr"}>
+            {switchLabel}
+          </a>
+        </header>
+
+        <section class="hero">
+          <p class="eyebrow">{eyebrow}</p>
+          <h1>{headline} <em>{accent}</em></h1>
+          <p class="intro">{intro}</p>
+        </section>
+
+        <div class="rule"></div>
+
+        <section class="cols">
+          <div>
+            <h2>{bodyTitle}</h2>
+            {body.map((p) => <p>{p}</p>)}
+          </div>
+
+          <div>
+            <h2>{catalogueTitle}</h2>
+            <dl class="figs">
+              {
+                catalogue.map((c) => (
+                  <div>
+                    <dt>{c.n}</dt>
+                    <dd>{c.label}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </section>
+
+        <div class="rule"></div>
+
+        <section class="cols contact">
+          <div>
+            <h2>{contactTitle}</h2>
+            <p class="note">{contactNote}</p>
+          </div>
+          <div>
+            <p class="tels">
+              <a href={`tel:${CONTACT.phonePrimaryE164}`}>{CONTACT.phonePrimary}</a>
+              <span aria-hidden="true">·</span>
+              <a href={`tel:${CONTACT.phoneSecondaryE164}`}>{CONTACT.phoneSecondary}</a>
+            </p>
+            <address>
+              <span class="lbl">{addressLabel}</span>
+              {CONTACT.addressLines.join(", ")}
+            </address>
+          </div>
+        </section>
+
+        <footer>
+          <span>Global Nouvelle Innovation Esthétique</span>
+          <span>© {new Date().getFullYear()} GNIE</span>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style>
+  /* Copied from src/styles/global.css — see the note at the top of this file. */
+  :root {
+    --noir: #0b0b0d;
+    --carbone: #1c1c21;
+    --or: #c9a24b;
+    --ivoire: #f3eee4;
+    --gris: #98938a;
+    --hairline: color-mix(in srgb, var(--or) 22%, transparent);
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :global(html),
+  :global(body) {
+    margin: 0;
+    padding: 0;
+  }
+
+  :global(body) {
+    background: var(--noir);
+    color: var(--ivoire);
+    font-family: "Manrope", system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    /* A single warm bloom behind the mark, the site's one lighting gesture. */
+    background:
+      radial-gradient(60rem 40rem at 78% -10%, color-mix(in srgb, var(--or) 9%, transparent), transparent 65%),
+      var(--noir);
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 58rem;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .head :global(img) {
+    width: 60px;
+    height: auto;
+  }
+
+  .lang {
+    color: var(--gris);
+    font-size: 0.78rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+
+  .lang:hover,
+  .lang:focus-visible {
+    color: var(--or);
+    border-bottom-color: var(--hairline);
+  }
+
+  .hero {
+    margin-top: clamp(2.5rem, 8vw, 5rem);
+  }
+
+  .eyebrow {
+    margin: 0 0 1rem;
+    color: var(--or);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7.5vw, 4.25rem);
+    line-height: 1.06;
+    letter-spacing: -0.01em;
+  }
+
+  h1 em {
+    display: block;
+    font-style: normal;
+    color: var(--or);
+  }
+
+  .intro {
+    margin: 1.5rem 0 0;
+    max-width: 42ch;
+    color: color-mix(in srgb, var(--ivoire) 82%, transparent);
+    font-size: 1.05rem;
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--hairline);
+    margin: clamp(2.5rem, 7vw, 4rem) 0;
+  }
+
+  .cols {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  @media (width >= 46rem) {
+    .cols {
+      grid-template-columns: 1.35fr 1fr;
+    }
+  }
+
+  h2 {
+    margin: 0 0 1rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+
+  .cols p {
+    margin: 0 0 0.9rem;
+    color: color-mix(in srgb, var(--ivoire) 76%, transparent);
+    font-size: 0.95rem;
+  }
+
+  .cols p:last-child {
+    margin-bottom: 0;
+  }
+
+  .figs {
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .figs > div {
+    display: flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    border-top: 1px solid color-mix(in srgb, var(--or) 12%, transparent);
+    padding-top: 0.9rem;
+  }
+
+  .figs > div:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .figs dt {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.7rem;
+    line-height: 1;
+    color: var(--or);
+    min-width: 2.2ch;
+  }
+
+  .figs dd {
+    margin: 0;
+    color: var(--gris);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .contact .note {
+    margin: 0;
+    color: color-mix(in srgb, var(--ivoire) 76%, transparent);
+    font-size: 0.95rem;
+  }
+
+  /* Scoped through .cols: the contact block now sits inside that grid, whose
+     `.cols p` rule is more specific than a bare `.tels` and was silently
+     shrinking the phone numbers to body size. They are the one thing on this
+     page a visitor has to be able to act on. */
+  .cols .tels {
+    margin: 0 0 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+    line-height: 1.15;
+  }
+
+  .tels a {
+    color: var(--ivoire);
+    text-decoration: none;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 3px;
+  }
+
+  .tels a:hover,
+  .tels a:focus-visible {
+    color: var(--or);
+    border-bottom-color: var(--or);
+  }
+
+  .tels span {
+    color: var(--or);
+  }
+
+  address {
+    font-style: normal;
+    color: var(--gris);
+    font-size: 0.88rem;
+  }
+
+  .lbl {
+    display: block;
+    color: var(--or);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  footer {
+    margin-top: clamp(2.5rem, 7vw, 4rem);
+    padding-top: 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--or) 12%, transparent);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: color-mix(in srgb, var(--gris) 80%, transparent);
+    font-size: 0.76rem;
+  }
+
+  :global(a:focus-visible) {
+    outline: 2px solid var(--or);
+    outline-offset: 3px;
+  }
+</style>

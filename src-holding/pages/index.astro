@@ -1,0 +1,36 @@
+---
+/**
+ * French holding page (`/`).
+ *
+ * Every sentence lives here; the layout only arranges it. The URL is the one
+ * the real home page will occupy, so launch day is a rebuild, not a migration.
+ */
+import Holding from "../layouts/Holding.astro";
+---
+
+<Holding
+  locale="fr"
+  title="GNIE — Équipements esthétiques professionnels en Tunisie"
+  description="GNIE importe, installe et entretient des équipements esthétiques professionnels pour les cliniques, medspas et instituts de Tunisie. Notre catalogue en ligne arrive prochainement."
+  eyebrow="Site en préparation"
+  headline="Le catalogue arrive"
+  accent="prochainement."
+  intro="GNIE importe et installe les technologies esthétiques premium des plus grandes marques internationales, pour les cliniques, medspas et instituts exigeants de Tunisie."
+  bodyTitle="En attendant, nous sommes déjà là"
+  body={[
+    "Global Nouvelle Innovation Esthétique accompagne depuis 2015 les établissements tunisiens : choix de l'équipement adapté à leur activité, importation directe auprès des fabricants, installation sur place et formation des équipes.",
+    "Le service après-vente est assuré en Tunisie par nos propres techniciens. Votre machine reste dans votre cabine, pas dans un colis.",
+    "Notre site présentera bientôt chaque équipement en détail : technologies, zones traitées, caractéristiques techniques et visuels. D'ici là, un appel suffit pour obtenir un conseil, un devis ou une démonstration.",
+  ]}
+  catalogueTitle="Ce qui sera en ligne"
+  catalogue={[
+    { n: "13", label: "équipements professionnels, chacun avec sa fiche détaillée" },
+    { n: "8", label: "familles de technologies, de l'épilation à l'analyse corporelle" },
+    { n: "3", label: "marques internationales distribuées : PZLASER, VISBODY, HOWBODY" },
+  ]}
+  contactTitle="Nous joindre dès maintenant"
+  contactNote="Nos bureaux répondent aux heures ouvrables. Pour un conseil sur un équipement, un devis ou une démonstration, appelez-nous directement."
+  addressLabel="Nos bureaux"
+  switchLabel="English"
+  switchHref="/en/"
+/>

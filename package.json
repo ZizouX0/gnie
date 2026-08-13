@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "build:soon": "COMING_SOON=1 astro build && node scripts/check-holding.mjs",
+    "dev:soon": "COMING_SOON=1 astro dev"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",
