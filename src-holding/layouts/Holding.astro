@@ -9,10 +9,16 @@
  * consumers of it for no benefit. The five values below are copied from
  * `src/styles/global.css`, which remains the source of truth.
  *
- * No JavaScript, no form, no cookie. The absence of a form is a decision, not
- * an omission — collecting an e-mail address would trigger the very privacy-
- * policy obligation this page exists to wait for. The phone numbers are real
- * and verified, so they carry the whole contact job on their own.
+ * No JavaScript and no cookie. Still no form, deliberately: a form collects
+ * personal data and triggers the very privacy-policy obligation this page
+ * exists to wait for. A `mailto:` link does not — it hands the visitor to
+ * their own mail client and stores nothing — so an address is safe here where
+ * a form is not.
+ *
+ * WhatsApp and e-mail follow the same rule as the rest of the site: when the
+ * value is missing they render nothing at all, rather than a button that
+ * fails or an empty row. The phone numbers are always present and carry the
+ * page on their own until the other two are configured.
  */
 import "@fontsource/cormorant-garamond/latin-400.css";
 import "@fontsource/cormorant-garamond/latin-600.css";
@@ -20,7 +26,7 @@ import "@fontsource/manrope/latin-400.css";
 import "@fontsource/manrope/latin-500.css";
 import logo from "@/assets/brand/gnie-logo-gold.png";
 import { Image } from "astro:assets";
-import { CONTACT } from "@/config/site";
+import { CONTACT, ENV } from "@/config/site";
 
 interface Props {
   locale: "fr" | "en";
@@ -37,6 +43,11 @@ interface Props {
   contactTitle: string;
   contactNote: string;
   addressLabel: string;
+  /** Label on the WhatsApp button. Rendered only when a number is configured. */
+  whatsappLabel: string;
+  /** Prefilled first message, so the visitor does not start from a blank chat. */
+  whatsappMessage: string;
+  emailLabel: string;
   switchLabel: string;
   switchHref: string;
 }
@@ -55,9 +66,18 @@ const {
   contactTitle,
   contactNote,
   addressLabel,
+  whatsappLabel,
+  whatsappMessage,
+  emailLabel,
   switchLabel,
   switchHref,
 } = Astro.props;
+
+/* wa.me wants digits only — no +, no spaces. Empty number, no button. */
+const waNumber = ENV.whatsapp.replace(/[^\d]/g, "");
+const waHref = waNumber
+  ? `https://wa.me/${waNumber}?text=${encodeURIComponent(whatsappMessage)}`
+  : null;
 
 const site = Astro.site ?? new URL("https://gnie-laser.com");
 const canonical = new URL(locale === "fr" ? "/" : "/en/", site).href;
@@ -168,6 +188,27 @@ const organization = {
               <span aria-hidden="true">·</span>
               <a href={`tel:${CONTACT.phoneSecondaryE164}`}>{CONTACT.phoneSecondary}</a>
             </p>
+
+            {
+              waHref && (
+                <a class="wa" href={waHref} target="_blank" rel="noopener noreferrer">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.03.24-3.47-.72-2.94-1.16-4.8-4.2-4.95-4.4-.14-.19-1.17-1.56-1.17-2.98 0-1.42.75-2.12 1.01-2.41.26-.29.57-.36.76-.36l.55.01c.17.01.41-.07.64.48.24.55.79 1.93.86 2.07.07.14.12.31.02.5-.1.19-.15.31-.29.48-.14.17-.3.38-.43.5-.14.15-.29.31-.12.58.17.29.75 1.24 1.62 2.01 1.11.99 2.05 1.3 2.34 1.45.29.14.46.12.63-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.65-.14.26.1 1.65.78 1.93.92.29.14.48.22.55.34.07.12.07.7-.17 1.38z" />
+                  </svg>
+                  {whatsappLabel}
+                </a>
+              )
+            }
+
+            {
+              CONTACT.email && (
+                <p class="mail">
+                  <span class="lbl">{emailLabel}</span>
+                  <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                </p>
+              )
+            }
+
             <address>
               <span class="lbl">{addressLabel}</span>
               {CONTACT.addressLines.join(", ")}
@@ -400,6 +441,54 @@ const organization = {
 
   .tels span {
     color: var(--or);
+  }
+
+  /* The one filled control on the page. WhatsApp is how buyers in Tunisia
+     actually open a conversation, so it gets weight the tel: links do not. */
+  .wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.25rem;
+    padding: 0.7rem 1.15rem;
+    background: var(--or);
+    color: var(--noir);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--or);
+    transition: background 0.15s ease;
+  }
+
+  .wa:hover,
+  .wa:focus-visible {
+    background: transparent;
+    color: var(--or);
+  }
+
+  .wa svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    fill: currentColor;
+    flex: none;
+  }
+
+  .cols .mail {
+    margin: 0 0 1.25rem;
+    font-size: 0.88rem;
+  }
+
+  .mail a {
+    color: var(--ivoire);
+    text-decoration: none;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 2px;
+  }
+
+  .mail a:hover,
+  .mail a:focus-visible {
+    color: var(--or);
+    border-bottom-color: var(--or);
   }
 
   address {
