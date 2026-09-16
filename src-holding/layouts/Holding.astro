@@ -286,7 +286,12 @@ const organization = {
 
   .wrap {
     width: 100%;
-    max-width: 58rem;
+    /* The same measure as the real site's `--wrap` in src/styles/global.css.
+       This page stood at 58rem for a while, which is 272px narrower than the
+       site it is standing in for: on a wide screen the content read as a
+       column floating in black rather than a page. Kept in step by hand — the
+       holding page deliberately does not import the design system. */
+    max-width: 75rem;
   }
 
   .head {
@@ -319,6 +324,31 @@ const organization = {
 
   .hero {
     margin-top: clamp(2.5rem, 8vw, 5rem);
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  /* Wide enough for two columns: the headline keeps the left, the intro moves
+     up beside it instead of sitting under it with the whole right half empty.
+     Same 1.35fr / 1fr ratio as the sections below, so the page reads on one
+     rhythm rather than switching measure halfway down. Breakpoint is higher
+     than the sections' 46rem — a headline this size needs the room first. */
+  @media (width >= 62rem) {
+    .hero {
+      grid-template-columns: 1.35fr 1fr;
+      column-gap: clamp(2rem, 5vw, 3.5rem);
+      align-items: end;
+    }
+
+    .hero .eyebrow {
+      grid-column: 1 / -1;
+      margin-bottom: 0;
+    }
+
+    .hero .intro {
+      /* Sits on the headline's last baseline rather than floating mid-column. */
+      margin: 0 0 0.55rem;
+    }
   }
 
   .eyebrow {
@@ -334,7 +364,7 @@ const organization = {
     margin: 0;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-weight: 400;
-    font-size: clamp(2.4rem, 7.5vw, 4.25rem);
+    font-size: clamp(2.4rem, 7.5vw, 4.6rem);
     line-height: 1.06;
     letter-spacing: -0.01em;
   }
