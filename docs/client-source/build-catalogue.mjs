@@ -146,6 +146,8 @@ table.specs caption{caption-side:top;text-align:left;font-weight:700;font-size:8
 table.specs td{border-bottom:1px solid #efefef;padding:1.3mm 2mm;vertical-align:top}
 table.specs td.k{color:var(--muted);width:46%}
 table.specs td.v{font-variant-numeric:tabular-nums}
+table.specs tr.todo td{color:#b06a1f}
+table.specs tr.todo td.v{font-style:italic}
 
 .small{font-size:8pt;color:var(--muted)}
 .kv{font-size:8pt;color:var(--muted);margin:0}
@@ -158,21 +160,43 @@ function pairs(items) {
     .join("")}</div>`;
 }
 
+/**
+ * A specification the manufacturer's documentation did not give.
+ *
+ * The content files carry the literal string `TODO:NEEDS_INPUT`, which the
+ * site renders as a visible marker rather than hiding, so an incomplete row is
+ * obvious to a visitor instead of looking like a complete one. Printing that
+ * raw token in a client document would be gibberish, so it becomes a legible
+ * request here — but it is still shown, never dropped: a silently missing row
+ * is the one thing worse than an empty one, because nobody knows to fill it.
+ */
+const MISSING = "TODO:NEEDS_INPUT";
+const isMissing = (v) => String(v).trim().startsWith(MISSING);
+
 function specTables(groups) {
   return groups
     .map(
       (g) => `<table class="specs"><caption>${esc(g.group)}</caption><tbody>${g.rows
-        .map((r) => `<tr><td class="k">${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`)
+        .map((r) =>
+          isMissing(r.value)
+            ? `<tr class="todo"><td class="k">${esc(r.label)}</td><td class="v">À fournir — absent de la documentation fabricant</td></tr>`
+            : `<tr><td class="k">${esc(r.label)}</td><td class="v">${esc(r.value)}</td></tr>`,
+        )
         .join("")}</tbody></table>`,
     )
     .join("");
 }
+
+/** How many rows across the whole catalogue are still waiting on a value. */
+const countMissing = (machines) =>
+  machines.reduce((t, m) => t + m.specs.reduce((s, g) => s + g.rows.filter((r) => isMissing(r.value)).length, 0), 0);
 
 function machineSection(m, n, byName) {
   const cat = CATEGORIES[m.category] ?? m.category;
   const published = !m.draft;
   const rel = m.related.map((s) => byName.get(s) ?? `${s} (introuvable)`).join(" · ");
   const specCount = m.specs.reduce((t, g) => t + g.rows.length, 0);
+  const missing = m.specs.reduce((t, g) => t + g.rows.filter((r) => isMissing(r.value)).length, 0);
 
   return `
 <section class="machine">
@@ -186,6 +210,7 @@ function machineSection(m, n, byName) {
       ${m.featured ? `<span class="pill">Mise en avant</span>` : ""}
       ${m.videoId ? `<span class="pill">Vidéo</span>` : ""}
       <span class="pill">${specCount} caractéristiques</span>
+      ${missing ? `<span class="pill draft">${missing} à fournir</span>` : ""}
     </div>
   </div>
 
@@ -223,6 +248,7 @@ function document_(machines, logo) {
   const waiting = machines.filter((m) => m.draft);
   const families = new Set(online.map((m) => m.category));
   const specTotal = machines.reduce((t, m) => t + m.specs.reduce((s, g) => s + g.rows.length, 0), 0);
+  const missingTotal = countMissing(machines);
 
   const indexRows = machines
     .map(
@@ -253,7 +279,7 @@ function document_(machines, logo) {
       <div><div class="n">${machines.length}</div><div class="l">équipements rédigés</div></div>
       <div><div class="n">${online.length}</div><div class="l">en ligne aujourd'hui</div></div>
       <div><div class="n">${waiting.length}</div><div class="l">en attente d'une photographie</div></div>
-      <div><div class="n">${specTotal}</div><div class="l">caractéristiques techniques</div></div>
+      <div><div class="n">${specTotal}</div><div class="l">caractéristiques techniques, dont ${missingTotal} à fournir</div></div>
     </div>
   </div>
   <div class="small">GNIE · Groupe Nasra Import Export · Document de relecture</div>
@@ -279,8 +305,11 @@ function document_(machines, logo) {
       relevés dans vos catalogues et vos brochures fabricants. Une erreur de virgule dans une
       fiche technique se retourne contre vous devant un client averti.</p>
     <p>Ensuite les noms commerciaux, les marques et les zones traitées.</p>
-    <p>Aucune valeur n'a été inventée : là où la documentation fabricant était muette, la ligne
-      est absente plutôt qu'estimée.</p>
+    <p>Aucune valeur n'a été inventée. Là où la documentation fabricant est muette, la ligne
+      reste visible et porte la mention <b style="color:#b06a1f">À fournir</b> : ${missingTotal} lignes
+      sont dans ce cas. Une ligne supprimée disparaîtrait de votre relecture, et personne ne
+      saurait qu'il manque quelque chose — c'est pourquoi elle est affichée plutôt qu'effacée.
+      Le site fait de même : le visiteur voit un repère, jamais une estimation.</p>
   </div>
 
   <table>
