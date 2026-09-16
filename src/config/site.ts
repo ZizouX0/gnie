@@ -28,11 +28,30 @@ export const CONTACT = {
    * along with the legal form and share capital.
    */
   legalName: "Groupe Nasra Import Export",
+  /**
+   * The leased office, from the lease itself: 4th floor of Immeuble Babel,
+   * Bloc F, office 7, Rue Chott Mariem. This replaces the address printed in
+   * catalogue 5 (Imm. Emmeraude de Tunis, Rue Mohamed Badra, Bureau A-2-8),
+   * which was never more than a transcription of a brochure and is now known
+   * to be wrong. A lease is a better source than a brochure.
+   *
+   * Three lines, and the third still carries the district — Base.astro joins
+   * them for the JSON-LD streetAddress and both footers render them in order.
+   */
   addressLines: [
-    "Imm. Emmeraude de Tunis",
-    "Rue Mohamed Badra, Bureau A-2-8",
+    "Immeuble Babel, Bloc F, 4e étage",
+    "Bureau n° 7, Rue Chott Mariem",
     "Montplaisir, Tunis 1073",
   ],
+  /**
+   * The part of the address a map can actually find.
+   *
+   * `addressLines` is what a human reads, and it carries a floor, a block and
+   * an office number — detail no geocoder resolves. Feeding the whole string to
+   * Google Maps drops the pin on the district, or on nothing. The building and
+   * the street are what place it.
+   */
+  mapQuery: "Immeuble Babel, Rue Chott Mariem, Montplaisir, Tunis 1073",
   cityLine: "Montplaisir · Tunis · Tunisie",
   phonePrimary: "55 157 506",
   phoneSecondary: "90 157 560",
