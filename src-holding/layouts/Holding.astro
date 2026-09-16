@@ -494,6 +494,7 @@ const organization = {
   .wa {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.55rem;
     margin-bottom: 1.25rem;
     padding: 0.7rem 1.15rem;
@@ -532,8 +533,7 @@ const organization = {
   }
 
   .mail a:hover,
-  .mail a:focus-visible {
-    color: var(--or);
+  .mail a:focus-visible {    color: var(--or);
     border-bottom-color: var(--or);
   }
 
@@ -568,5 +568,42 @@ const organization = {
   :global(a:focus-visible) {
     outline: 2px solid var(--or);
     outline-offset: 3px;
+  }
+
+  /* ── Touch ergonomics ──────────────────────────────────────────
+     The language switch, the phone number and the e-mail address are 22–24px
+     tall. That is comfortable with a mouse and fiddly with a thumb, and this
+     page is mostly read on a phone.
+
+     The hit area is grown with an invisible pseudo-element rather than with
+     padding, because each of these carries a hairline underline: padding would
+     push the underline away from the text and the row would grow. `inset` with
+     negative values expands what the finger can hit and changes no layout and
+     no pixel on screen. */
+  .lang,
+  .tels a,
+  .mail a {
+    position: relative;
+  }
+
+  .lang::after,
+  .tels a::after,
+  .mail a::after {
+    content: "";
+    position: absolute;
+    inset: -11px -8px;
+  }
+
+  .wa {
+    /* Already comfortable, but state it rather than leave it to the font. */
+    min-height: 44px;
+  }
+
+  /* One action on the page, so on a phone it takes the column rather than
+     sitting shrink-to-fit in the middle of it. */
+  @media (width < 30rem) {
+    .wa {
+      width: 100%;
+    }
   }
 </style>
