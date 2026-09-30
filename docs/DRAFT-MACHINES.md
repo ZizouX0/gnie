@@ -1,6 +1,6 @@
 # Machines en brouillon — comment les publier
 
-Le catalogue contient **30 machines** : 13 en ligne, 17 en brouillon.
+Le catalogue contient **39 machines** : 15 en ligne, 24 en brouillon.
 
 Les 17 brouillons viennent de l'étude *Gammes de technologies en médecine
 esthétique 2025/2026* (GNIE / Sarra Bellakhal, 112 pages). Leur contenu est
@@ -125,16 +125,45 @@ Trois chaînes portent des compteurs écrits à la main. Elles disent aujourd'hu
 Trois familles n'existent que pour elles et n'apparaîtront sur le site qu'à
 leur publication : `resurfacing`, `hifu` et `perinee`.
 
+## Les six modèles ajoutés en septembre
+
+L'étude nomme **23 références**. Dix-sept avaient été rédigées ; les six
+autres avaient été écartées comme doublons ou variantes. À la demande du
+client, cinq d'entre elles ont désormais leur propre fiche — la sixième reste
+écartée, et pour une bonne raison.
+
+| Modèle | Statut | Pourquoi |
+|---|---|---|
+| **DL108** | ajouté | Tableau de spécifications complet et distinct du DL109 : 720-1200 W contre 1800-3000 W, 87 J/cm² contre 38, impulsions 10-200 ms contre 3-100 ms. Deux classes de puissance, pas un doublon. |
+| **FU4-1SP** | ajouté | Format compact de table du FU5-1S. Même plateforme électronique, châssis différent. |
+| **EMS15** | ajouté | Format de table du Pulse Lift EMS10, pour les espaces de soins restreints. |
+| **EMS2** | ajouté | Fauteuil périnéal élargi : écran orientable sur châssis, protocole automatisé en 3 phases. |
+| **MR16-5S** | ajouté | L'étude traite MR16-6S et MR16-5S dans une section commune sans détailler ce qui les sépare. La fiche le dit et marque la différence `TODO:NEEDS_INPUT`. |
+| **BMFR15** | **non ajouté** | C'est le Laser CO2 Fractionné **déjà en ligne** : huit valeurs de spécification identiques. L'ajouter afficherait la même machine deux fois sous deux noms. |
+
+### Les quatre paires « grand / compact »
+
+L'étude décrit quatre gammes déclinées en deux architectures. Chacune a
+maintenant deux fiches, conformément au choix du client :
+
+| Version large | Version compacte |
+|---|---|
+| FU5-1S — station verticale sur roulettes, 60 kg | FU4-1SP — format de table |
+| EMS10 — console mobile, écran 12,1 pouces | EMS15 — format de table |
+| EMS2 — assise élargie, écran orientable, 3 phases | EMS1 — assise centrée, impulsions 300 µs |
+| MR16-6S | MR16-5S — distinction à confirmer |
+
+Les fiches des versions compactes héritent du tableau de spécifications de
+leur jumelle, l'étude ne publiant qu'un seul tableau par plateforme. Ce que
+la fiche ajoute est ce que l'étude affirme explicitement : l'architecture,
+et rien de plus.
+
 ## Modèles de l'étude volontairement absents
 
-- **DL108** — mêmes quatre longueurs d'onde que l'EosICE Pro Max déjà en
-  ligne. L'ajouter avant confirmation du client risquerait de présenter la
-  même machine deux fois sous deux noms. La question est posée dans
-  `docs/client/GNIE-Ce-Qui-Manque.pdf`.
 - **BMFR15** — c'est le Laser CO2 Fractionné déjà en ligne : huit valeurs de
   spécification identiques.
-- **FU4-1SP, MR16-5S, EMS15, EMS2** — variantes de format sans tableau de
-  spécifications propre. Chacune est une ligne dans la fiche de son jumeau.
+Il ne reste qu'une exclusion : **BMFR15**, doublon avéré du Laser CO2
+Fractionné en ligne.
 - **Er:YAG 2940 nm** (section 4.6 de l'étude) — technologie décrite, mais
   aucun modèle nommé et aucun tableau. Rien à partir de quoi construire une
   fiche.
