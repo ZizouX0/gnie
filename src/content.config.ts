@@ -23,6 +23,7 @@ const machines = defineCollection({
         "epilation",
         "hifu",
         "perinee",
+        "chirurgical",
       ]),
       tagline: z.string(),
       excerpt: z.string(),

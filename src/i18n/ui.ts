@@ -28,6 +28,7 @@ export const categories = [
   "pressotherapie",
   "perinee",
   "analyse",
+  "chirurgical",
 ] as const;
 export type Category = (typeof categories)[number];
 
@@ -73,7 +74,7 @@ export const ui = {
        clinic actually types. The h1 above stays short on the page itself. */
     "catalog.seoTitle": "Machines esthétiques professionnelles en Tunisie",
     "catalog.intro":
-      "Treize équipements professionnels, huit familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
+      "Quinze équipements professionnels, huit familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
     "catalog.all": "Toutes",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -92,6 +93,7 @@ export const ui = {
     "cat.visage": "Soin du visage",
     "cat.pressotherapie": "Pressothérapie & drainage",
     "cat.analyse": "Analyse & diagnostic",
+    "cat.chirurgical": "Laser chirurgical",
     "cat.epilation": "Épilation définitive",
 
     "footer.machines": "Machines",
@@ -154,7 +156,7 @@ export const ui = {
     "catalog.title": "Our machines",
     "catalog.seoTitle": "Professional aesthetic machines in Tunisia",
     "catalog.intro":
-      "Thirteen professional devices across eight technology families, selected for demanding clinics and institutes.",
+      "Fifteen professional devices across eight technology families, selected for demanding clinics and institutes.",
     "catalog.all": "All",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -173,6 +175,7 @@ export const ui = {
     "cat.visage": "Facial care",
     "cat.pressotherapie": "Pressotherapy & drainage",
     "cat.analyse": "Analysis & diagnostics",
+    "cat.chirurgical": "Surgical laser",
     "cat.epilation": "Permanent hair removal",
 
     "footer.machines": "Machines",
