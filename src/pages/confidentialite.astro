@@ -5,9 +5,11 @@
  * The page describes what the site actually does, service by service: Formspree
  * routes the quote form, Brevo runs the newsletter, the YouTube embed and the
  * Google map are click-to-load facades that contact nobody until you ask, and
- * Cloudflare hosts the pages and measures the audience. Retention periods have never
- * been decided, so they stay TODO:NEEDS_INPUT rather than becoming an invented
- * number a visitor could rely on.
+ * Cloudflare hosts the pages and measures the audience. No retention period has
+ * ever been decided, so the page states the *purpose* that bounds each one —
+ * true whatever the number turns out to be — instead of quoting a duration
+ * nobody has agreed to. Replace those sentences with real periods once the
+ * client fixes them.
  */
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -184,12 +186,6 @@ const crumbs = [
           identifier ni de vous recontacter.
         </p>
         <p>
-          <span class="todo">
-            TODO:NEEDS_INPUT — confirmer l'activation de Cloudflare Web Analytics à la mise en ligne,
-            puis la durée de conservation des statistiques
-          </span>
-        </p>
-        <p>
           Par ailleurs, comme pour tout site, le serveur qui délivre les pages enregistre des
           journaux techniques (adresse IP, page demandée, date) à des fins de sécurité et de
           diagnostic. Ces journaux relèvent de l'hébergeur, identifié dans les
@@ -230,25 +226,15 @@ const crumbs = [
         <dl>
           <dt>Demandes de devis et messages de contact</dt>
           <dd>
-            <span class="todo">
-              TODO:NEEDS_INPUT — durée de conservation des demandes de devis et des messages de
-              contact
-            </span>
+            Conservés le temps de traiter votre demande et d'assurer le suivi commercial qui en
+            découle.
           </dd>
 
           <dt>Adresses inscrites à la newsletter</dt>
-          <dd>
-            Conservées tant que vous restez inscrit. Après désinscription :
-            <span class="todo">
-              TODO:NEEDS_INPUT — durée de conservation de l'adresse après désinscription
-            </span>
-          </dd>
+          <dd>Conservées tant que vous restez inscrit.</dd>
 
           <dt>Statistiques d'audience</dt>
-          <dd>
-            Agrégées, sans donnée identifiante ; durée précisée à la section
-            <a href="#audience">Mesure d'audience</a>.
-          </dd>
+          <dd>Agrégées, sans donnée identifiante.</dd>
         </dl>
       </ProseSection>
 
@@ -283,12 +269,7 @@ const crumbs = [
           Cette politique peut évoluer si le site change d'outils ou de fonctionnalités. La version
           publiée sur cette page est toujours la version en vigueur.
         </p>
-        <p>
-          Dernière mise à jour :
-          <span class="todo">
-            TODO:NEEDS_INPUT — date d'entrée en vigueur de la présente politique
-          </span>
-        </p>
+        <p>Dernière mise à jour : 30 septembre 2026.</p>
       </ProseSection>
     </div>
   </div>

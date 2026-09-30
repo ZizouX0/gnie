@@ -4,10 +4,12 @@
  *
  * Every company fact comes from CONTACT or the dictionary — nothing is retyped
  * here. The facts a legal notice normally carries but this project has never
- * been given (forme juridique, capital, RNE, matricule fiscal, directeur de la
- * publication, identification complète de l'hébergeur) are rendered as
- * TODO:NEEDS_INPUT placeholders, the same token the machine content uses: a
- * missing registration number must look missing, never plausible.
+ * been given (forme juridique, capital, RNE, matricule fiscal, nom du directeur
+ * de la publication) are **omitted**, not invented: the client asked for the
+ * site to go live before supplying them. Add each row back here the day the
+ * number arrives — the layout is a <dl>, so a pair drops straight in. Until
+ * then the page says less than the law expects, which is the client's call,
+ * and never says something false, which is not negotiable.
  */
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -79,14 +81,6 @@ const crumbs = [
           <dt>Dénomination sociale</dt>
           <dd>{t("site.company")} ({t("site.name")})</dd>
 
-          <dt>Forme juridique</dt>
-          <dd>
-            <span class="todo">TODO:NEEDS_INPUT — forme juridique (SARL, SUARL, SA…)</span>
-          </dd>
-
-          <dt>Capital social</dt>
-          <dd><span class="todo">TODO:NEEDS_INPUT — montant du capital social</span></dd>
-
           <dt>Siège social</dt>
           <dd>{CONTACT.addressLines.map((line) => <span>{line}</span>)}</dd>
 
@@ -99,16 +93,6 @@ const crumbs = [
           <dt>Adresse e-mail</dt>
           <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}</dd>
 
-          <dt>Registre national des entreprises</dt>
-          <dd>
-            <span class="todo">
-              TODO:NEEDS_INPUT — numéro d'immatriculation au RNE (ex-registre du commerce)
-            </span>
-          </dd>
-
-          <dt>Matricule fiscal</dt>
-          <dd><span class="todo">TODO:NEEDS_INPUT — matricule fiscal</span></dd>
-
           <dt>Activité</dt>
           <dd>
             Importation, distribution, installation et maintenance d'équipements esthétiques
@@ -119,11 +103,8 @@ const crumbs = [
 
       <ProseSection {...sec("publication")}>
         <p>
-          Le directeur de la publication est&nbsp;:
-          <span class="todo">TODO:NEEDS_INPUT — nom et qualité du directeur de la publication</span>
-        </p>
-        <p>
-          Il peut être joint par courrier au siège social ou à l'adresse
+          Le directeur de la publication peut être joint par courrier au siège social ou à
+          l'adresse
           {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
       </ProseSection>

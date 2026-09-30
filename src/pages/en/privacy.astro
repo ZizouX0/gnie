@@ -5,8 +5,9 @@
  * Same substance, written in English rather than translated word for word. It
  * names the services the site really uses — Formspree for the quote form, Brevo
  * for the newsletter, Cloudflare for hosting and audience measurement, Google and
- * YouTube only behind a click-to-load facade — and leaves every retention period
- * as TODO:NEEDS_INPUT, because none has ever been decided.
+ * YouTube only behind a click-to-load facade. No retention period has ever been
+ * decided, so each one is bounded by its purpose rather than by an invented
+ * number; see the French twin, `/confidentialite/`, and keep the two in step.
  */
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -173,12 +174,6 @@ const crumbs = [
           tracking from one site to another. None of it can identify you or reach you.
         </p>
         <p>
-          <span class="todo">
-            TODO:NEEDS_INPUT — confirm that Cloudflare Web Analytics is enabled at launch, then the
-            retention period for the statistics
-          </span>
-        </p>
-        <p>
           Separately, as on any website, the server delivering the pages records technical logs (IP
           address, page requested, timestamp) for security and diagnostics. Those logs are the
           host's responsibility; the host is identified in the
@@ -212,24 +207,15 @@ const crumbs = [
         <dl>
           <dt>Quote requests and contact messages</dt>
           <dd>
-            <span class="todo">
-              TODO:NEEDS_INPUT — retention period for quote requests and contact messages
-            </span>
+            Kept for as long as it takes to handle your request and the commercial follow-up that
+            comes out of it.
           </dd>
 
           <dt>Newsletter addresses</dt>
-          <dd>
-            Kept for as long as you stay subscribed. After you unsubscribe:
-            <span class="todo">
-              TODO:NEEDS_INPUT — retention period for the address after unsubscribing
-            </span>
-          </dd>
+          <dd>Kept for as long as you stay subscribed.</dd>
 
           <dt>Audience statistics</dt>
-          <dd>
-            Aggregated, with nothing identifying in them; the period is given under
-            <a href="#analytics">Audience measurement</a>.
-          </dd>
+          <dd>Aggregated, with nothing identifying in them.</dd>
         </dl>
       </ProseSection>
 
@@ -263,10 +249,7 @@ const crumbs = [
           This policy may change if the site adopts different tools or features. The version
           published on this page is always the one in force.
         </p>
-        <p>
-          Last updated:
-          <span class="todo">TODO:NEEDS_INPUT — effective date of this policy</span>
-        </p>
+        <p>Last updated: 30 September 2026.</p>
       </ProseSection>
     </div>
   </div>

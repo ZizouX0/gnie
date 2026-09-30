@@ -4,9 +4,9 @@
  *
  * Same substance, written in English rather than translated word for word. Every
  * company fact comes from CONTACT or the dictionary; the facts nobody has given
- * us yet (legal form, share capital, trade register, tax number, publication
- * director, the host's full identification) stay TODO:NEEDS_INPUT so a missing
- * registration number always looks missing.
+ * us yet (legal form, share capital, trade register, tax number, the publication
+ * director's name) are omitted rather than invented — see the French twin,
+ * `/mentions-legales/`, for why, and keep the two pages in step.
  */
 import Base from "@/layouts/Base.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -78,14 +78,6 @@ const crumbs = [
           <dt>Company name</dt>
           <dd>{t("site.company")} ({t("site.name")})</dd>
 
-          <dt>Legal form</dt>
-          <dd>
-            <span class="todo">TODO:NEEDS_INPUT — legal form (SARL, SUARL, SA…)</span>
-          </dd>
-
-          <dt>Share capital</dt>
-          <dd><span class="todo">TODO:NEEDS_INPUT — amount of share capital</span></dd>
-
           <dt>Registered office</dt>
           <dd>{CONTACT.addressLines.map((line) => <span>{line}</span>)}</dd>
 
@@ -98,19 +90,6 @@ const crumbs = [
           <dt>Email</dt>
           <dd>{CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}</dd>
 
-          <dt>Trade register</dt>
-          <dd>
-            <span class="todo">
-              TODO:NEEDS_INPUT — registration number with the Tunisian national business register
-              (RNE, formerly the commercial register)
-            </span>
-          </dd>
-
-          <dt>Tax identification number</dt>
-          <dd>
-            <span class="todo">TODO:NEEDS_INPUT — tax identification number (matricule fiscal)</span>
-          </dd>
-
           <dt>Activity</dt>
           <dd>
             Import, distribution, installation and servicing of professional aesthetic equipment,
@@ -121,13 +100,7 @@ const crumbs = [
 
       <ProseSection {...sec("director")}>
         <p>
-          The director of publication is:
-          <span class="todo">
-            TODO:NEEDS_INPUT — name and role of the publication director
-          </span>
-        </p>
-        <p>
-          They can be reached by post at the registered office, or at
+          The director of publication can be reached by post at the registered office, or at
           {CONTACT.email ? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : <Fragment set:html={TODO_EMAIL} />}.
         </p>
       </ProseSection>
