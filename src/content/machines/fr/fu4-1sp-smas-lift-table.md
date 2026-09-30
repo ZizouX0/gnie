@@ -48,8 +48,6 @@ specs:
       - { label: "Lipohifu", value: "8,0 · 13,0 mm" }
   - group: "Général"
     rows:
-      - { label: "Poids net", value: "60 kg" }
-      - { label: "Dimensions d'emballage", value: "68 × 57 × 118 cm" }
       - { label: "Alimentation", value: "AC 110-220 V, 50/60 Hz" }
   - group: "Format"
     rows:

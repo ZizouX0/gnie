@@ -49,7 +49,7 @@ specs:
     rows:
       - { label: "Limite des consommables", value: "1 200 tirs / 24 heures" }
       - { label: "Alimentation", value: "AC 100-240 V" }
-      - { label: "Variante", value: "MR16-5S" }
+      - { label: "Variante", value: "MR16-6S" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
   - group: "Déclinaison"

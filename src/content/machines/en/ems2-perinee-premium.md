@@ -38,10 +38,8 @@ specs:
       - { label: "Induction performance", value: "12,000 contractions in 30 minutes" }
   - group: "General"
     rows:
-      - { label: "Manufacturer name", value: "Privacy And Health Management Machine (EMS1)" }
+      - { label: "Manufacturer name", value: "TODO:NEEDS_INPUT" }
       - { label: "Maximum consumption", value: "2.3 kVA" }
-      - { label: "Chassis dimensions", value: "76 × 70 × 65.5 cm" }
-      - { label: "Shipping crate dimensions", value: "86 × 77 × 81 cm" }
       - { label: "Power supply", value: "AC 110-220 V, 50/60 Hz" }
       - { label: "Variant", value: "EMS2, wider seat, tilting screen, 3-phase protocol" }
       - { label: "Weight", value: "TODO:NEEDS_INPUT" }

@@ -48,8 +48,6 @@ specs:
       - { label: "Lipohifu", value: "8.0 · 13.0 mm" }
   - group: "General"
     rows:
-      - { label: "Net weight", value: "60 kg" }
-      - { label: "Packing dimensions", value: "68 × 57 × 118 cm" }
       - { label: "Power supply", value: "AC 110-220 V, 50/60 Hz" }
       - { label: "Compact variant", value: "FU4-1SP, tabletop format, same electronics platform" }
   - group: "Format"

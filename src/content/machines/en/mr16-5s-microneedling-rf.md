@@ -49,7 +49,7 @@ specs:
     rows:
       - { label: "Consumable limit", value: "1,200 shots / 24 hours" }
       - { label: "Power supply", value: "AC 100-240 V" }
-      - { label: "Variant", value: "MR16-5S" }
+      - { label: "Variant", value: "MR16-6S" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Weight", value: "TODO:NEEDS_INPUT" }
   - group: "Format"

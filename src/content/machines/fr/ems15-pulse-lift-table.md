@@ -46,8 +46,6 @@ specs:
       - { label: "Interface", value: "Écran tactile 12,1 pouces" }
       - { label: "Puissance totale apparente", value: "550 VA" }
       - { label: "Refroidissement", value: "Par air" }
-      - { label: "Dimensions", value: "52 × 60 × 73 cm" }
-      - { label: "Poids net de la console", value: "46 kg" }
       - { label: "Alimentation", value: "AC 100-240 V, 50/60 Hz" }
   - group: "Format"
     rows:

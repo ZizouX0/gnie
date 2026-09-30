@@ -47,7 +47,6 @@ specs:
       - { label: "Total apparent power", value: "550 VA" }
       - { label: "Cooling", value: "Air" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
-      - { label: "Console net weight", value: "46 kg" }
       - { label: "Power supply", value: "AC 100-240 V, 50/60 Hz" }
       - { label: "Compact variant", value: "EMS15, tabletop format, same technology base" }
   - group: "Format"
