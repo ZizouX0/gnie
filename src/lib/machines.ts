@@ -27,6 +27,27 @@ export async function featuredMachines(locale: Locale): Promise<Machine[]> {
 }
 
 /**
+ * How big the catalogue is, counted rather than typed.
+ *
+ * The home page and the catalogue heading both open by saying how many
+ * machines and how many technology families the site holds. Those two numbers
+ * were written out by hand in five places, and publishing one machine made all
+ * five wrong at once — the catalogue said "quinze équipements" above a grid of
+ * sixteen. Counting them here costs nothing and cannot drift.
+ *
+ * `families` counts categories that actually have a published machine in them,
+ * which is the same rule CategoryStrip uses to decide which tiles to draw: a
+ * family nobody can click is not a family the visitor sees.
+ */
+export async function catalogueSize(locale: Locale): Promise<{ machines: number; families: number }> {
+  const entries = await publishedMachines(locale);
+  return {
+    machines: entries.length,
+    families: new Set(entries.map((m) => m.data.category)).size,
+  };
+}
+
+/**
  * A related machine, resolved in the caller's language.
  *
  * Returns null when the target does not exist or is a draft — a draft is a

@@ -32,6 +32,30 @@ disparaissent.
   bon domaine, mais toujours l'ancienne adresse postale.
 - Les pages de `catalogue 4.pdf` citent des marques tierces — MyoFiber®,
   FiLaC®, LHP®, Triangel — qui ne sont pas celles du fabricant de l'appareil.
-- Le corps de texte de `catalogue 4.pdf` est vectorisé, pas du texte
-  sélectionnable : `get_text()` renvoie du vide sur la plupart des pages. Il
-  faut rendre la page en image pour la lire.
+- Une page sur deux de `catalogue 4.pdf` a son texte vectorisé plutôt que
+  sélectionnable : `get_text()` ne rend presque rien sur les pages 1, 2, 3, 5,
+  7, 10, 11, 13, 16, 19, 22, 25, 28 et 29. Les quinze autres se lisent
+  normalement. Pour les premières, il faut rendre la page en image.
+
+## Ce que `catalogue 4.pdf` a donné
+
+C'est la source unique de la fiche **Endolaser — LASEEV 980/1470**
+(`src/content/machines/*/endolaser.md`) : tableau de spécifications complet
+sur la couverture, et dix domaines d'application répartis sur les 29 pages.
+
+Les quatre visuels de la fiche en sortent aussi, extraits à leur résolution
+réelle avec `extract_image` — pas à leur taille d'affichage, qui est plus
+petite :
+
+| Visuel | Source | Résolution d'origine |
+|---|---|---|
+| Hero | page 3, xref 4495 | 453 × 453, **agrandi ×2** |
+| Pièce à main et pointes | page 2, xref 5894 | 501 × 501, natif |
+| Fibre gainée SMA905 | page 2, xref 5895 | 501 × 501, natif |
+| Canules de lipolyse | page 9, xref 5848 | 660 × 495, natif |
+
+L'agrandissement du hero est un Lanczos ×2 suivi d'un masque flou. Rien n'est
+inventé : c'est un rendu de synthèse à surfaces plates, sans texture à
+halluciner, et c'était le seul visuel de l'appareil dans tout le document.
+Les trois autres sont intacts. Si le fournisseur envoie une vraie
+photographie, elle remplace le hero sans rien changer d'autre.

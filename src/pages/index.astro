@@ -19,9 +19,14 @@ import NewsletterBlock from "@/components/NewsletterBlock.astro";
 import CTABlock from "@/components/CTABlock.astro";
 import { useTranslations } from "@/i18n/ui";
 import { CONTACT } from "@/config/site";
+import { catalogueSize } from "@/lib/machines";
 
 const locale = "fr" as const;
 const t = useTranslations(locale);
+
+/* Counted, never typed: publishing a machine used to leave three numbers on
+   this page quietly wrong. */
+const { machines, families } = await catalogueSize(locale);
 ---
 
 <Base
@@ -36,7 +41,7 @@ const t = useTranslations(locale);
     accent="différence."
     sub="GNIE importe et installe les technologies esthétiques premium des plus grandes marques internationales, pour les cliniques, medspas et instituts exigeants."
     trust={[
-      "<b>15</b> machines au catalogue",
+      `<b>${machines}</b> machines au catalogue`,
       "<b>Installation &amp; formation</b> incluses",
       "<b>SAV local</b> assuré par nos techniciens",
     ]}
@@ -45,7 +50,7 @@ const t = useTranslations(locale);
   <CategoryStrip
     locale={locale}
     eyebrow="Le catalogue"
-    title="Huit familles de technologies"
+    title={`${families} familles de technologies`}
     intro="Chaque famille répond à une demande précise de votre clientèle. Choisissez la vôtre : le catalogue s'ouvre déjà filtré."
   />
 
@@ -75,7 +80,7 @@ const t = useTranslations(locale);
       },
       {
         title: "Marques internationales",
-        text: "Notre catalogue réunit les gammes de fabricants reconnus — PZLASER, VISBODY, HOWBODY — réparties en huit familles de technologies.",
+        text: `Notre catalogue réunit les gammes de fabricants reconnus — PZLASER, VISBODY, HOWBODY — réparties en ${families} familles de technologies.`,
       },
     ]}
   />

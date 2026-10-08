@@ -40,6 +40,11 @@ const t = useTranslations(locale);
 
 const entries = await publishedMachines(locale);
 
+/** The intro line counts the catalogue rather than asserting a figure. */
+const intro = t("catalog.intro")
+  .replace("{machines}", String(entries.length))
+  .replace("{families}", String(new Set(entries.map((m) => m.data.category)).size));
+
 /* ── spec helpers ────────────────────────────────────────────────
    Everything the catalogue shows of a spec table goes through here, so the
    D7 rule (a visitor never reads "TODO") is applied once. */
@@ -112,7 +117,7 @@ const crumbs = [
   locale={locale}
   page="machines"
   title={t("catalog.seoTitle")}
-  description={t("catalog.intro")}
+  description={intro}
 >
   <div class="wrap">
     <Breadcrumb items={crumbs} />
@@ -123,7 +128,7 @@ const crumbs = [
       as="h1"
       eyebrow={t("nav.machines")}
       title={t("catalog.title")}
-      intro={t("catalog.intro")}
+      intro={intro}
     />
   </div>
 

@@ -73,8 +73,11 @@ export const ui = {
     /* The <title> is a search result, not a heading: it carries the terms a
        clinic actually types. The h1 above stays short on the page itself. */
     "catalog.seoTitle": "Machines esthétiques professionnelles en Tunisie",
+    /* {machines} and {families} are filled from the collection at build time —
+       see catalogueSize(). Publishing a machine must never leave a number here
+       stale. */
     "catalog.intro":
-      "Quinze équipements professionnels, huit familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
+      "{machines} équipements professionnels, {families} familles de technologies, sélectionnés pour les cliniques et instituts exigeants.",
     "catalog.all": "Toutes",
     "catalog.count": "machines",
     "catalog.countOne": "machine",
@@ -155,8 +158,9 @@ export const ui = {
 
     "catalog.title": "Our machines",
     "catalog.seoTitle": "Professional aesthetic machines in Tunisia",
+    /* {machines} and {families} are filled from the collection at build time. */
     "catalog.intro":
-      "Fifteen professional devices across eight technology families, selected for demanding clinics and institutes.",
+      "{machines} professional devices across {families} technology families, selected for demanding clinics and institutes.",
     "catalog.all": "All",
     "catalog.count": "machines",
     "catalog.countOne": "machine",

@@ -19,9 +19,13 @@ import NewsletterBlock from "@/components/NewsletterBlock.astro";
 import CTABlock from "@/components/CTABlock.astro";
 import { useTranslations } from "@/i18n/ui";
 import { CONTACT } from "@/config/site";
+import { catalogueSize } from "@/lib/machines";
 
 const locale = "en" as const;
 const t = useTranslations(locale);
+
+/* Counted, never typed — see the French twin. */
+const { machines, families } = await catalogueSize(locale);
 ---
 
 <Base
@@ -36,7 +40,7 @@ const t = useTranslations(locale);
     accent="difference."
     sub="GNIE imports and installs premium aesthetic technology from the world's leading manufacturers, for clinics, medspas and institutes that expect more."
     trust={[
-      "<b>15</b> machines in the catalogue",
+      `<b>${machines}</b> machines in the catalogue`,
       "<b>Installation &amp; training</b> included",
       "<b>Local service</b> by our own technicians",
     ]}
@@ -45,7 +49,7 @@ const t = useTranslations(locale);
   <CategoryStrip
     locale={locale}
     eyebrow="The catalogue"
-    title="Eight technology families"
+    title={`${families} technology families`}
     intro="Each family answers a specific demand from your clients. Pick yours and the catalogue opens already filtered."
   />
 
@@ -75,7 +79,7 @@ const t = useTranslations(locale);
       },
       {
         title: "International brands",
-        text: "Our catalogue brings together established manufacturers — PZLASER, VISBODY, HOWBODY — across eight technology families.",
+        text: `Our catalogue brings together established manufacturers — PZLASER, VISBODY, HOWBODY — across ${families} technology families.`,
       },
     ]}
   />
