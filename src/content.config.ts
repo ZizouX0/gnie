@@ -38,8 +38,22 @@ const machines = defineCollection({
           rows: z.array(z.object({ label: z.string(), value: z.string() })),
         }),
       ),
-      /** Official manufacturer footage, loaded only on click (see spec D11). */
+      /**
+       * Official manufacturer footage, loaded only on click (see spec D11).
+       *
+       * Two sources, same behaviour on the page. `videoId` embeds YouTube;
+       * `videoFile` plays a file we host ourselves, named relative to the site
+       * root (`/videos/shotwalker.mp4`). Most of what suppliers send GNIE
+       * arrives as a WhatsApp MP4 and was never published on YouTube, so
+       * demanding a YouTube id would have meant leaving that footage unused.
+       *
+       * A self-hosted file is also the better of the two for the visitor:
+       * nothing third-party is contacted even after the click, where the
+       * YouTube path hands the viewer to Google. Set one or the other; if both
+       * are set the file wins, because it is the private one.
+       */
       videoId: z.string().optional(),
+      videoFile: z.string().startsWith("/videos/").optional(),
       related: z.array(z.string()).length(2),
       featured: z.boolean().default(false),
       /**

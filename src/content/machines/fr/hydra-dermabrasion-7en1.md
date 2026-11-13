@@ -58,6 +58,7 @@ specs:
       - { label: "Alimentation", value: "TODO:NEEDS_INPUT" }
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
+videoFile: "/videos/hydra-dermabrasion-7en1.mp4"
 related: ["hydrafacial-10-en-1", "revivefacial-14en1"]
 featured: false
 draft: false

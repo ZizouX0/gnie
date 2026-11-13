@@ -3,13 +3,20 @@
  * Click-to-load video facade (spec decision D11).
  *
  * The initial HTML contains a poster and a button — no iframe, no YouTube
- * script, no preconnect. The embed is created only when the visitor asks for
- * it, so nothing third-party touches the page otherwise (~1 KB instead of
- * ~600 KB) and no cookie is set before consent-by-click.
+ * script, no preconnect, and for a self-hosted file not a single byte of
+ * video. The player is created only when the visitor asks for it, so nothing
+ * loads otherwise (~1 KB instead of ~600 KB for YouTube, instead of tens of
+ * megabytes for a file) and no cookie is set before consent-by-click.
+ *
+ * Two sources, one appearance. `src` plays a file this site serves itself;
+ * `videoId` embeds YouTube. The file is preferred when both are given: it is
+ * the version that contacts nobody, even after the click. Most supplier
+ * footage reaches GNIE as a WhatsApp MP4 that was never put on YouTube, so
+ * the file path is the common one and the embed is the exception.
  *
  * Without JavaScript the poster still renders and the overlay becomes a real
- * link to YouTube: the button is hidden while `html.no-js` is set, so a dead
- * control is never exposed to the keyboard.
+ * link — to the file, or to YouTube. The button is hidden while `html.no-js`
+ * is set, so a dead control is never exposed to the keyboard.
  */
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
@@ -17,19 +24,25 @@ import { useTranslations, type Locale } from "@/i18n/ui";
 
 interface Props {
   /** YouTube id of the official manufacturer footage. */
-  videoId: string;
+  videoId?: string;
+  /** Path to footage this site hosts, e.g. `/videos/shotwalker.mp4`. */
+  src?: string;
   /** Machine name — used for the accessible names only, never displayed raw. */
   title: string;
   poster: ImageMetadata;
   locale: Locale;
   class?: string;
 }
-const { videoId, title, poster, locale, class: className = "" } = Astro.props;
+const { videoId, src, title, poster, locale, class: className = "" } = Astro.props;
 const t = useTranslations(locale);
 
-/** Fallback destination for the no-JS path; the embed URL is built in the script. */
-const watch = `https://www.youtube.com/watch?v=${videoId}`;
-const host = new URL(watch).hostname.replace(/^www\./, "");
+if (!videoId && !src) throw new Error(`VideoFacade (${title}): neither videoId nor src was given`);
+
+/* The no-JS destination. For a hosted file that is the file itself, which the
+   browser plays on its own; for YouTube it is the watch page. The player is
+   built in the script either way. */
+const watch = src ?? `https://www.youtube.com/watch?v=${videoId}`;
+const host = src ? "" : "youtube.com";
 
 const playLabel = `${t("machine.videoPlay")} — ${title}`;
 const frameTitle = `${t("machine.video")} — ${title}`;
@@ -38,7 +51,8 @@ const frameTitle = `${t("machine.video")} — ${title}`;
 <div
   class:list={["vf", className]}
   data-video-facade
-  data-video-id={videoId}
+  data-video-id={src ? undefined : videoId}
+  data-video-src={src}
   data-video-title={frameTitle}
   data-reveal
 >
@@ -70,7 +84,7 @@ const frameTitle = `${t("machine.video")} — ${title}`;
           </svg>
         </span>
         <span class="cap">{t("machine.videoPlay")}</span>
-        <span class="host">{host} ↗</span>
+        {host && <span class="host">{host} ↗</span>}
       </a>
     </noscript>
   </div>
@@ -95,6 +109,13 @@ const frameTitle = `${t("machine.video")} — ${title}`;
   .stage :global(img) {
     object-fit: cover;
     filter: saturate(0.88) brightness(0.9);
+  }
+  /* Supplier footage arrives in whatever shape the phone that filmed it had —
+     portrait as often as landscape. `contain` pillarboxes it inside the 16/9
+     stage rather than cropping the machine out of its own video. */
+  .stage :global(video) {
+    object-fit: contain;
+    background: var(--color-noir);
   }
 
   /* Overlay: shared by the button (JS) and the noscript link (no JS). */
@@ -182,17 +203,33 @@ const frameTitle = `${t("machine.video")} — ${title}`;
 </style>
 
 <script>
-  // The only third-party contact on the page, and only after a deliberate click.
+  // Nothing loads until a deliberate click — not the file, and for the YouTube
+  // path not the embed either, which is the page's only third-party contact.
   document.querySelectorAll<HTMLElement>("[data-video-facade]").forEach((root) => {
     const stage = root.querySelector<HTMLElement>(".stage");
     const trigger = root.querySelector<HTMLButtonElement>(".trigger");
     const id = root.dataset.videoId;
-    if (!stage || !trigger || !id) return;
+    const src = root.dataset.videoSrc;
+    if (!stage || !trigger || (!id && !src)) return;
 
     trigger.addEventListener("click", () => {
+      if (src) {
+        const video = document.createElement("video");
+        video.className = "embed";
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        // iOS refuses to autoplay a video that would take over the screen.
+        video.playsInline = true;
+        video.setAttribute("aria-label", root.dataset.videoTitle ?? "");
+        stage.replaceChildren(video);
+        video.focus();
+        return;
+      }
+
       const frame = document.createElement("iframe");
       frame.className = "embed";
-      frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+      frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id!)}?autoplay=1&rel=0`;
       frame.title = root.dataset.videoTitle ?? "";
       frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
       frame.allowFullscreen = true;

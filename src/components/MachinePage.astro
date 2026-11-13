@@ -66,7 +66,7 @@ const facts = d.specs
 
 /* ── conditional sections ────────────────────────────────────── */
 const hasApplications = d.applications.length > 0;
-const hasVideo = Boolean(d.videoId);
+const hasVideo = Boolean(d.videoId || d.videoFile);
 const hasGallery = d.gallery.length >= 2; // MachineGallery self-hides below 2
 
 /** Alternation is driven by what renders, not by a hardcoded index. */
@@ -264,7 +264,8 @@ const crumbs = [
           <SectionHeading eyebrow={d.name} title={t("machine.video")} />
           <div class="col">
             <VideoFacade
-              videoId={d.videoId!}
+              videoId={d.videoId}
+              src={d.videoFile}
               title={d.name}
               poster={d.heroImage}
               locale={locale}

@@ -59,3 +59,33 @@ inventé : c'est un rendu de synthèse à surfaces plates, sans texture à
 halluciner, et c'était le seul visuel de l'appareil dans tout le document.
 Les trois autres sont intacts. Si le fournisseur envoie une vraie
 photographie, elle remplace le hero sans rien changer d'autre.
+
+## Arrivée du 13 novembre 2026
+
+Quatre documents, trois appareils nouveaux et une brochure GNIE.
+
+| Document | Appareil | État |
+|---|---|---|
+| `Microneedling Catalog-MR-2T.pdf` | **ShotWalker** (JonteLaser) | Tableau de spécifications complet. Fiche publiée. |
+| `H18-Jordi-reyouth-Gold-Microneedle.pdf` | **Gold Microneedle** (Jordi Reyouth) | 21 pages, **aucun tableau de spécifications** : les chiffres sont dispersés dans les visuels. Fiche publiée avec ce qui est imprimé, rien de plus. |
+| `Regen OS catalogue.pdf` | **RegenOS** (Triangel) | Tableau complet en page 5. Fiche publiée. |
+| `brochure chaise EMS E0436.pdf` | Chaise de rééducation périnéale | Brochure GNIE en français. **Pas exploitée**, voir ci-dessous. |
+
+Les trois premiers sont des documents à page unique aplatie : `pdftotext` ne
+rend rien, il faut rendre les pages en image (`pdftoppm`) ou extraire l'image
+de page (`pdfimages -all`) pour les lire.
+
+### Ce qu'il ne faut pas en conclure
+
+- La brochure `chaise EMS E0436` décrit une chaise périnéale à
+  électromagnétisme focalisé, 3–150 Hz, ISO·CE, 10 cm de pénétration,
+  12 000 contractions en 30 minutes. La fiche `ems1-perinee` déjà en ligne
+  décrit une chaise aux mêmes 10 cm et 12 000 contractions, **mais sous une
+  autre référence**. Même famille, probablement le même appareil, ce n'est
+  pas la même chose que la certitude : aucune de ces valeurs n'a été reportée
+  sur la fiche existante tant que le client n'a pas confirmé.
+- Cette brochure porte **l'ancienne adresse de GNIE et `grtarek@yahoo.fr`**.
+  Elle est à refaire avant d'être envoyée à un client.
+- Le catalogue RegenOS affiche un badge « FDA Approval ». C'est une
+  affirmation réglementaire du fabricant, invérifiable ici, et elle n'a pas
+  été reprise sur la fiche.
