@@ -4,8 +4,11 @@ brand: "Newface"
 category: "visage"
 tagline: "Twelve handpieces, HIFU and plasma among them, on one tower."
 excerpt: "High-end facial platform with twelve handpieces: four-cartridge HIFU lifting, plasma, bipolar radiofrequency, sound mesotherapy, bubble cleansing, high-pressure oxygen and V-face lifting, on a 12.1-inch screen."
-heroImage: "../../../assets/machines/_placeholder/photo-a-venir.jpg"
-gallery: []
+heroImage: "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-hero.jpg"
+gallery:
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-01.jpg"
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-02.jpg"
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-03.jpg"
 benefits:
   - title: "Twelve handpieces on one tower"
     text: "Cleansing, firming, lifting, mesotherapy and soothing all run from the same unit. For an institute, that is a complete facial menu without multiplying machines or training."
@@ -61,9 +64,10 @@ specs:
     rows:
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Weight", value: "TODO:NEEDS_INPUT" }
+videoFile: "/videos/nv-wb12-12en1.mp4"
 related: ["revivefacial-14en1", "hydrafacial-10-en-1"]
 featured: false
-draft: true
+draft: false
 order: 33
 seo:
   title: "NV-WB12 — 12-handpiece facial platform"

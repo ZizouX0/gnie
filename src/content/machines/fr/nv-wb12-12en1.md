@@ -4,8 +4,11 @@ brand: "Newface"
 category: "visage"
 tagline: "Douze pièces à main, dont le HIFU et le plasma, sur une seule tour."
 excerpt: "Plateforme visage haut de gamme à douze pièces à main : HIFU de lifting à quatre cartouches, plasma, radiofréquence bipolaire, mésothérapie sonore, nettoyage à bulles, oxygène haute pression et lifting V-face, sur écran de 12,1 pouces."
-heroImage: "../../../assets/machines/_placeholder/photo-a-venir.jpg"
-gallery: []
+heroImage: "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-hero.jpg"
+gallery:
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-01.jpg"
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-02.jpg"
+  - "../../../assets/machines/nv-wb12-12en1/nv-wb12-12en1-03.jpg"
 benefits:
   - title: "Douze pièces à main sur une seule tour"
     text: "Nettoyage, raffermissement, lifting, mésothérapie et apaisement se traitent sur le même appareil. Pour un institut, c'est une carte visage complète sans multiplier les machines ni les formations."
@@ -61,9 +64,10 @@ specs:
     rows:
       - { label: "Dimensions", value: "TODO:NEEDS_INPUT" }
       - { label: "Poids", value: "TODO:NEEDS_INPUT" }
+videoFile: "/videos/nv-wb12-12en1.mp4"
 related: ["revivefacial-14en1", "hydrafacial-10-en-1"]
 featured: false
-draft: true
+draft: false
 order: 33
 seo:
   title: "NV-WB12 — plateforme visage 12 pièces à main"
